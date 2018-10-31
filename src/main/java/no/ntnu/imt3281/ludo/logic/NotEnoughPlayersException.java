@@ -4,7 +4,7 @@ package no.ntnu.imt3281.ludo.logic;
  * Title:   BadNumberException
  * Desc:    Custom exception class
  */
-public class NotEnoughPlayersException extends Exception {
+public class NotEnoughPlayersException extends RuntimeException {
 
     @Override
     public String getMessage(){

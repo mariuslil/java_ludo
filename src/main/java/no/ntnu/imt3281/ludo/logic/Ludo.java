@@ -17,19 +17,11 @@ public class Ludo {
     }
 
     public Ludo(String player1, String player2, String player3, String player4) throws NotEnoughPlayersException {
-        if(player1 != null){
-            players.add(RED, new Player(player1));
-        }
-        if(player2 != null){
-            players.add(BLUE, new Player(player2));
-        }
-        if(player3 != null){
-            players.add(YELLOW, new Player(player3));
-        }
-        if(player4 != null){
-            players.add(GREEN, new Player(player4));
-        }
 
+        players.add(RED, new Player(player1));
+        players.add(BLUE, new Player(player2));
+        players.add(YELLOW, new Player(player3));
+        players.add(GREEN, new Player(player4));
 
         if(this.nrOfPlayers() < 2){
             throw new NotEnoughPlayersException();
@@ -38,15 +30,54 @@ public class Ludo {
     }
 
     public int nrOfPlayers(){
-        return players.size();
+        int playerCount = 0;
+        for (Player player: players) {
+            if(player.getName() != null){
+                playerCount++;
+            }
+        }
+
+        return playerCount;
+    }
+
+    public int activePlayers(){
+        int playerCount = 0;
+        for (Player player: players) {
+            if(player.getName() != null && player.getState()){
+                playerCount++;
+            }
+        }
+
+        return playerCount;
     }
 
     public String getPlayerName(int playerColor){
         if(nrOfPlayers()-1 >= playerColor){
-            return players.get(playerColor).getName();
+            if(players.get(playerColor).getState()){
+                return players.get(playerColor).getName();
+            }else{
+                return "Inactive: " + players.get(playerColor).getName();
+            }
+
         }
 
         return null;
+    }
+
+    public void addPlayer(String name) {
+        if(nrOfPlayers() < 4) {
+            players.add(new Player(name));
+        }else{
+            throw new NoRoomForMorePlayersException();
+        }
+    }
+
+    public void removePlayer(String name){
+        for (Player player: players) {
+            if(player.getName().equals(name)){
+                player.setState(false);
+            }
+        }
     }
 
 }
