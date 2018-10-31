@@ -30,7 +30,7 @@ public class LudoTest {
 	 */
 	@Test
 	public void initialTest() {
-/*		// Player 1 should be red, player 2 should be blue, player 3 should be yellow
+		// Player 1 should be red, player 2 should be blue, player 3 should be yellow
 		// and player 4 should be green.
 		assertEquals(0, Ludo.RED, 0);
 		assertEquals(1, Ludo.BLUE, 0);
@@ -63,7 +63,7 @@ public class LudoTest {
 			exceptionThrown = true;
 		}
 		assertTrue(exceptionThrown);
-*/	}
+	}
 
 	/**
 	 * Test the methods addPlayer and removePlayer. It should be possible to add up
