@@ -113,7 +113,7 @@ public class LudoTest {
 	 */
 	@Test
 	public void testInitialPositions() {
-/*		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+		Ludo ludo = new Ludo("Player1", "Player2", null, null);
 
 		// All pieces should be placed at position 0
 		for (int player = 0; player < 4; player++) { // RED is 0, GREEN is 3
@@ -126,7 +126,7 @@ public class LudoTest {
 		// move
 		// his/her pieces.
 		assertEquals(Ludo.RED, ludo.activePlayer(), 0);
-*/	}
+	}
 
 	/**
 	 * Player must throw a six to get out of the home position. Since all pieces are
