@@ -294,7 +294,7 @@ public class LudoTest {
 	 */
 	@Test
 	public void checkPlayerLocationToBoardLocationConversion() {
-/*		Ludo ludo = new Ludo();
+		Ludo ludo = new Ludo();
 		// The order of the players are RED, BLUE, YELLOW and GREEN
 
 		// For user position 0 we return the first Ludo board grid, then we know we can
@@ -328,7 +328,13 @@ public class LudoTest {
 		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.BLUE, 54), 74, 0);
 		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.YELLOW, 54), 80, 0);
 		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.GREEN, 54), 86, 0);
-*/	}
+
+		// Last field of the "home stretch" (player position 59) should be 73, 79, 85, and 91
+		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.RED, 59), 73, 0);
+        assertEquals(ludo.userGridToLudoBoardGrid(Ludo.BLUE, 59), 79, 0);
+        assertEquals(ludo.userGridToLudoBoardGrid(Ludo.YELLOW, 59), 85, 0);
+        assertEquals(ludo.userGridToLudoBoardGrid(Ludo.GREEN, 59), 91, 0);
+	}
 
 	/**
 	 * When a player lands on top of an opponents piece that opponents piece should
