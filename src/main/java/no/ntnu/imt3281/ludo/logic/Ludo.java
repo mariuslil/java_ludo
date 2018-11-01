@@ -2,7 +2,6 @@ package no.ntnu.imt3281.ludo.logic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Ludo {
@@ -14,9 +13,11 @@ public class Ludo {
 
     private int activePlayer = 0;
 
+    private int lastThrow = 0;
+
     private List<Player> players = new ArrayList<>();
 
-    public Ludo(){
+    public Ludo() {
 
     }
 
@@ -27,16 +28,16 @@ public class Ludo {
         players.add(YELLOW, new Player(player3));
         players.add(GREEN, new Player(player4));
 
-        if(this.nrOfPlayers() < 2){
+        if (this.nrOfPlayers() < 2) {
             throw new NotEnoughPlayersException();
         }
 
     }
 
-    public int nrOfPlayers(){
+    public int nrOfPlayers() {
         int playerCount = 0;
-        for (Player player: players) {
-            if(player.getName() != null){
+        for (Player player : players) {
+            if (player.getName() != null) {
                 playerCount++;
             }
         }
@@ -44,10 +45,10 @@ public class Ludo {
         return playerCount;
     }
 
-    public int activePlayers(){
+    public int activePlayers() {
         int playerCount = 0;
-        for (Player player: players) {
-            if(player.getName() != null && player.getState()){
+        for (Player player : players) {
+            if (player.getName() != null && player.getState()) {
                 playerCount++;
             }
         }
@@ -55,55 +56,57 @@ public class Ludo {
         return playerCount;
     }
 
-    public int activePlayer(){
+    public int activePlayer() {
         return this.activePlayer;
     }
 
-    public String getPlayerName(int playerColor){
-        if(nrOfPlayers()-1 >= playerColor){
-            if(players.get(playerColor).getState()){
+    public String getPlayerName(int playerColor) {
+        if (nrOfPlayers() - 1 >= playerColor) {
+            if (players.get(playerColor).getState()) {
                 return players.get(playerColor).getName();
-            }else{
+            } else {
                 return "Inactive: " + players.get(playerColor).getName();
             }
-
         }
-
         return null;
     }
 
     public void addPlayer(String name) {
-        if(nrOfPlayers() < 4) {
+        if (nrOfPlayers() < 4) {
             players.add(new Player(name));
-        }else{
+        } else {
             throw new NoRoomForMorePlayersException();
         }
     }
 
-    public void removePlayer(String name){
-        for (Player player: players) {
-            if(player.getName().equals(name)){
+    public void removePlayer(String name) {
+        for (Player player : players) {
+            if (player.getName().equals(name)) {
                 player.setState(false);
             }
         }
     }
 
-    public int getPosition(int player, int piece){
-        //dette ble jo jævelig stygt da men
-        //eventuelt: players.get(player).pieces.get(piece).position;
+    public int getPosition(int player, int piece) {
         return players.get(player)
                 .getPieces()
                 .get(piece)
                 .getPosition();
     }
 
-    public void throwDice(int number){
-        if(getPosition(activePlayer(), 0) == 0){
-
+    public void throwDice(int number) {
+        this.lastThrow = number;
+        Player player = players.get(activePlayer);
+        if (player.inStartingPosition()) {
+            player.setThrowAttempts(player.getThrowAttempts() + 1);
+            if (number != 6 && player.getThrowAttempts() == 3) {
+                this.setNextActivePlayer();
+                player.setThrowAttempts(0);
+            }
         }
     }
 
-    public int throwDice(){
+    public int throwDice() {
         //create new random number between 1 and 6
         int nr = ThreadLocalRandom.current().nextInt(1, 6 + 1);
         //throw the number
@@ -112,8 +115,56 @@ public class Ludo {
         return nr;
     }
 
-/*    public boolean movePiece(int player, int from, int to){
+    public void setNextActivePlayer() {
+        this.activePlayer = getNextActivePlayer();
+    }
+
+    public int getNextActivePlayer() {
+        if (this.activePlayer == nrOfPlayers() - 1) {
+            for (int i = 0; i < nrOfPlayers(); i++) {
+                if (players.get(i).getState()) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = activePlayer + 1; i < nrOfPlayers(); i++) {
+                if (players.get(i).getState()) {
+                    return i;
+                }
+            }
+        }
+
+        return 69; //should never be returned
+    }
 
 
-    }*/
+    public boolean movePiece(int player, int from, int to) {
+
+        int piece = players.get(player).getPiece(from);
+
+        if (piece != 69) {
+            //last throw was a 6, but player is in starting position
+            //end of turn
+            if (this.lastThrow == 6 && players.get(player).inStartingPosition()) {
+                this.setNextActivePlayer();
+            }
+            //player didn't throw a 6
+            //end of turn
+            if (this.lastThrow != 6) {
+                this.setNextActivePlayer();
+            }
+
+            //move piece
+            players.get(player)
+                    .getPieces()
+                    .get(piece)
+                    .setPosition(to);
+
+            return true;
+        } else {
+            //doesn't work
+            return false;
+        }
+
+    }
 }

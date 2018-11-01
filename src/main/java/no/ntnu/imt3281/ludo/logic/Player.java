@@ -7,6 +7,7 @@ public class Player {
     protected String name;
     protected boolean state; //active or inactive
     protected List<Piece> pieces = new ArrayList<>();
+    protected int throwAttempts = 0;
 
     public Player(String name){
         this.name = name;
@@ -37,4 +38,32 @@ public class Player {
         return pieces;
     }
 
+    public int getPiece(int position){
+        for (int i = 0; i < pieces.size(); i++) {
+            if(pieces.get(i).getPosition() == position){
+                return i;
+            }
+        }
+
+        return 69;
+    }
+
+    public boolean inStartingPosition(){
+        for (Piece piece: pieces) {
+            if(piece.getPosition() != 0){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    public int getThrowAttempts() {
+        return throwAttempts;
+    }
+
+    public void setThrowAttempts(int throwAttempts) {
+        this.throwAttempts = throwAttempts;
+    }
 }
