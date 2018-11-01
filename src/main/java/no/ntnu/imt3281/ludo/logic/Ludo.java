@@ -15,10 +15,12 @@ public class Ludo {
 
     private int lastThrow = 0;
 
+    private String status;
+
     private List<Player> players = new ArrayList<>();
 
     public Ludo() {
-
+        this.status = "Created";
     }
 
     public Ludo(String player1, String player2, String player3, String player4) throws NotEnoughPlayersException {
@@ -30,6 +32,8 @@ public class Ludo {
 
         if (this.nrOfPlayers() < 2) {
             throw new NotEnoughPlayersException();
+        } else {
+            this.status = "Initiated";
         }
 
     }
@@ -43,6 +47,10 @@ public class Ludo {
         }
 
         return playerCount;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public int activePlayers() {
@@ -74,6 +82,7 @@ public class Ludo {
     public void addPlayer(String name) {
         if (nrOfPlayers() < 4) {
             players.add(new Player(name));
+            this.status = "Initiated";
         } else {
             throw new NoRoomForMorePlayersException();
         }
@@ -94,16 +103,46 @@ public class Ludo {
                 .getPosition();
     }
 
-    public void throwDice(int number) {
+    public int throwDice(int number) {
         this.lastThrow = number;
+        this.status = "Started";
         Player player = players.get(activePlayer);
+
+        if (number != 6) {
+            player.setSixersRow(0);
+        } else {
+            player.setSixersRow(player.getSixersRow() + 1);
+        }
+
+        if (player.getSixersRow() == 3) {
+            this.setNextActivePlayer();
+            return number;
+        }
+
         if (player.inStartingPosition()) {
             player.setThrowAttempts(player.getThrowAttempts() + 1);
             if (number != 6 && player.getThrowAttempts() == 3) {
                 this.setNextActivePlayer();
                 player.setThrowAttempts(0);
+                return number;
             }
         }
+
+        for (Piece piece : player.getPieces()) {
+
+            if (piece.getPosition() < 53 && piece.getPosition() > 0) {
+                return number;
+            }
+
+            //If piece is at pos over 52 but the thrown dice won't make it 59
+            //end of turn
+            if (piece.getPosition() > 52 && piece.getPosition() + number != 59 && piece.getPosition() != 59) {
+                this.setNextActivePlayer();
+                return number;
+            }
+        }
+
+        return number;
     }
 
     public int throwDice() {
@@ -133,7 +172,6 @@ public class Ludo {
                 }
             }
         }
-
         return 69; //should never be returned
     }
 
@@ -145,7 +183,7 @@ public class Ludo {
         if (piece != 69) {
             //last throw was a 6, but player is in starting position
             //end of turn
-            if (this.lastThrow == 6 && players.get(player).inStartingPosition()) {
+            if (this.lastThrow == 6 && players.get(player).inStartingPosition() && from == 0) {
                 this.setNextActivePlayer();
             }
             //player didn't throw a 6
@@ -160,12 +198,29 @@ public class Ludo {
                     .get(piece)
                     .setPosition(to);
 
+            if (to == 59) {
+                boolean finished = players.get(player).pieceFinished();
+                if (finished) {
+                    this.status = "Finished";
+                }
+            }
+
             return true;
         } else {
             //doesn't work
             return false;
         }
 
+    }
+
+
+    public int getWinner() {
+        for (int i = 0; i < nrOfPlayers(); i++) {
+            if (players.get(i).isFinished()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     protected int userGridToLudoBoardGrid(int color, int position) {
