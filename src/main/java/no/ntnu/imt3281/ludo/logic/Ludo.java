@@ -110,11 +110,11 @@ public class Ludo {
 
         if(number != 6){
             player.setSixersRow(0);
-        }else{
+        }else if(!player.inStartingPosition()){
             player.setSixersRow(player.getSixersRow()+1);
         }
 
-        if(player.getSixersRow() == 3){
+        if(player.getSixersRow() > 2){
             this.setNextActivePlayer();
             return number;
         }
@@ -198,9 +198,11 @@ public class Ludo {
                     .get(piece)
                     .setPosition(to);
 
+
+            //checkIfAnotherPlayerLiesThere(player, to);
+
             if(to == 59){
-                boolean finished = players.get(player).pieceFinished();
-                if(finished){
+                if(players.get(player).pieceFinished()){
                     this.status = "Finished";
                 }
             }
@@ -213,6 +215,27 @@ public class Ludo {
 
     }
 
+    private void checkIfAnotherPlayerLiesThere(int player, int place){
+        for (Player player2: players) {
+            if(player2.getName() != players.get(player).getName()) {
+                int test = 0;
+
+                for (Piece piece : player2.getPieces()) {
+                    if (piece.getPosition() == place){
+                        test++;
+                    }
+                }
+                if(test == 1){
+                    for (Piece piece : player2.getPieces()) {
+                        if (piece.getPosition() == place){
+                            piece.setPosition(0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public int getWinner() {
         for (int i = 0; i < nrOfPlayers(); i++) {
             if(players.get(i).isFinished()) {
@@ -222,4 +245,5 @@ public class Ludo {
 
         return -1;
     }
+
 }
