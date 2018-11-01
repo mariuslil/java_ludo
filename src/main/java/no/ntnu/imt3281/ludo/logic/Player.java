@@ -8,6 +8,8 @@ public class Player {
     protected boolean state; //active or inactive
     protected List<Piece> pieces = new ArrayList<>();
     protected int throwAttempts = 0;
+    protected int sixersRow = 0;
+    protected int piecesFinished = 0;
 
     public Player(String name){
         this.name = name;
@@ -65,5 +67,25 @@ public class Player {
 
     public void setThrowAttempts(int throwAttempts) {
         this.throwAttempts = throwAttempts;
+    }
+
+    public int getSixersRow() {
+        return sixersRow;
+    }
+
+    public void setSixersRow(int sixersRow) {
+        this.sixersRow = sixersRow;
+    }
+
+    public boolean pieceFinished(){
+        piecesFinished++;
+        if(piecesFinished == 4){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFinished(){
+        return (piecesFinished == 4);
     }
 }
