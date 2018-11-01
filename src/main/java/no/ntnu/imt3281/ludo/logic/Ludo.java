@@ -108,13 +108,13 @@ public class Ludo {
         this.status = "Started";
         Player player = players.get(activePlayer);
 
-        if(number != 6){
+        if (number != 6) {
             player.setSixersRow(0);
-        }else{
-            player.setSixersRow(player.getSixersRow()+1);
+        } else {
+            player.setSixersRow(player.getSixersRow() + 1);
         }
 
-        if(player.getSixersRow() == 3){
+        if (player.getSixersRow() == 3) {
             this.setNextActivePlayer();
             return number;
         }
@@ -130,13 +130,13 @@ public class Ludo {
 
         for (Piece piece : player.getPieces()) {
 
-            if(piece.getPosition() < 53 && piece.getPosition() > 0){
+            if (piece.getPosition() < 53 && piece.getPosition() > 0) {
                 return number;
             }
 
             //If piece is at pos over 52 but the thrown dice won't make it 59
             //end of turn
-            if(piece.getPosition() > 52 && piece.getPosition()+number != 59 && piece.getPosition() != 59){
+            if (piece.getPosition() > 52 && piece.getPosition() + number != 59 && piece.getPosition() != 59) {
                 this.setNextActivePlayer();
                 return number;
             }
@@ -198,9 +198,9 @@ public class Ludo {
                     .get(piece)
                     .setPosition(to);
 
-            if(to == 59){
+            if (to == 59) {
                 boolean finished = players.get(player).pieceFinished();
-                if(finished){
+                if (finished) {
                     this.status = "Finished";
                 }
             }
@@ -213,13 +213,36 @@ public class Ludo {
 
     }
 
+
     public int getWinner() {
         for (int i = 0; i < nrOfPlayers(); i++) {
-            if(players.get(i).isFinished()) {
+            if (players.get(i).isFinished()) {
                 return i;
             }
         }
-
         return -1;
+    }
+
+    protected int userGridToLudoBoardGrid(int color, int position) {
+        // Get base for calculating board position
+        int boardPos = (position + 15 + (13 * color));
+
+        // If position is zero, multiply color with 4
+        if (position == 0) {
+            return (color * 4);
+
+        } else if (position > 53 && position < 60) {
+            // If position is 54, add position with 14 and then add 6 times color code,
+            // because it's 6 special positions for each color
+            return position + 14 + (6 * color);
+
+        } else if (boardPos > 0) {
+            // if position is not 0 or 54, calculate board position
+            return (boardPos < 67) ? boardPos : (boardPos % 67) + 15;
+
+        } else {
+            // If failed to calculate, return -1
+            return -1;
+        }
     }
 }
