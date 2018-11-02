@@ -110,7 +110,7 @@ public class Ludo {
 
         if (number != 6) {
             player.setSixersRow(0);
-        } else {
+        } else if (!player.inStartingPosition()) {
             player.setSixersRow(player.getSixersRow() + 1);
         }
 
@@ -198,10 +198,10 @@ public class Ludo {
                     .get(piece)
                     .setPosition(to);
 
-            //checkIfAnotherPlayerLiesThere(player, to);
+            checkIfAnotherPlayerLiesThere(player, to);
 
-            if(to == 59){
-                if(players.get(player).pieceFinished()){
+            if (to == 59) {
+                if (players.get(player).pieceFinished()) {
                     this.status = "Finished";
                 }
             }
@@ -214,19 +214,21 @@ public class Ludo {
 
     }
 
-    private void checkIfAnotherPlayerLiesThere(int player, int place){
-        for (Player player2: players) {
-            if(player2.getName() != players.get(player).getName()) {
-                int test = 0;
+    private void checkIfAnotherPlayerLiesThere(int player, int place) {
 
-                for (Piece piece : player2.getPieces()) {
-                    if (piece.getPosition() == place){
-                        test++;
+        int playerPos = userGridToLudoBoardGrid(player, place);
+
+        for (int i = 0; i < nrOfPlayers(); i++) {
+            if (players.get(i).getName() != players.get(player).getName()) {
+                int counter = 0;
+                for (Piece piece : players.get(i).getPieces()) {
+                    if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
+                        counter++;
                     }
                 }
-                if(test == 1){
-                    for (Piece piece : player2.getPieces()) {
-                        if (piece.getPosition() == place){
+                if (counter == 1) {
+                    for (Piece piece : players.get(i).getPieces()) {
+                        if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
                             piece.setPosition(0);
                         }
                     }
@@ -266,5 +268,5 @@ public class Ludo {
             return -1;
         }
     }
-    
+
 }
