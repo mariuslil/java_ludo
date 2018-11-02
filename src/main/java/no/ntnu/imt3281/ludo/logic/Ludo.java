@@ -215,17 +215,22 @@ public class Ludo {
     }
 
     private void checkIfAnotherPlayerLiesThere(int player, int place) {
-
+        //get our board position
         int playerPos = userGridToLudoBoardGrid(player, place);
 
+        //iterate all players
         for (int i = 0; i < nrOfPlayers(); i++) {
+            //not our player
             if (players.get(i).getName() != players.get(player).getName()) {
                 int counter = 0;
+                //go through all pieces
                 for (Piece piece : players.get(i).getPieces()) {
+                    //check if board position is the same
                     if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
                         counter++;
                     }
                 }
+                //if there is only 1 piece there, reset it
                 if (counter == 1) {
                     for (Piece piece : players.get(i).getPieces()) {
                         if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
