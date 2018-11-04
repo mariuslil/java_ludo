@@ -110,7 +110,7 @@ public class Ludo {
 
         if (number != 6) {
             player.setSixersRow(0);
-        } else {
+        } else if (!player.inStartingPosition()) {
             player.setSixersRow(player.getSixersRow() + 1);
         }
 
@@ -198,9 +198,10 @@ public class Ludo {
                     .get(piece)
                     .setPosition(to);
 
+            checkIfAnotherPlayerLiesThere(player, to);
+
             if (to == 59) {
-                boolean finished = players.get(player).pieceFinished();
-                if (finished) {
+                if (players.get(player).pieceFinished()) {
                     this.status = "Finished";
                 }
             }
@@ -213,6 +214,33 @@ public class Ludo {
 
     }
 
+    private void checkIfAnotherPlayerLiesThere(int player, int place) {
+        //get our board position
+        int playerPos = userGridToLudoBoardGrid(player, place);
+
+        //iterate all players
+        for (int i = 0; i < nrOfPlayers(); i++) {
+            //not our player
+            if (players.get(i).getName() != players.get(player).getName()) {
+                int counter = 0;
+                //go through all pieces
+                for (Piece piece : players.get(i).getPieces()) {
+                    //check if board position is the same
+                    if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
+                        counter++;
+                    }
+                }
+                //if there is only 1 piece there, reset it
+                if (counter == 1) {
+                    for (Piece piece : players.get(i).getPieces()) {
+                        if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
+                            piece.setPosition(0);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public int getWinner() {
         for (int i = 0; i < nrOfPlayers(); i++) {
@@ -245,4 +273,5 @@ public class Ludo {
             return -1;
         }
     }
+
 }

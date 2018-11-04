@@ -289,8 +289,6 @@ public class LudoTest {
 	 * playing field and to place pieces on the Ludo board we need to be able to
 	 * convert between player locations and board locations. Here we test these
 	 * conversions.
-	 * 
-	 * @param ludo
 	 */
 	@Test
 	public void checkPlayerLocationToBoardLocationConversion() {
@@ -343,7 +341,7 @@ public class LudoTest {
 	 */
 	@Test
 	public void landingOnTopSendsPlayerBack() {
-/*		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+		Ludo ludo = new Ludo("Player1", "Player2", null, null);
 
 		ludo.throwDice(6); // Lucky red, threw a six
 		ludo.movePiece(Ludo.RED, 0, 1); // Board position 16
@@ -379,7 +377,7 @@ public class LudoTest {
 
 		// RED player got "hit" by BLUE player and should be sent back to start
 		assertEquals(0, ludo.getPosition(Ludo.RED, 0));
-*/	}
+	}
 
 	/**
 	 * When a player has two or more pieces on top of each other no other player can
