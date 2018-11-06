@@ -104,6 +104,12 @@ public class Ludo {
                 player.setThrowAttempts(0);
             }
         }
+        //TODO need to know the chosen piece for this function call, there should be no need for a for-loop
+        for (Piece piece : player.getPieces()) {
+            if (towersBlocksOpponents(player, piece.position, number)) {
+                this.setNextActivePlayer();
+            }
+        }
     }
 
     public int throwDice() {
@@ -154,6 +160,30 @@ public class Ludo {
                 this.setNextActivePlayer();
             }
 
+            if (players.get(player).getPieces().get(piece).towerPos != -1) {
+                players.get(player)
+                        .getPieces()
+                        .get(piece)
+                        .setTower(-1);
+
+                for (Piece piece2 : players.get(player).pieces) {
+                    if (piece2.position == from) {
+                        piece2.setTower(-1);
+                    }
+                }
+            }
+
+            for (Piece piece2 : players.get(player).pieces) {
+                if (piece2.position == to) {
+                    //Both pieces become a tower
+                    piece2.setTower(piece2.position);
+                    players.get(player)
+                            .getPieces()
+                            .get(piece)
+                            .setTower(to);
+                }
+            }
+
             //move piece
             players.get(player)
                     .getPieces()
@@ -166,5 +196,26 @@ public class Ludo {
             return false;
         }
 
+    }
+
+
+    public boolean towersBlocksOpponents (Player playr, int from, int number){
+
+        int tPpos;
+        int pos;
+        for (Player player : players) {
+            if (player != playr && player.getName() != null) {
+                pos = userGridToLudoBoardGrid(player.getColour(), from);
+                for (Piece piece : player.pieces) {
+                    tPpos = userGridToLudoBoardGrid(player.getColour(), piece.position);
+                    for (int i = from; i <= pos + number; i++) {
+                        if (tPpos == i) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
