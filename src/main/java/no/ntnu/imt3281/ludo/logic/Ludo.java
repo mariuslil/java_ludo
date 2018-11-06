@@ -154,6 +154,10 @@ public class Ludo {
         return nr;
     }
 
+    public void addDiceListener(DiceListener listener){
+        // TODO finish this function
+    }
+
     public void setNextActivePlayer() {
         this.activePlayer = getNextActivePlayer();
     }
