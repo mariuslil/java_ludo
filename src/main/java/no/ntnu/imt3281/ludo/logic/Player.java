@@ -9,10 +9,13 @@ public class Player {
     protected List<Piece> pieces = new ArrayList<>();
     protected int throwAttempts = 0;
     protected int colour;
+    protected int sixersRow = 0;
+    protected int piecesFinished = 0;
 
-    public Player(String name){
+    public Player(String name, int colour){
         this.name = name;
         this.state = true;
+        this.colour = colour;
         pieces.add(new Piece());
         pieces.add(new Piece());
         pieces.add(new Piece());
@@ -68,7 +71,29 @@ public class Player {
         this.throwAttempts = throwAttempts;
     }
 
+
     public void setColour (int colour) {this.colour = colour;}
 
     public int getColour () {return colour;}
+
+    public int getSixersRow() {
+        return sixersRow;
+    }
+
+    public void setSixersRow(int sixersRow) {
+        this.sixersRow = sixersRow;
+    }
+
+    public boolean pieceFinished(){
+        piecesFinished++;
+        if(piecesFinished == 4){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFinished(){
+        return (piecesFinished == 4);
+    }
+
 }

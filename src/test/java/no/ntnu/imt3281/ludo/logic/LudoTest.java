@@ -192,7 +192,7 @@ public class LudoTest {
 	 */
 	@Test
 	public void gameStates() {
-/*		Ludo ludo = new Ludo();
+		Ludo ludo = new Ludo();
 		assertEquals("Created", ludo.getStatus()); // A game with no players are created
 		ludo.addPlayer("Player1");
 		assertEquals("Initiated", ludo.getStatus()); // A game with players are Initiated
@@ -282,19 +282,17 @@ public class LudoTest {
 		assertTrue(ludo.movePiece(Ludo.RED, 55, 59));
 		assertEquals("Finished", ludo.getStatus()); // A game with a winner is finished
 		assertEquals(Ludo.RED, ludo.getWinner(), 0);
-*/	}
+	}
 
 	/**
 	 * To be able to detect when pieces from different players end up on the same
 	 * playing field and to place pieces on the Ludo board we need to be able to
 	 * convert between player locations and board locations. Here we test these
 	 * conversions.
-	 * 
-	 * @param ludo
 	 */
 	@Test
 	public void checkPlayerLocationToBoardLocationConversion() {
-/*		Ludo ludo = new Ludo();
+		Ludo ludo = new Ludo();
 		// The order of the players are RED, BLUE, YELLOW and GREEN
 
 		// For user position 0 we return the first Ludo board grid, then we know we can
@@ -328,7 +326,13 @@ public class LudoTest {
 		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.BLUE, 54), 74, 0);
 		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.YELLOW, 54), 80, 0);
 		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.GREEN, 54), 86, 0);
-*/	}
+
+		// Last field of the "home stretch" (player position 59) should be 73, 79, 85, and 91
+		assertEquals(ludo.userGridToLudoBoardGrid(Ludo.RED, 59), 73, 0);
+        assertEquals(ludo.userGridToLudoBoardGrid(Ludo.BLUE, 59), 79, 0);
+        assertEquals(ludo.userGridToLudoBoardGrid(Ludo.YELLOW, 59), 85, 0);
+        assertEquals(ludo.userGridToLudoBoardGrid(Ludo.GREEN, 59), 91, 0);
+	}
 
 	/**
 	 * When a player lands on top of an opponents piece that opponents piece should
@@ -337,7 +341,7 @@ public class LudoTest {
 	 */
 	@Test
 	public void landingOnTopSendsPlayerBack() {
-/*		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+		Ludo ludo = new Ludo("Player1", "Player2", null, null);
 
 		ludo.throwDice(6); // Lucky red, threw a six
 		ludo.movePiece(Ludo.RED, 0, 1); // Board position 16
@@ -373,7 +377,7 @@ public class LudoTest {
 
 		// RED player got "hit" by BLUE player and should be sent back to start
 		assertEquals(0, ludo.getPosition(Ludo.RED, 0));
-*/	}
+	}
 
 	/**
 	 * When a player has two or more pieces on top of each other no other player can
@@ -452,10 +456,10 @@ public class LudoTest {
 	 * @param ludo the object holding this game
 	 */
 	private void skipPlayer(Ludo ludo) {
-/*		for (int noBlue = 0; noBlue < 3; noBlue++) { // We will be moving the red players pieces only
+		for (int noBlue = 0; noBlue < 3; noBlue++) { // We will be moving the red players pieces only
 			ludo.throwDice(1); // So blue only throws ones
 		}
-*/	}
+	}
 
 	/*
 	 * =========================================================================
