@@ -252,20 +252,19 @@ public class Ludo {
         int tPos;
         int pos = userGridToLudoBoardGrid(playr.getColour(), from);
         for (Player player : players) { //Goes through all other players
-            if (player != playr && player.getName() != null) {
-                for (Piece piece : player.pieces) {
-                    if (piece.position != 0 && piece.towerPos != -1) { //Checks the relevant pieces
+            for (Piece piece : player.pieces) {//Checks the relevant pieces
+                if (player != playr && player.getName() != null &&
+                        piece.position != 0 && piece.towerPos != -1) {
+                        // If the piece is in a tower
                         tPos = userGridToLudoBoardGrid(player.getColour(), piece.position);
                         for (int i = pos; i <= pos + number; i++) { //Checks all fields the piece would have to move
-                            if (tPos == i) {
-                                //Returns if a tower blocks the move
+                            if (tPos == i) { //Returns if a tower blocks the move
                                 return true;
                             }
                         }
                     }
                 }
             }
-        }
         return false;
     }
 
