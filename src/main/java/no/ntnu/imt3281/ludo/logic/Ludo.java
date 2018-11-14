@@ -1,5 +1,10 @@
 package no.ntnu.imt3281.ludo.logic;
 
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceListener;
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,8 +24,11 @@ public class Ludo {
 
     private List<Player> players = new ArrayList<>();
 
-    // List for all Dicelisteners
-    private List<DiceListener> listeners = new ArrayList<>();
+    // List for all DiceListeners
+    private List<DiceListener> diceListeners = new ArrayList<>();
+
+    // List for all PieceListeners
+    private List<PieceListener> pieceListeners = new ArrayList<>();
 
     public Ludo() {
         this.status = "Created";
@@ -111,8 +119,8 @@ public class Ludo {
         this.status = "Started";
         Player player = players.get(activePlayer);
 
-        //throw DiceEvent to listeners
-        for(DiceListener listener: listeners){
+        //throw DiceEvent to diceListeners
+        for (DiceListener listener : diceListeners) {
             DiceEvent diceEvent = new DiceEvent(this, this.activePlayer, number);
             listener.diceThrown(diceEvent);
         }
@@ -135,7 +143,7 @@ public class Ludo {
                 this.setNextActivePlayer();
                 player.setThrowAttempts(0);
                 return number;
-            }else{
+            } else {
                 return number;
             }
         }
@@ -146,7 +154,7 @@ public class Ludo {
         int notMakingItInPieces = 0;
 
         for (Piece piece : player.getPieces()) {
-            if(piece.isInPlay()){
+            if (piece.isInPlay()) {
                 //count blocked pieces
                 if (towersBlocksOpponents(player, piece.position, number)) {
                     blockedPieces++;
@@ -162,18 +170,18 @@ public class Ludo {
         }
 
         //if all active pieces are blocked, end of turn
-        if(blockedPieces == piecesInPlay){
+        if (blockedPieces == piecesInPlay) {
             nextTurn = true;
-        //if all pieces are at endplay, but none can get in, end of turn
-        }else if(notMakingItInPieces == piecesInPlay){
+            //if all pieces are at endplay, but none can get in, end of turn
+        } else if (notMakingItInPieces == piecesInPlay) {
             nextTurn = true;
-        //if blocked pieces and notmakingitinpieces are all the pieces in play, end of turn
-        }else if((notMakingItInPieces+blockedPieces) == piecesInPlay){
+            //if blocked pieces and notmakingitinpieces are all the pieces in play, end of turn
+        } else if ((notMakingItInPieces + blockedPieces) == piecesInPlay) {
             nextTurn = true;
         }
 
         //set next turn
-        if(nextTurn){
+        if (nextTurn) {
             this.setNextActivePlayer();
         }
 
@@ -189,9 +197,14 @@ public class Ludo {
         return nr;
     }
 
-    public void addDiceListener(DiceListener listener){
-        // Add listener to listeners list
-        this.listeners.add(listener);
+    public void addPieceListener(PieceListener listener) {
+        // Add listener til diceListeners list for moved piece
+        this.pieceListeners.add(listener);
+    }
+
+    public void addDiceListener(DiceListener listener) {
+        // Add listener to diceListeners list for dice thrown
+        this.diceListeners.add(listener);
     }
 
     public void setNextActivePlayer() {
@@ -219,6 +232,12 @@ public class Ludo {
     public boolean movePiece(int player, int from, int to) {
 
         int piece = players.get(player).getPiece(from);
+
+        // Throw PieceEvent to PieceListeners
+        for (PieceListener listener : pieceListeners) {
+            PieceEvent pieceEvent = new PieceEvent(this, player, piece, from, to);
+            listener.pieceMoved(pieceEvent);
+        }
 
         if (piece != 69) {
             //last throw was a 6, but player is in starting position
@@ -265,7 +284,7 @@ public class Ludo {
                     .setPosition(to);
 
             //set piece to in play
-            if(to > 0 && to < 59){
+            if (to > 0 && to < 59) {
                 players.get(player)
                         .getPieces()
                         .get(piece)
@@ -297,16 +316,16 @@ public class Ludo {
             for (Piece piece : player.pieces) {//Checks the relevant pieces
                 if (player != playr && player.getName() != null &&
                         piece.position != 0 && piece.towerPos != -1) {
-                        // If the piece is in a tower
-                        tPos = userGridToLudoBoardGrid(player.getColour(), piece.position);
-                        for (int i = pos; i <= pos + number; i++) { //Checks all fields the piece would have to move
-                            if (tPos == i) { //Returns if a tower blocks the move
-                                return true;
-                            }
+                    // If the piece is in a tower
+                    tPos = userGridToLudoBoardGrid(player.getColour(), piece.position);
+                    for (int i = pos; i <= pos + number; i++) { //Checks all fields the piece would have to move
+                        if (tPos == i) { //Returns if a tower blocks the move
+                            return true;
                         }
                     }
                 }
             }
+        }
         return false;
     }
 
@@ -328,10 +347,18 @@ public class Ludo {
                 }
                 //if there is only 1 piece there, reset it
                 if (counter == 1) {
+                    int pieceIndex = 0;
                     for (Piece piece : players.get(i).getPieces()) {
                         if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
-                            piece.setPosition(0);
 
+                            // Throw PieceEvent to PieceListeners
+                            for (PieceListener listener : pieceListeners) {
+                                PieceEvent pieceEvent = new PieceEvent(this, players.get(i).colour, pieceIndex++, piece.getPosition(), 0);
+                                listener.pieceMoved(pieceEvent);
+                            }
+
+                            // Reset piece
+                            piece.setPosition(0);
                         }
                     }
                 }
