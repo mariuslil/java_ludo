@@ -474,7 +474,7 @@ public class LudoTest {
 	 */
 	@Test
 	public void diceThrownEventTest() {
-/*		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+		Ludo ludo = new Ludo("Player1", "Player2", null, null);
 
 		// Create a mock DiceListener
 		DiceListener diceListener = mock(DiceListener.class);
@@ -492,7 +492,7 @@ public class LudoTest {
 
 		DiceEvent diceEvent1 = new DiceEvent(ludo, Ludo.BLUE, 3); // Then blue threw a three
 		order.verify(diceListener).diceThrown(diceEvent1);
-*/	}
+	}
 
 	/**
 	 * Check that correct movement of pieces event is sent. I.e. when a piece is
