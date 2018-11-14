@@ -108,45 +108,62 @@ public class Ludo {
         this.status = "Started";
         Player player = players.get(activePlayer);
 
+        //check if number thrown was a 6
         if (number != 6) {
             player.setSixersRow(0);
-        } else if (!player.inStartingPosition()) {
+        } else if (!player.inStartingPosition()) { //count up the sixers row if not in starting pos
             player.setSixersRow(player.getSixersRow() + 1);
         }
 
-        if (player.getSixersRow() == 3) {
+        if (player.getSixersRow() == 3) { //three 6's in a row, next turn
             this.setNextActivePlayer();
             return number;
         }
 
-        if (player.inStartingPosition()) {
+        if (player.inStartingPosition()) { //starting position have 3 throws to get a six
             player.setThrowAttempts(player.getThrowAttempts() + 1);
             if (number != 6 && player.getThrowAttempts() == 3) {
                 this.setNextActivePlayer();
                 player.setThrowAttempts(0);
                 return number;
+            }else{
+                return number;
             }
         }
 
-        //TODO need to know the chosen piece for this function call, there should be no need for a for-loop
-        for (Piece piece : player.getPieces()) { //Check to se if a tower blocks the path
-            if (towersBlocksOpponents(player, piece.position, number)) {
-                this.setNextActivePlayer();
-            }
-        }
+        boolean nextTurn = false;
+        int piecesInPlay = player.piecesInPlay();
+        int blockedPieces = 0;
+        int notMakingItInPieces = 0;
 
         for (Piece piece : player.getPieces()) {
-
-            if (piece.getPosition() < 53 && piece.getPosition() > 0) {
-                return number;
+            if(piece.isInPlay()){
+                //count blocked pieces
+                if (towersBlocksOpponents(player, piece.position, number)) {
+                    blockedPieces++;
+                }
+                
+                //If piece is at pos over 52 but the thrown dice won't make it 59
+                //end of turn
+                if (piece.getPosition() > 52 && piece.getPosition() + number != 59 && piece.getPosition() != 59) {
+                    notMakingItInPieces++;
+                }
             }
 
-            //If piece is at pos over 52 but the thrown dice won't make it 59
-            //end of turn
-            if (piece.getPosition() > 52 && piece.getPosition() + number != 59 && piece.getPosition() != 59) {
-                this.setNextActivePlayer();
-                return number;
-            }
+        }
+
+        //if all active pieces are blocked, end of turn
+        if(blockedPieces == piecesInPlay){
+            nextTurn = true;
+        }else if(notMakingItInPieces == piecesInPlay){
+            nextTurn = true;
+        }else if((notMakingItInPieces+blockedPieces) == piecesInPlay){
+            nextTurn = true;
+        }
+
+        //set next turn
+        if(nextTurn){
+            this.setNextActivePlayer();
         }
 
         return number;
@@ -231,9 +248,18 @@ public class Ludo {
                     .get(piece)
                     .setPosition(to);
 
+            //set piece to in play
+            if(to > 0 && to < 59){
+                players.get(player)
+                        .getPieces()
+                        .get(piece)
+                        .setInPlay(true);
+            }
+
             checkIfAnotherPlayerLiesThere(player, to);
 
             if (to == 59) {
+
                 if (players.get(player).pieceFinished()) {
                     this.status = "Finished";
                 }

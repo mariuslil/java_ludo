@@ -54,7 +54,7 @@ public class Player {
 
     public boolean inStartingPosition(){
         for (Piece piece: pieces) {
-            if(piece.getPosition() != 0){
+            if(piece.getPosition() != 0 || piece.getPosition() == 59){
                 return false;
             }
         }
@@ -62,6 +62,16 @@ public class Player {
         return true;
     }
 
+    public int piecesInPlay(){
+        int count = 0;
+        for (Piece piece: this.pieces) {
+            if(piece.isInPlay()){
+                count++;
+            }
+        }
+
+        return count;
+    }
 
     public int getThrowAttempts() {
         return throwAttempts;
@@ -85,6 +95,11 @@ public class Player {
     }
 
     public boolean pieceFinished(){
+        for (Piece piece:pieces) {
+            if(piece.getPosition() == 59){
+                piece.setInPlay(false);
+            }
+        }
         piecesFinished++;
         if(piecesFinished == 4){
             return true;
