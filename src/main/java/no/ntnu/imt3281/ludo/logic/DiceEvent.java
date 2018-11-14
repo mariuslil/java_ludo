@@ -7,7 +7,7 @@ public class DiceEvent {
     private int diceNr;
 
     /**
-     * @param ludo Ludo
+     * @param ludo   Ludo
      * @param color  int
      * @param diceNr int
      */
@@ -22,12 +22,15 @@ public class DiceEvent {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
+        // Return true if object equals to this object
+        if (obj == this)
             return true;
-        }
-        if (!(obj instanceof DiceEvent)) {
+
+        // Return false if obj is not an instance of DiceEvent
+        if (!(obj instanceof DiceEvent))
             return false;
-        }
+
+        // Cast to DiceEvent object and check if all values equals to obj
         DiceEvent event = (DiceEvent) obj;
         return (event.ludo == ludo) && (event.color == color) && (event.diceNr == diceNr);
     }

@@ -19,6 +19,7 @@ public class Ludo {
 
     private List<Player> players = new ArrayList<>();
 
+    // List for all Dicelisteners
     private List<DiceListener> listeners = new ArrayList<>();
 
     public Ludo() {
@@ -189,7 +190,7 @@ public class Ludo {
     }
 
     public void addDiceListener(DiceListener listener){
-        // TODO finish this function
+        // Add listener to listeners list
         this.listeners.add(listener);
     }
 
