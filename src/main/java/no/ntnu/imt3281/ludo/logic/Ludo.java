@@ -142,7 +142,7 @@ public class Ludo {
                 if (towersBlocksOpponents(player, piece.position, number)) {
                     blockedPieces++;
                 }
-                
+
                 //If piece is at pos over 52 but the thrown dice won't make it 59
                 //end of turn
                 if (piece.getPosition() > 52 && piece.getPosition() + number != 59 && piece.getPosition() != 59) {
@@ -155,8 +155,10 @@ public class Ludo {
         //if all active pieces are blocked, end of turn
         if(blockedPieces == piecesInPlay){
             nextTurn = true;
+        //if all pieces are at endplay, but none can get in, end of turn
         }else if(notMakingItInPieces == piecesInPlay){
             nextTurn = true;
+        //if blocked pieces and notmakingitinpieces are all the pieces in play, end of turn
         }else if((notMakingItInPieces+blockedPieces) == piecesInPlay){
             nextTurn = true;
         }
