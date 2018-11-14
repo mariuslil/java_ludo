@@ -5,6 +5,7 @@ package no.ntnu.imt3281.ludo.gui;
  */
 
 import javafx.fxml.FXML;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -52,4 +53,13 @@ public class GameBoardController {
     @FXML
     private Button sendTextButton;
 
+    @FXML
+    void speak(ActionEvent event) {
+
+    }
+
+    @FXML
+    void throwDice(ActionEvent event) {
+
+    }
 }

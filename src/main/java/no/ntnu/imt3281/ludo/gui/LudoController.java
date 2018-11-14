@@ -10,14 +10,69 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import java.net.URL;
 
 public class LudoController {
 
-    @FXML
-    private MenuItem random;
+	@FXML
+	private ResourceBundle resources;
 
-    @FXML
-    private TabPane tabbedPane;
+	@FXML
+	private URL location;
+
+	@FXML
+	private MenuItem connect;
+
+	@FXML
+	private MenuItem close;
+
+	@FXML
+	private MenuItem random;
+
+	@FXML
+	private MenuItem challenge;
+
+	@FXML
+	private MenuItem joinChat;
+
+	@FXML
+	private MenuItem listRooms;
+
+	@FXML
+	private MenuItem about;
+
+	@FXML
+	private TabPane tabbedPane;
+
+	@FXML
+	void ListRooms(ActionEvent event) {
+
+	}
+
+	@FXML
+	void about(ActionEvent event) {
+
+	}
+
+	@FXML
+	void challengePlayer(ActionEvent event) {
+
+	}
+
+	@FXML
+	void closeApp(ActionEvent event) {
+
+	}
+
+	@FXML
+	void connectToServer(ActionEvent event) {
+
+	}
+
+	@FXML
+	void joinChat(ActionEvent event) {
+
+	}
 
     @FXML
     public void joinRandomGame(ActionEvent e) {  	

@@ -25,10 +25,10 @@ public class Ludo {
 
     public Ludo(String player1, String player2, String player3, String player4) throws NotEnoughPlayersException {
 
-        players.add(RED, new Player(player1));
-        players.add(BLUE, new Player(player2));
-        players.add(YELLOW, new Player(player3));
-        players.add(GREEN, new Player(player4));
+        players.add(RED, new Player(player1, RED));
+        players.add(BLUE, new Player(player2, BLUE));
+        players.add(YELLOW, new Player(player3, YELLOW));
+        players.add(GREEN, new Player(player4, GREEN));
 
         if (this.nrOfPlayers() < 2) {
             throw new NotEnoughPlayersException();
@@ -81,7 +81,7 @@ public class Ludo {
 
     public void addPlayer(String name) {
         if (nrOfPlayers() < 4) {
-            players.add(new Player(name));
+            players.add(new Player(name, nrOfPlayers() + 1));
             this.status = "Initiated";
         } else {
             throw new NoRoomForMorePlayersException();
@@ -108,38 +108,64 @@ public class Ludo {
         this.status = "Started";
         Player player = players.get(activePlayer);
 
+        //check if number thrown was a 6
         if (number != 6) {
             player.setSixersRow(0);
-        } else if (!player.inStartingPosition()) {
+        } else if (!player.inStartingPosition()) { //count up the sixers row if not in starting pos
             player.setSixersRow(player.getSixersRow() + 1);
         }
 
-        if (player.getSixersRow() == 3) {
+        if (player.getSixersRow() == 3) { //three 6's in a row, next turn
             this.setNextActivePlayer();
             return number;
         }
 
-        if (player.inStartingPosition()) {
+        if (player.inStartingPosition()) { //starting position have 3 throws to get a six
             player.setThrowAttempts(player.getThrowAttempts() + 1);
             if (number != 6 && player.getThrowAttempts() == 3) {
                 this.setNextActivePlayer();
                 player.setThrowAttempts(0);
                 return number;
+            }else{
+                return number;
             }
         }
 
+        boolean nextTurn = false;
+        int piecesInPlay = player.piecesInPlay();
+        int blockedPieces = 0;
+        int notMakingItInPieces = 0;
+
         for (Piece piece : player.getPieces()) {
+            if(piece.isInPlay()){
+                //count blocked pieces
+                if (towersBlocksOpponents(player, piece.position, number)) {
+                    blockedPieces++;
+                }
 
-            if (piece.getPosition() < 53 && piece.getPosition() > 0) {
-                return number;
+                //If piece is at pos over 52 but the thrown dice won't make it 59
+                //end of turn
+                if (piece.getPosition() > 52 && piece.getPosition() + number != 59 && piece.getPosition() != 59) {
+                    notMakingItInPieces++;
+                }
             }
 
-            //If piece is at pos over 52 but the thrown dice won't make it 59
-            //end of turn
-            if (piece.getPosition() > 52 && piece.getPosition() + number != 59 && piece.getPosition() != 59) {
-                this.setNextActivePlayer();
-                return number;
-            }
+        }
+
+        //if all active pieces are blocked, end of turn
+        if(blockedPieces == piecesInPlay){
+            nextTurn = true;
+        //if all pieces are at endplay, but none can get in, end of turn
+        }else if(notMakingItInPieces == piecesInPlay){
+            nextTurn = true;
+        //if blocked pieces and notmakingitinpieces are all the pieces in play, end of turn
+        }else if((notMakingItInPieces+blockedPieces) == piecesInPlay){
+            nextTurn = true;
+        }
+
+        //set next turn
+        if(nextTurn){
+            this.setNextActivePlayer();
         }
 
         return number;
@@ -196,15 +222,50 @@ public class Ludo {
                 this.setNextActivePlayer();
             }
 
+            //Resets the tower info when a tower is split
+            if (players.get(player).getPieces().get(piece).towerPos != -1) {
+                players.get(player)
+                        .getPieces()
+                        .get(piece)
+                        .setTower(-1);
+
+                for (Piece piece2 : players.get(player).pieces) {
+                    if (piece2.position == from) {
+                        piece2.setTower(-1);
+                    }
+                }
+            }
+
+            //Sets tower info when a tower is made
+            for (Piece piece2 : players.get(player).pieces) {
+                if (piece2.position == to) {
+                    //Both pieces become a tower
+                    piece2.setTower(piece2.position);
+                    players.get(player)
+                            .getPieces()
+                            .get(piece)
+                            .setTower(to);
+                }
+            }
+
             //move piece
             players.get(player)
                     .getPieces()
                     .get(piece)
                     .setPosition(to);
 
+            //set piece to in play
+            if(to > 0 && to < 59){
+                players.get(player)
+                        .getPieces()
+                        .get(piece)
+                        .setInPlay(true);
+            }
+
             checkIfAnotherPlayerLiesThere(player, to);
 
             if (to == 59) {
+
                 if (players.get(player).pieceFinished()) {
                     this.status = "Finished";
                 }
@@ -216,6 +277,27 @@ public class Ludo {
             return false;
         }
 
+    }
+
+    public boolean towersBlocksOpponents(Player playr, int from, int number) {
+
+        int tPos;
+        int pos = userGridToLudoBoardGrid(playr.getColour(), from);
+        for (Player player : players) { //Goes through all other players
+            for (Piece piece : player.pieces) {//Checks the relevant pieces
+                if (player != playr && player.getName() != null &&
+                        piece.position != 0 && piece.towerPos != -1) {
+                        // If the piece is in a tower
+                        tPos = userGridToLudoBoardGrid(player.getColour(), piece.position);
+                        for (int i = pos; i <= pos + number; i++) { //Checks all fields the piece would have to move
+                            if (tPos == i) { //Returns if a tower blocks the move
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        return false;
     }
 
     private void checkIfAnotherPlayerLiesThere(int player, int place) {
@@ -239,6 +321,7 @@ public class Ludo {
                     for (Piece piece : players.get(i).getPieces()) {
                         if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
                             piece.setPosition(0);
+
                         }
                     }
                 }
@@ -277,5 +360,4 @@ public class Ludo {
             return -1;
         }
     }
-
 }

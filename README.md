@@ -11,6 +11,9 @@ Du er nå klar til å begynne på prosjektet :-).
 All testkode skal passere for å få bestått prosjektet, koden som ligger i src/main/java er gitt som et utgangspunkt, dere kan enten bygge videre på den eller starte fra scratch.
 
 ## Deltagere
-- Johan Aanesen
-- Brede Frijof Klausen
-- Marius Lillevik
+| Navn                | Study |
+| --------------------|:------:|
+| [Brede Fritjof Klausen](https://bitbucket.org/Brede_F_Klausen/) | BPROG  |  
+| [Johan Aanesen](https://bitbucket.org/Aanesen/)        | BPROG |
+| [Marius Lillevik](https://bitbucket.org/marlil/)      | BIDAT |
+

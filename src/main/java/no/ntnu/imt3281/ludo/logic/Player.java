@@ -8,12 +8,14 @@ public class Player {
     protected boolean state; //active or inactive
     protected List<Piece> pieces = new ArrayList<>();
     protected int throwAttempts = 0;
+    protected int colour;
     protected int sixersRow = 0;
     protected int piecesFinished = 0;
 
-    public Player(String name){
+    public Player(String name, int colour){
         this.name = name;
         this.state = true;
+        this.colour = colour;
         pieces.add(new Piece());
         pieces.add(new Piece());
         pieces.add(new Piece());
@@ -52,7 +54,7 @@ public class Player {
 
     public boolean inStartingPosition(){
         for (Piece piece: pieces) {
-            if(piece.getPosition() != 0){
+            if(piece.getPosition() != 0 || piece.getPosition() == 59){
                 return false;
             }
         }
@@ -60,6 +62,16 @@ public class Player {
         return true;
     }
 
+    public int piecesInPlay(){
+        int count = 0;
+        for (Piece piece: this.pieces) {
+            if(piece.isInPlay()){
+                count++;
+            }
+        }
+
+        return count;
+    }
 
     public int getThrowAttempts() {
         return throwAttempts;
@@ -68,6 +80,11 @@ public class Player {
     public void setThrowAttempts(int throwAttempts) {
         this.throwAttempts = throwAttempts;
     }
+
+
+    public void setColour (int colour) {this.colour = colour;}
+
+    public int getColour () {return colour;}
 
     public int getSixersRow() {
         return sixersRow;
@@ -78,6 +95,11 @@ public class Player {
     }
 
     public boolean pieceFinished(){
+        for (Piece piece:pieces) {
+            if(piece.getPosition() == 59){
+                piece.setInPlay(false);
+            }
+        }
         piecesFinished++;
         if(piecesFinished == 4){
             return true;
@@ -88,4 +110,5 @@ public class Player {
     public boolean isFinished(){
         return (piecesFinished == 4);
     }
+
 }
