@@ -1,5 +1,7 @@
-package no.ntnu.imt3281.ludo.logic;
+package no.ntnu.imt3281.ludo.logic.ListenerAndEvents;
 
+
+import no.ntnu.imt3281.ludo.logic.Ludo;
 
 public class DiceEvent {
     private Ludo ludo;

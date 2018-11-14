@@ -1,4 +1,4 @@
-package no.ntnu.imt3281.ludo.logic;
+package no.ntnu.imt3281.ludo.logic.ListenerAndEvents;
 
 
 public class DiceListener {

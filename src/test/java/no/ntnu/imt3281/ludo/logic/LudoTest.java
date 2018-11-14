@@ -8,6 +8,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceListener;
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceListener;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -331,214 +335,211 @@ public class LudoTest {
         assertEquals(ludo.userGridToLudoBoardGrid(Ludo.BLUE, 59), 79, 0);
         assertEquals(ludo.userGridToLudoBoardGrid(Ludo.YELLOW, 59), 85, 0);
         assertEquals(ludo.userGridToLudoBoardGrid(Ludo.GREEN, 59), 91, 0);
-	}
+    }
 
-	/**
-	 * When a player lands on top of an opponents piece that opponents piece should
-	 * be put back to start.
-	 * 
-	 */
-	@Test
-	public void landingOnTopSendsPlayerBack() {
-		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+    /**
+     * When a player lands on top of an opponents piece that opponents piece should
+     * be put back to start.
+     */
+    @Test
+    public void landingOnTopSendsPlayerBack() {
+        Ludo ludo = new Ludo("Player1", "Player2", null, null);
 
-		ludo.throwDice(6); // Lucky red, threw a six
-		ludo.movePiece(Ludo.RED, 0, 1); // Board position 16
-		ludo.throwDice(6); // Lucky blue as well, threw a six
-		ludo.movePiece(Ludo.BLUE, 0, 1); // Board position 29
+        ludo.throwDice(6); // Lucky red, threw a six
+        ludo.movePiece(Ludo.RED, 0, 1); // Board position 16
+        ludo.throwDice(6); // Lucky blue as well, threw a six
+        ludo.movePiece(Ludo.BLUE, 0, 1); // Board position 29
 
-		assertEquals(1, ludo.getPosition(Ludo.BLUE, 0)); // BLUEs first piece is in play
+        assertEquals(1, ludo.getPosition(Ludo.BLUE, 0)); // BLUEs first piece is in play
 
-		ludo.throwDice(6); // One more six
-		ludo.movePiece(Ludo.RED, 1, 7); // Board position 22
-		ludo.throwDice(6); // One more six
-		ludo.movePiece(Ludo.RED, 7, 13); // Board position 28
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.RED, 13, 14); // Red ended up on top of blue
+        ludo.throwDice(6); // One more six
+        ludo.movePiece(Ludo.RED, 1, 7); // Board position 22
+        ludo.throwDice(6); // One more six
+        ludo.movePiece(Ludo.RED, 7, 13); // Board position 28
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.RED, 13, 14); // Red ended up on top of blue
 
-		// NOTE, one variant of the rules says that you are safe standing on this field
-		// For now, we do not implement this rule
+        // NOTE, one variant of the rules says that you are safe standing on this field
+        // For now, we do not implement this rule
 
-		assertEquals(Ludo.BLUE, ludo.activePlayer(), 0); // It should be blue players turn
-		assertEquals(0, ludo.getPosition(Ludo.BLUE, 0)); // This piece should be sent back to home field
+        assertEquals(Ludo.BLUE, ludo.activePlayer(), 0); // It should be blue players turn
+        assertEquals(0, ludo.getPosition(Ludo.BLUE, 0)); // This piece should be sent back to home field
 
-		skipPlayer(ludo); // Skip blue player for now
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.RED, 14, 15); // Board position 30
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.BLUE, 0, 1); // Board position 29
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.RED, 15, 16); // Board position 31
-		assertEquals(16, ludo.getPosition(Ludo.RED, 0));
+        skipPlayer(ludo); // Skip blue player for now
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.RED, 14, 15); // Board position 30
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.BLUE, 0, 1); // Board position 29
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.RED, 15, 16); // Board position 31
+        assertEquals(16, ludo.getPosition(Ludo.RED, 0));
 
-		ludo.throwDice(2);
-		ludo.movePiece(Ludo.BLUE, 1, 3); // Board position 31, this should send the red piece back to start
+        ludo.throwDice(2);
+        ludo.movePiece(Ludo.BLUE, 1, 3); // Board position 31, this should send the red piece back to start
 
-		// RED player got "hit" by BLUE player and should be sent back to start
-		assertEquals(0, ludo.getPosition(Ludo.RED, 0));
-	}
+        // RED player got "hit" by BLUE player and should be sent back to start
+        assertEquals(0, ludo.getPosition(Ludo.RED, 0));
+    }
 
-	/**
-	 * When a player has two or more pieces on top of each other no other player can
-	 * move past this "tower"
-	 */
-	@Test
-	public void towersBlocksOpponents() {
-		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+    /**
+     * When a player has two or more pieces on top of each other no other player can
+     * move past this "tower"
+     */
+    @Test
+    public void towersBlocksOpponents() {
+        Ludo ludo = new Ludo("Player1", "Player2", null, null);
 
-		ludo.throwDice(6); // RED is in play
-		assertTrue(ludo.movePiece(Ludo.RED, 0, 1));
-		skipPlayer(ludo);
-		ludo.throwDice(6);
-		assertTrue(ludo.movePiece(Ludo.RED, 1, 7));
-		ludo.throwDice(6);
-		assertTrue(ludo.movePiece(Ludo.RED, 7, 13));
-		ludo.throwDice(3);
-		assertTrue(ludo.movePiece(Ludo.RED, 13, 16)); // Board position 31
-		skipPlayer(ludo);
-		ludo.throwDice(6);
-		assertTrue(ludo.movePiece(Ludo.RED, 0, 1)); // RED put another piece in play
-		skipPlayer(ludo);
-		ludo.throwDice(6);
-		assertTrue(ludo.movePiece(Ludo.RED, 1, 7));
-		ludo.throwDice(5);
-		assertTrue(ludo.movePiece(Ludo.RED, 7, 12)); // Board position 27
-		ludo.throwDice(6);
-		assertTrue(ludo.movePiece(Ludo.BLUE, 0, 1)); // Board position 29
-		ludo.throwDice(4);
-		assertTrue(ludo.movePiece(Ludo.RED, 12, 16)); // RED now have two pieces on 31
+        ludo.throwDice(6); // RED is in play
+        assertTrue(ludo.movePiece(Ludo.RED, 0, 1));
+        skipPlayer(ludo);
+        ludo.throwDice(6);
+        assertTrue(ludo.movePiece(Ludo.RED, 1, 7));
+        ludo.throwDice(6);
+        assertTrue(ludo.movePiece(Ludo.RED, 7, 13));
+        ludo.throwDice(3);
+        assertTrue(ludo.movePiece(Ludo.RED, 13, 16)); // Board position 31
+        skipPlayer(ludo);
+        ludo.throwDice(6);
+        assertTrue(ludo.movePiece(Ludo.RED, 0, 1)); // RED put another piece in play
+        skipPlayer(ludo);
+        ludo.throwDice(6);
+        assertTrue(ludo.movePiece(Ludo.RED, 1, 7));
+        ludo.throwDice(5);
+        assertTrue(ludo.movePiece(Ludo.RED, 7, 12)); // Board position 27
+        ludo.throwDice(6);
+        assertTrue(ludo.movePiece(Ludo.BLUE, 0, 1)); // Board position 29
+        ludo.throwDice(4);
+        assertTrue(ludo.movePiece(Ludo.RED, 12, 16)); // RED now have two pieces on 31
 
-		assertEquals(Ludo.BLUE, ludo.activePlayer(), 0);
+        assertEquals(Ludo.BLUE, ludo.activePlayer(), 0);
 
-		ludo.throwDice(5); // Blue have one piece in play, but can not move past REDs tower
+        ludo.throwDice(5); // Blue have one piece in play, but can not move past REDs tower
 
-		// Since BLUE can not move, the move goes on to RED
-		assertEquals(Ludo.RED, ludo.activePlayer(), 0);
+        // Since BLUE can not move, the move goes on to RED
+        assertEquals(Ludo.RED, ludo.activePlayer(), 0);
 
-		ludo.throwDice(6);
-		assertTrue(ludo.movePiece(Ludo.RED, 0, 1)); // RED still has two pieces on 31
+        ludo.throwDice(6);
+        assertTrue(ludo.movePiece(Ludo.RED, 0, 1)); // RED still has two pieces on 31
 
-		ludo.throwDice(2); // Can not move on top of a tower
+        ludo.throwDice(2); // Can not move on top of a tower
 
-		// BLUE can still not move, the move goes on to RED
-		assertEquals(Ludo.RED, ludo.activePlayer(), 0);
-		ludo.throwDice(2);
-		assertTrue(ludo.movePiece(Ludo.RED, 1, 3)); // RED still has two pieces on 31
+        // BLUE can still not move, the move goes on to RED
+        assertEquals(Ludo.RED, ludo.activePlayer(), 0);
+        ludo.throwDice(2);
+        assertTrue(ludo.movePiece(Ludo.RED, 1, 3)); // RED still has two pieces on 31
 
-		ludo.throwDice(1);
-		assertTrue(ludo.movePiece(Ludo.BLUE, 1, 2)); // BLUE CAN move 1 (one) place forward
+        ludo.throwDice(1);
+        assertTrue(ludo.movePiece(Ludo.BLUE, 1, 2)); // BLUE CAN move 1 (one) place forward
 
-		ludo.throwDice(2);
-		assertTrue(ludo.movePiece(Ludo.RED, 16, 18));
-		ludo.throwDice(3);
-		assertTrue(ludo.movePiece(Ludo.BLUE, 2, 5)); // BLUE will jump over one of REDs pieces and land on another
+        ludo.throwDice(2);
+        assertTrue(ludo.movePiece(Ludo.RED, 16, 18));
+        ludo.throwDice(3);
+        assertTrue(ludo.movePiece(Ludo.BLUE, 2, 5)); // BLUE will jump over one of REDs pieces and land on another
 
-		int piece0Location = ludo.getPosition(Ludo.RED, 0);
-		int piece1Location = ludo.getPosition(Ludo.RED, 1);
-		if (piece0Location < piece1Location) { // Either piece 0 or piece 1 should be back to home
-			assertEquals(0, piece0Location, 0);
-			assertEquals(16, piece1Location, 0);
-		} else {
-			assertEquals(16, piece0Location, 0);
-			assertEquals(0, piece1Location, 0);
-		}
-		assertEquals(3, ludo.getPosition(Ludo.RED, 2), 0); // Moved on line 405 and 412
-		assertEquals(0, ludo.getPosition(Ludo.RED, 3), 0);
+        int piece0Location = ludo.getPosition(Ludo.RED, 0);
+        int piece1Location = ludo.getPosition(Ludo.RED, 1);
+        if (piece0Location < piece1Location) { // Either piece 0 or piece 1 should be back to home
+            assertEquals(0, piece0Location, 0);
+            assertEquals(16, piece1Location, 0);
+        } else {
+            assertEquals(16, piece0Location, 0);
+            assertEquals(0, piece1Location, 0);
+        }
+        assertEquals(3, ludo.getPosition(Ludo.RED, 2), 0); // Moved on line 405 and 412
+        assertEquals(0, ludo.getPosition(Ludo.RED, 3), 0);
 
-		assertEquals(5, ludo.getPosition(Ludo.BLUE, 0));
-	}
+        assertEquals(5, ludo.getPosition(Ludo.BLUE, 0));
+    }
 
-	/**
-	 * Use to throw three ones for a player, i.e. if this player has all the pieces
-	 * in home position it will effectively skip this player.
-	 * 
-	 * @param ludo the object holding this game
-	 */
-	private void skipPlayer(Ludo ludo) {
-		for (int noBlue = 0; noBlue < 3; noBlue++) { // We will be moving the red players pieces only
-			ludo.throwDice(1); // So blue only throws ones
-		}
-	}
+    /**
+     * Use to throw three ones for a player, i.e. if this player has all the pieces
+     * in home position it will effectively skip this player.
+     *
+     * @param ludo the object holding this game
+     */
+    private void skipPlayer(Ludo ludo) {
+        for (int noBlue = 0; noBlue < 3; noBlue++) { // We will be moving the red players pieces only
+            ludo.throwDice(1); // So blue only throws ones
+        }
+    }
 
-	/*
-	 * =========================================================================
-	 * Below are tests for event listeners that should be implementet in the Ludo
-	 * logic class. These will help when the Ludo logic is used both on the server
-	 * and on the client.
-	 */
+    /*
+     * =========================================================================
+     * Below are tests for event listeners that should be implementet in the Ludo
+     * logic class. These will help when the Ludo logic is used both on the server
+     * and on the client.
+     */
 
-	/**
-	 * Check that correct listener gets called when a dice is thrown. When a dice is
-	 * thrown then diceThrown should be called on all DiceListeners, with the player
-	 * and value of the dice in the eventObject.
-	 */
-	@Test
-	public void diceThrownEventTest() {
-		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+    /**
+     * Check that correct listener gets called when a dice is thrown. When a dice is
+     * thrown then diceThrown should be called on all DiceListeners, with the player
+     * and value of the dice in the eventObject.
+     */
+    @Test
+    public void diceThrownEventTest() {
+        Ludo ludo = new Ludo("Player1", "Player2", null, null);
 
-		// Create a mock DiceListener
-		DiceListener diceListener = mock(DiceListener.class);
-		ludo.addDiceListener(diceListener); // Add the dice listener
-		ludo.throwDice(6); // RED is in play
-		ludo.movePiece(Ludo.RED, 0, 1);
-		ludo.throwDice(3); // BLUE is in play
+        // Create a mock DiceListener
+        DiceListener diceListener = mock(DiceListener.class);
+        ludo.addDiceListener(diceListener); // Add the dice listener
+        ludo.throwDice(6); // RED is in play
+        ludo.movePiece(Ludo.RED, 0, 1);
+        ludo.throwDice(3); // BLUE is in play
 
-		// Now check that the event has happened in the correct order
-		InOrder order = inOrder(diceListener);
+        // Now check that the event has happened in the correct order
+        InOrder order = inOrder(diceListener);
 
-		DiceEvent diceEvent = new DiceEvent(ludo, Ludo.RED, 6); // First RED threw a six
-		// NOTE!! Requires that DiceEvent implements the equals method from Object !!
-		order.verify(diceListener).diceThrown(diceEvent);
+        DiceEvent diceEvent = new DiceEvent(ludo, Ludo.RED, 6); // First RED threw a six
+        // NOTE!! Requires that DiceEvent implements the equals method from Object !!
+        order.verify(diceListener).diceThrown(diceEvent);
 
-		DiceEvent diceEvent1 = new DiceEvent(ludo, Ludo.BLUE, 3); // Then blue threw a three
-		order.verify(diceListener).diceThrown(diceEvent1);
-	}
+        DiceEvent diceEvent1 = new DiceEvent(ludo, Ludo.BLUE, 3); // Then blue threw a three
+        order.verify(diceListener).diceThrown(diceEvent1);
+    }
 
-	/**
-	 * Check that correct movement of pieces event is sent. I.e. when a piece is
-	 * moved, both the piece that is moved and any pieces that is affected by that
-	 * move should receive separate pieceMoved messages through the registered
-	 * PieceListener's.
-	 * 
-	 * This is the BIG one, once this passes your logic is all sound and good
-	 */
-	@Test
-	public void pieceMovedEventTest() {
-/*		Ludo ludo = new Ludo("Player1", "Player2", null, null);
+    /**
+     * Check that correct movement of pieces event is sent. I.e. when a piece is
+     * moved, both the piece that is moved and any pieces that is affected by that
+     * move should receive separate pieceMoved messages through the registered
+     * PieceListener's.
+     * <p>
+     * This is the BIG one, once this passes your logic is all sound and good
+     */
+    @Test
+    public void pieceMovedEventTest() {
+        Ludo ludo = new Ludo("Player1", "Player2", null, null);
+        // Create a mock PieceListener
+        PieceListener pieceListener = mock(PieceListener.class);
+        ludo.addPieceListener(pieceListener);
+        ludo.throwDice(6); // Lucky red, threw a six
+        ludo.movePiece(Ludo.RED, 0, 1); // Board position 16
+        ludo.throwDice(6); // Lucky blue as well, threw a six
+        ludo.movePiece(Ludo.BLUE, 0, 1); // Board position 29
 
-		// Create a mock PieceListener
-		PieceListener pieceListener = mock(PieceListener.class);
-		ludo.addPieceListener(pieceListener);
-		ludo.throwDice(6); // Lucky red, threw a six
-		ludo.movePiece(Ludo.RED, 0, 1); // Board position 16
-		ludo.throwDice(6); // Lucky blue as well, threw a six
-		ludo.movePiece(Ludo.BLUE, 0, 1); // Board position 29
+        assertEquals(1, ludo.getPosition(Ludo.BLUE, 0)); // BLUEs first piece is in play
 
-		assertEquals(1, ludo.getPosition(Ludo.BLUE, 0)); // BLUEs first piece is in play
+        ludo.throwDice(6); // One more six
+        ludo.movePiece(Ludo.RED, 1, 7); // Board position 22
+        ludo.throwDice(6); // One more six
+        ludo.movePiece(Ludo.RED, 7, 13); // Board position 28
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.RED, 13, 14); // Red ended up on top of blue
 
-		ludo.throwDice(6); // One more six
-		ludo.movePiece(Ludo.RED, 1, 7); // Board position 22
-		ludo.throwDice(6); // One more six
-		ludo.movePiece(Ludo.RED, 7, 13); // Board position 28
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.RED, 13, 14); // Red ended up on top of blue
-
-		// Now check that the event has happened in the correct order
-		InOrder order = inOrder(pieceListener);
-		PieceEvent pe;
-		pe = new PieceEvent(ludo, Ludo.RED, 0, 0, 1); // Red moved piece 0 out from start
-		order.verify(pieceListener).pieceMoved(pe);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 0, 1);
-		order.verify(pieceListener).pieceMoved(pe);
-		pe = new PieceEvent(ludo, Ludo.RED, 0, 1, 7);
-		order.verify(pieceListener).pieceMoved(pe);
-		pe = new PieceEvent(ludo, Ludo.RED, 0, 7, 13);
-		order.verify(pieceListener).pieceMoved(pe);
-		pe = new PieceEvent(ludo, Ludo.RED, 0, 13, 14);
-		order.verify(pieceListener).pieceMoved(pe);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 1, 0); // Blue got pushed back to start
-		order.verify(pieceListener).pieceMoved(pe);
-*/
+        // Now check that the event has happened in the correct order
+        InOrder order = inOrder(pieceListener);
+        PieceEvent pe;
+        pe = new PieceEvent(ludo, Ludo.RED, 0, 0, 1); // Red moved piece 0 out from start
+        order.verify(pieceListener).pieceMoved(pe);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 0, 1);
+        order.verify(pieceListener).pieceMoved(pe);
+        pe = new PieceEvent(ludo, Ludo.RED, 0, 1, 7);
+        order.verify(pieceListener).pieceMoved(pe);
+        pe = new PieceEvent(ludo, Ludo.RED, 0, 7, 13);
+        order.verify(pieceListener).pieceMoved(pe);
+        pe = new PieceEvent(ludo, Ludo.RED, 0, 13, 14);
+        order.verify(pieceListener).pieceMoved(pe);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 1, 0); // Blue got pushed back to start
+        order.verify(pieceListener).pieceMoved(pe);
     }
 
     /**
