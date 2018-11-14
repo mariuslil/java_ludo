@@ -1,10 +1,5 @@
 package no.ntnu.imt3281.ludo.logic;
 
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceListener;
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceEvent;
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceListener;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -29,6 +24,9 @@ public class Ludo {
 
     // List for all PieceListeners
     private List<PieceListener> pieceListeners = new ArrayList<>();
+
+    // List for all PlayerListeners
+    private List<PlayerListener> playerListeners = new ArrayList<>();
 
     public Ludo() {
         this.status = "Created";
@@ -205,6 +203,11 @@ public class Ludo {
     public void addDiceListener(DiceListener listener) {
         // Add listener to diceListeners list for dice thrown
         this.diceListeners.add(listener);
+    }
+
+    public void addPlayerListener(PlayerListener listener){
+        // Add listener to playerListeners list for players
+        this.playerListeners.add(listener);
     }
 
     public void setNextActivePlayer() {
