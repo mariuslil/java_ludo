@@ -16,6 +16,27 @@ public class PlayerEvent {
         if(status == WAITING || status == PLAYING || status == WON || status == LEFTGAME){
             this.status = status;
         }
+        // TODO : remove this (debugging purpose)
+        String player;
+        switch (this.color){
+            case 0: player = "RED"; break;
+            case 1: player = "BLUE"; break;
+            case 2: player = "YELLOW"; break;
+            case 3: player = "GREEN"; break;
+            default: player = "N/A"; break;
+        }
+
+        String stringStatus;
+        switch (this.status){
+            case WAITING: stringStatus = "WAITING"; break;
+            case PLAYING: stringStatus = "PLAYING"; break;
+            case WON: stringStatus = "WON"; break;
+            case LEFTGAME: stringStatus = "LEFTGAME"; break;
+            default: stringStatus = "N/A"; break;
+        }
+
+        System.out.printf("Player %s's status is %s%n", player, stringStatus);
+        // TODO : ends here
     }
 
     /**
