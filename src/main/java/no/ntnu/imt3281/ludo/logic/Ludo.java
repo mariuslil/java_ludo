@@ -19,6 +19,9 @@ public class Ludo {
 
     private List<Player> players = new ArrayList<>();
 
+    // List for all Dicelisteners
+    private List<DiceListener> listeners = new ArrayList<>();
+
     public Ludo() {
         this.status = "Created";
     }
@@ -108,6 +111,12 @@ public class Ludo {
         this.status = "Started";
         Player player = players.get(activePlayer);
 
+        //throw DiceEvent to listeners
+        for(DiceListener listener: listeners){
+            DiceEvent diceEvent = new DiceEvent(this, this.activePlayer, number);
+            listener.diceThrown(diceEvent);
+        }
+
         //check if number thrown was a 6
         if (number != 6) {
             player.setSixersRow(0);
@@ -178,6 +187,11 @@ public class Ludo {
         throwDice(nr);
         //return number
         return nr;
+    }
+
+    public void addDiceListener(DiceListener listener){
+        // Add listener to listeners list
+        this.listeners.add(listener);
     }
 
     public void setNextActivePlayer() {
