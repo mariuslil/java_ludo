@@ -110,6 +110,7 @@ public class Ludo {
         this.status = "Started";
         Player player = players.get(activePlayer);
 
+        //throw DiceEvent to listeners
         for(DiceListener listener: listeners){
             DiceEvent diceEvent = new DiceEvent(this, this.activePlayer, number);
             listener.diceThrown(diceEvent);
