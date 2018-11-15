@@ -34,10 +34,10 @@ public class Ludo {
 
     public Ludo(String player1, String player2, String player3, String player4) throws NotEnoughPlayersException {
 
-        players.add(RED, new Player(player1, RED));
-        players.add(BLUE, new Player(player2, BLUE));
-        players.add(YELLOW, new Player(player3, YELLOW));
-        players.add(GREEN, new Player(player4, GREEN));
+            players.add(RED, new Player(player1, RED));
+            players.add(BLUE, new Player(player2, BLUE));
+            players.add(YELLOW, new Player(player3, YELLOW));
+            players.add(GREEN, new Player(player4, GREEN));
 
         if (this.nrOfPlayers() < 2) {
             throw new NotEnoughPlayersException();
@@ -99,7 +99,7 @@ public class Ludo {
 
     public void removePlayer(String name) {
         for (Player player : players) {
-            if (player.getName().equals(name)) {
+            if (player.getName() != null && player.getName().equals(name)) {
                 player.setState(false);
             }
         }
@@ -205,7 +205,7 @@ public class Ludo {
         this.diceListeners.add(listener);
     }
 
-    public void addPlayerListener(PlayerListener listener){
+    public void addPlayerListener(PlayerListener listener) {
         // Add listener to playerListeners list for players
         this.playerListeners.add(listener);
     }
@@ -215,6 +215,7 @@ public class Ludo {
     }
 
     public int getNextActivePlayer() {
+
         if (this.activePlayer == nrOfPlayers() - 1) {
             for (int i = 0; i < nrOfPlayers(); i++) {
                 if (players.get(i).getState()) {
@@ -222,13 +223,14 @@ public class Ludo {
                 }
             }
         } else {
-            for (int i = activePlayer + 1; i < nrOfPlayers(); i++) {
+            for (int i = this.activePlayer + 1; i < nrOfPlayers(); i++) {
                 if (players.get(i).getState()) {
                     return i;
                 }
             }
         }
-        return 69; //should never be returned
+        // TODO : Why is this returned?
+        return -1; //should never be returned
     }
 
 
@@ -242,7 +244,7 @@ public class Ludo {
             listener.pieceMoved(pieceEvent);
         }
 
-        if (piece != 69) {
+        if (piece != -1) {
             //last throw was a 6, but player is in starting position
             //end of turn
             if (this.lastThrow == 6 && players.get(player).inStartingPosition() && from == 0) {
