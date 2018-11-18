@@ -105,7 +105,7 @@ public class Client extends Application {
 		 * @throws IOException
 		 */
 		public Connection() throws IOException {
-			socket = new Socket("localhost", 50000);
+			socket = new Socket("localhost", 1234);
 			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		}

@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * @author 
  *
  */
-public class Server extends Application {
+public class Server {
 
     private Connection dbCon = null;
     private Database database = null;
@@ -56,7 +56,7 @@ public class Server extends Application {
         //executor.execute(()->messageListenerThread());					// This thread waits for messages to send to clients, then sends the message(s) to all clients.
     }
 
-    @Override
+    /*@Override
     public void start(Stage primaryStage) throws Exception {
 
         this.database = new Database();
@@ -73,19 +73,20 @@ public class Server extends Application {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
 	public static void main(String[] args) {
-        launch(args);
-        System.exit(0);
+        Server server = new Server();
 	}
 
     private void connectionListenerThread() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("Serversocket created on Port: "+PORT);
             while (!shutdown) {		// Run until server stopping
                 Socket s= null;
                 try {
                     s = serverSocket.accept();
+                    System.out.println("accepted connection");
                 } catch (IOException e) {
                     logger.log(Level.SEVERE, "Error while getting client connection: "+PORT, e);
                     System.exit(0);
