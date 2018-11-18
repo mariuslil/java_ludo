@@ -10,9 +10,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import no.ntnu.imt3281.ludo.client.Client;
+
 import java.net.URL;
 
 public class LudoController {
+
+	private Client client = new Client();
 
 	@FXML
 	private ResourceBundle resources;
@@ -66,7 +70,8 @@ public class LudoController {
 
 	@FXML
 	void connectToServer(ActionEvent event) {
-
+		System.out.println("hurray");
+		client.connect("test");
 	}
 
 	@FXML
