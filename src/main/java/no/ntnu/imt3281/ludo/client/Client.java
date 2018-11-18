@@ -91,18 +91,20 @@ public class Client extends Application {
 							messages.add(tmp);
 						}else if(tmp.startsWith("EVENT:")){
 							//todo: handle event
+							String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
+							if(event.startsWith("DICE:")){ //dice event
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+tmp.replace("DICE:", ""));
+								//TODO: handle DICE event
+							}else if(event.startsWith("PIECE:")){ //piece event
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+tmp.replace("PIECE:", ""));
+								//TODO: handle PIECE event
+							}else if(event.startsWith("PLAYER:")){ //player event
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+tmp.replace("PLAYER:", ""));
+								//TODO: handle PLAYER event
+							}
 						}else if(tmp.startsWith("DISCONNECTED:")){
 							//todo: handle disconnect
 						}
-						/*if (tmp.startsWith("JOIN:")) {
-							usernames.add(tmp.substring(5));
-						} else if (tmp.startsWith("DISCONNECTED:")) {
-							usernames.remove(tmp.substring(13));
-						} else {
-							String who = tmp.substring(4, tmp.indexOf('>', 4));
-							String msg = tmp.substring(tmp.indexOf('>', 4)+1);
-							chat.setText(chat.getText()+who+" said: "+msg+"\n");	// this is the reason for Platform.runLater...
-						}*/
 				//	});
 				}
 				Thread.sleep(50); 	// Prevent client from using 100% CPU

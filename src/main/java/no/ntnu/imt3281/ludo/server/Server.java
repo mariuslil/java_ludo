@@ -133,8 +133,6 @@ public class Server {
                 } else if (msg!=null &&msg.startsWith("EVENT:")) {
                     events.add(player.getName()+msg);   // Add event to event queue
                 } else if (msg!=null && msg.startsWith("MSG:")) {
-                    //msgFromClient(client, msg);
-                    System.out.println("TRIGGERED");
                     messages.add(msg+"&§&"+player.getName());	// Add message to message queue
                 }
             });
@@ -153,7 +151,7 @@ public class Server {
                 String[] eventParts = event.split("&§&");
                 String[] playerName = eventParts[0].split("EVENT:"); //player who triggered this event
                 /*
-                 * eventParts[0] = EVENT:DICE: or EVENT:PIECE:
+                 * eventParts[0] = EVENT:DICE: or EVENT:PIECE: or EVENT:PLAYER:
                  * eventParts[1] = GAMEHASH/ID
                  * eventParts[2] = Event information
                  */
