@@ -26,13 +26,14 @@ public class Database {
             System.out.println("Database created");
             String sql = "CREATE TABLE USERS\n" +
                     "    (ID INT PRIMARY KEY,\n" +
-                    "    NAME VARCHAR(24) NOT NULL)";
+                    "    NAME VARCHAR(24) NOT NULL,\n" +
+                    "    WINS INTEGER)";
             Statement stmnt = connect.createStatement();
             stmnt.execute(sql);
             System.out.println("User Table created");
 
             //insert mock data
-            String sql1 = "INSERT INTO USERS VALUES (1,'Johan Aanesen'), (2, 'Brede')";
+            String sql1 = "INSERT INTO USERS VALUES (1,'Johan Aanesen', 0), (2, 'Brede', 0)";
             Statement stmnt1 = connect.createStatement();
             int rows = stmnt1.executeUpdate(sql1);
 

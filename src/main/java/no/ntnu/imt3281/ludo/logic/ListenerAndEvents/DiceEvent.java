@@ -36,4 +36,16 @@ public class DiceEvent {
         DiceEvent event = (DiceEvent) obj;
         return (event.ludo == ludo) && (event.color == color) && (event.diceNr == diceNr);
     }
+
+    public int getColor() {
+        return color;
+    }
+
+    public int getDiceNr() {
+        return diceNr;
+    }
+
+    public int getLudoHash() {
+        return ludo.hashCode();
+    }
 }

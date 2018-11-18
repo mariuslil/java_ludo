@@ -1,20 +1,11 @@
 package no.ntnu.imt3281.ludo.server;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,7 +31,9 @@ public class Server {
     private boolean shutdown = false;
 
     private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
     private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String[]> games = new ConcurrentHashMap<>();
 
 
     /**
@@ -49,11 +42,17 @@ public class Server {
      * and the thread that sends messages to all clients.
      */
     public Server() {
+        this.database = new Database();
+        dbCon = database.connectDB();
+
         ExecutorService executor = Executors.newCachedThreadPool();
         //executor.execute(()->connectionListenerThread());
         executor.execute(()->connectionListenerThread());	// This thread listens for connections from clients
-        executor.execute(()->messageSenderThread());					// This thread listens for messages from clients
-        //executor.execute(()->messageListenerThread());					// This thread waits for messages to send to clients, then sends the message(s) to all clients.
+        executor.execute(()->playerListenerThread());		// This thread waits for messages to send to clients, then sends the message(s) to all clients.
+        executor.execute(()->messageSenderThread());		// This thread listens for messages from clients
+        //EVENTSENDERS
+        executor.execute(()->eventSenderThread());      // This thread sends events to the users
+
     }
 
     /*@Override
@@ -109,7 +108,7 @@ public class Server {
                 final String message = messages.take();		// Blocks until a message is available
                 players.forEachValue(100, player->player.write(message));	// Do in parallel if more than 100 clients
             } catch (InterruptedException e) {
-                logger.log(Level.INFO, "Error fetching message from que", e);
+                logger.log(Level.INFO, "Error fetching message from queue", e);
                 Thread.currentThread().interrupt();
             }
             // Clients that have IO error was marked inactive
@@ -120,6 +119,55 @@ public class Server {
             });
         }
     }
+
+    private void playerListenerThread() {
+        while (!shutdown) {
+            players.forEachValue(100, player-> {
+                String msg = player.read();		// Read message from client
+                if (msg!=null&&msg.equals("§§BYEBYE§§")) {	// Client says goodbye
+                    //msgFromClient(client, msg);		// Handled separately, adds message to textarea
+                    if (players.remove(player.getName())!=null) {
+                        //todo: clientRemoved(client);		// Let other clients know this client has left, adds message to textarea
+                    }
+                } else if (msg!=null &&msg.startsWith("EVENT:")) {
+                    events.add(player.getName()+msg);   // Add event to event queue
+                } else if (msg!=null && msg.startsWith("MSG:")) {
+                    //msgFromClient(client, msg);
+                    messages.add(player.getName()+msg);	// Add message to message queue
+                }
+            });
+            try {
+                Thread.sleep(10);	// Prevent excessive processor usage
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private void eventSenderThread(){
+        while (!shutdown) {
+            try {
+                final String event = events.take();		// Blocks until a message is available
+                String[] eventParts = event.split("&§&");
+                String[] playerName = eventParts[0].split("EVENT:"); //player who triggered this event
+                /*
+                 * eventParts[0] = EVENT:DICE: or EVENT:PIECE:
+                 * eventParts[1] = GAMEHASH/ID
+                 * eventParts[2] = Event information
+                 */
+                for (String player: games.get(eventParts[1])) { //get players from the game
+                    if(player != playerName[0]) {
+                        players.get(player).write(event);           //send these players the event
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                logger.log(Level.INFO, "Error fetching message from queue", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
 
     private void addPlayer(Socket s) throws IOException {
         final Player player = new Player(s);
@@ -135,6 +183,7 @@ public class Server {
         private BufferedReader input;
         private BufferedWriter output;
         private boolean active = true;
+        private List<String> activeGames = new ArrayList<>();
 
         /**
          * Gets a socket and creates reader/writer objects and reads the name of the client/user
@@ -202,6 +251,15 @@ public class Server {
             } catch (IOException e) {
                 // This connection will be dropped anyway, nothing much to do about it
             }
+        }
+
+        public boolean isInThisGame(String game){
+            for (String activeGame:activeGames) {
+                if(activeGame.equals(game)){
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

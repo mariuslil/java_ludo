@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -90,6 +91,26 @@ public class Client extends Application {
 				// Ignored, should have disconnected
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
+	private void sendDiceEvent(DiceEvent diceEvent){
+		if (connected){
+			try{
+				connection.send("EVENT:DICE:&§&"+diceEvent.getLudoHash()+"&§&"+diceEvent.getColor()+"&§&"+diceEvent.getDiceNr());
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	private void sendText(String message){
+		if (connected){
+			try{
+				connection.send("MSG:"+message);
+			}catch (IOException e){
+				connection.close();
 			}
 		}
 	}
