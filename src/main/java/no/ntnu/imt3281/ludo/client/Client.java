@@ -11,6 +11,8 @@ import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,12 +26,16 @@ import java.util.concurrent.Executors;
  */
 public class Client extends Application {
 
+	protected String name = "";
+	protected List<String> messages = new ArrayList<>();
 	private boolean connected = false;
+	private int PORT = 1234;
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
-	public Client(){
 
+	public Client(int port){
+		this.PORT = port;
 	}
 
 	@Override
@@ -55,11 +61,12 @@ public class Client extends Application {
 
 		} else {
 			try {
+				System.out.println("CLIENT: "+username+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true;
 				connection.send(username); 	// Send username
+				this.name = username;
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
-				System.out.println("Connected to server.");
 			} catch (UnknownHostException e) {
 				// Ignored, means no connection (should have informed the user.)
 			} catch (IOException e) {
@@ -74,7 +81,19 @@ public class Client extends Application {
 			try {
 				if (connection.input.ready()) {		// A line can be read
 					String tmp = connection.input.readLine();
-					Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
+					//Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
+						if(tmp.startsWith("JOIN:")){
+							//todo: handle join
+							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp);
+						}else if(tmp.startsWith("MSG:")){
+							//todo: handle message
+							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp);
+							messages.add(tmp);
+						}else if(tmp.startsWith("EVENT:")){
+							//todo: handle event
+						}else if(tmp.startsWith("DISCONNECTED:")){
+							//todo: handle disconnect
+						}
 						/*if (tmp.startsWith("JOIN:")) {
 							usernames.add(tmp.substring(5));
 						} else if (tmp.startsWith("DISCONNECTED:")) {
@@ -84,7 +103,7 @@ public class Client extends Application {
 							String msg = tmp.substring(tmp.indexOf('>', 4)+1);
 							chat.setText(chat.getText()+who+" said: "+msg+"\n");	// this is the reason for Platform.runLater...
 						}*/
-					});
+				//	});
 				}
 				Thread.sleep(50); 	// Prevent client from using 100% CPU
 			} catch (IOException e) {
@@ -95,7 +114,7 @@ public class Client extends Application {
 		}
 	}
 
-	private void sendDiceEvent(DiceEvent diceEvent){
+	protected void sendDiceEvent(DiceEvent diceEvent){
 		if (connected){
 			try{
 				connection.send("EVENT:DICE:&§&"+diceEvent.getLudoHash()+"&§&"+diceEvent.getColor()+"&§&"+diceEvent.getDiceNr());
@@ -105,7 +124,7 @@ public class Client extends Application {
 		}
 	}
 
-	private void sendText(String message){
+	protected void sendText(String message){
 		if (connected){
 			try{
 				connection.send("MSG:"+message);
@@ -126,7 +145,7 @@ public class Client extends Application {
 		 * @throws IOException
 		 */
 		public Connection() throws IOException {
-			socket = new Socket("localhost", 1234);
+			socket = new Socket("localhost", PORT);
 			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		}

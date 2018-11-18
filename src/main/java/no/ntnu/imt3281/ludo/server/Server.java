@@ -28,7 +28,7 @@ public class Server {
     private int PORT = 1234;
 
     private final Logger logger = Logger.getLogger("Chat server");
-    private boolean shutdown = false;
+    protected boolean shutdown = false;
 
     private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
     private final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
@@ -41,18 +41,17 @@ public class Server {
      * listening for incomming connections, messages from clients
      * and the thread that sends messages to all clients.
      */
-    public Server() {
+    public Server(int port) {
         this.database = new Database();
         dbCon = database.connectDB();
-
+        this.PORT = port;
         ExecutorService executor = Executors.newCachedThreadPool();
         //executor.execute(()->connectionListenerThread());
         executor.execute(()->connectionListenerThread());	// This thread listens for connections from clients
         executor.execute(()->playerListenerThread());		// This thread waits for messages to send to clients, then sends the message(s) to all clients.
         executor.execute(()->messageSenderThread());		// This thread listens for messages from clients
         //EVENTSENDERS
-        executor.execute(()->eventSenderThread());      // This thread sends events to the users
-
+        //executor.execute(()->eventSenderThread());      // This thread sends events to the users
     }
 
     /*@Override
@@ -75,17 +74,18 @@ public class Server {
     }*/
 
 	public static void main(String[] args) {
-        Server server = new Server();
+        //Server server = new Server(1234);
+
 	}
 
     private void connectionListenerThread() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Serversocket created on Port: "+PORT);
+            System.out.println("SERVER: Serversocket created on Port: "+PORT);
             while (!shutdown) {		// Run until server stopping
                 Socket s= null;
                 try {
                     s = serverSocket.accept();
-                    System.out.println("accepted connection");
+                    System.out.println("SERVER: Accepted connection");
                 } catch (IOException e) {
                     logger.log(Level.SEVERE, "Error while getting client connection: "+PORT, e);
                     System.exit(0);
@@ -107,6 +107,7 @@ public class Server {
             try {
                 final String message = messages.take();		// Blocks until a message is available
                 players.forEachValue(100, player->player.write(message));	// Do in parallel if more than 100 clients
+
             } catch (InterruptedException e) {
                 logger.log(Level.INFO, "Error fetching message from queue", e);
                 Thread.currentThread().interrupt();
@@ -133,7 +134,8 @@ public class Server {
                     events.add(player.getName()+msg);   // Add event to event queue
                 } else if (msg!=null && msg.startsWith("MSG:")) {
                     //msgFromClient(client, msg);
-                    messages.add(player.getName()+msg);	// Add message to message queue
+                    System.out.println("TRIGGERED");
+                    messages.add(msg+"&§&"+player.getName());	// Add message to message queue
                 }
             });
             try {
@@ -156,8 +158,9 @@ public class Server {
                  * eventParts[2] = Event information
                  */
                 for (String player: games.get(eventParts[1])) { //get players from the game
+                    String payload = event.replace(playerName[0], ""); //remove name from string
                     if(player != playerName[0]) {
-                        players.get(player).write(event);           //send these players the event
+                        players.get(player).write(payload);           //send these players the event
                     }
                 }
 
@@ -171,10 +174,14 @@ public class Server {
 
     private void addPlayer(Socket s) throws IOException {
         final Player player = new Player(s);
-        players.forEachKey(100, name-> player.write("JOIN:"+name)); // Let the new client know the name of the existing clients
+       // players.forEachKey(100, name-> player.write("JOIN:"+name)); // Let the new client know the name of the existing clients
         players.put(player.getName(), player);
         messages.add("JOIN:" +player.getName());
 
+    }
+
+    public boolean playerExistInServer(String username){
+	    return (players.get(username) != null);
     }
 
     class Player {
