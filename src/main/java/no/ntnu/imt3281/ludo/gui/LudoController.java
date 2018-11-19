@@ -6,10 +6,14 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.client.Client;
 
 import java.net.URL;
@@ -20,20 +24,7 @@ public class LudoController {
 
 	@FXML
 	private void initialize(){
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
-		LoginController controller = loader.getController();
-
-		try {
-			AnchorPane gameBoard = loader.load();
-			Tab tab = new Tab("Login");
-			tab.setContent(gameBoard);
-			tabbedPane.getTabs().add(tab);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 	}
 
 	@FXML
@@ -87,8 +78,25 @@ public class LudoController {
 	}
 
 	@FXML
-	void connectToServer(ActionEvent event) {
-		client.connect("test");
+	void connectToServer(ActionEvent event) throws IOException {
+		//client.connect("test");
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+
+		LoginController loginController = new LoginController(this); //create controller that points to this controller
+		loader.setController(loginController);										//set controller to this custom controller
+		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+		Parent parent = loader.load();
+
+
+
+		Scene scene = new Scene(parent, 600, 340);
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
+
+
 	}
 
 	@FXML
@@ -116,4 +124,14 @@ public class LudoController {
 			e1.printStackTrace();
 		}
     }
+
+    public void loginUser(String username, String password){
+		System.out.println("CONTROLLER: loginUser triggered");
+		//client.connect(username);
+		//disregard password for now
+	}
+
+	public void registerUser(String username, String password){
+		System.out.println("CONTROLLER: registerUser triggered");
+	}
 }
