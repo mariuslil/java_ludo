@@ -222,23 +222,20 @@ public class Ludo {
 
     public int getNextActivePlayer() {
 
-        //try and see
-        if(this.activePlayer+1 < nrOfPlayers()) {
-            for (int i = this.activePlayer + 1; i < nrOfPlayers(); i++) {
-                if (players.get(i).getState()) {
-                    return i;
-                }
+        //first check all players after current player
+        for (int i = this.activePlayer + 1; i < nrOfPlayers(); i++) {
+            if (players.get(i).getState()) {
+                return i;
             }
         }
 
+        //then check all players from the beginning
         for (int i = 0; i < nrOfPlayers(); i++) {
             if (players.get(i).getState()) {
                 return i;
             }
         }
 
-
-        // TODO : Why is this returned?
         return -1; //should never be returned
     }
 
