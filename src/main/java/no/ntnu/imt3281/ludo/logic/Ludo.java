@@ -108,7 +108,7 @@ public class Ludo {
                     this.setNextActivePlayer();
                 }
 
-                // Trigger playerEvent for player that LEFTGAME
+                // PLAYERLISTENER : Trigger playerEvent for player that LEFTGAME
                 for (PlayerListener listener : playerListeners) {
                     PlayerEvent event = new PlayerEvent(this, player.getColour(), PlayerEvent.LEFTGAME);
                     listener.playerStateChanged(event);
@@ -129,7 +129,7 @@ public class Ludo {
         this.status = "Started";
         Player player = players.get(activePlayer);
 
-        //throw DiceEvent to diceListeners
+        // DICELISTENER : throw DiceEvent to diceListeners
         for (DiceListener listener : diceListeners) {
             DiceEvent diceEvent = new DiceEvent(this, this.activePlayer, number);
             listener.diceThrown(diceEvent);
@@ -144,7 +144,7 @@ public class Ludo {
         }
 
         if (player.getSixersRow() == 3) { //three 6's in a row, next turn
-            // Trigger playerEvent for player that is WAITING
+            // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
             for (PlayerListener listener : playerListeners) {
                 PlayerEvent event = new PlayerEvent(this, this.activePlayer, PlayerEvent.WAITING);
                 listener.playerStateChanged(event);
@@ -156,7 +156,7 @@ public class Ludo {
         if (player.inStartingPosition()) { //starting position have 3 throws to get a six
             player.setThrowAttempts(player.getThrowAttempts() + 1);
             if (number != 6 && player.getThrowAttempts() == 3) {
-                // Trigger playerEvent for player that is WAITING
+                // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
                 for (PlayerListener listener : playerListeners) {
                     PlayerEvent event = new PlayerEvent(this, this.activePlayer, PlayerEvent.WAITING);
                     listener.playerStateChanged(event);
@@ -204,7 +204,7 @@ public class Ludo {
         //set next turn
         if (nextTurn) {
             this.setNextActivePlayer();
-            // Trigger playerEvent for player that is WAITING
+            // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
             for (PlayerListener listener : playerListeners) {
                 PlayerEvent event = new PlayerEvent(this, this.activePlayer, PlayerEvent.WAITING);
                 listener.playerStateChanged(event);
@@ -240,7 +240,7 @@ public class Ludo {
 
     public void setNextActivePlayer() {
         this.activePlayer = getNextActivePlayer();
-        // Trigger playerEvent for player that is WAITING
+        // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
         for (PlayerListener listener : playerListeners) {
             PlayerEvent event = new PlayerEvent(this, this.activePlayer, PlayerEvent.PLAYING);
             listener.playerStateChanged(event);
@@ -270,27 +270,31 @@ public class Ludo {
 
         int piece = players.get(player).getPiece(from);
 
-        // Throw PieceEvent to PieceListeners
+        // PIECELISTENER : Throw PieceEvent to PieceListeners
         for (PieceListener listener : pieceListeners) {
             PieceEvent pieceEvent = new PieceEvent(this, player, piece, from, to);
             listener.pieceMoved(pieceEvent);
-        }
-
-        // Trigger playerEvent for player that is WAITING
-        for (PlayerListener listener : playerListeners) {
-            PlayerEvent event = new PlayerEvent(this, players.get(player).getColour(), PlayerEvent.WAITING);
-            listener.playerStateChanged(event);
         }
 
         if (piece != -1) {
             //last throw was a 6, but player is in starting position
             //end of turn
             if (this.lastThrow == 6 && players.get(player).inStartingPosition() && from == 0) {
+                // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
+                for (PlayerListener listener : playerListeners) {
+                    PlayerEvent event = new PlayerEvent(this, players.get(player).getColour(), PlayerEvent.WAITING);
+                    listener.playerStateChanged(event);
+                }
                 this.setNextActivePlayer();
             }
             //player didn't throw a 6
             //end of turn
             if (this.lastThrow != 6) {
+                // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
+                for (PlayerListener listener : playerListeners) {
+                    PlayerEvent event = new PlayerEvent(this, players.get(player).getColour(), PlayerEvent.WAITING);
+                    listener.playerStateChanged(event);
+                }
                 this.setNextActivePlayer();
             }
 
@@ -394,7 +398,7 @@ public class Ludo {
                     for (Piece piece : players.get(i).getPieces()) {
                         if (userGridToLudoBoardGrid(i, piece.getPosition()) == playerPos) {
 
-                            // Throw PieceEvent to PieceListeners
+                            // PIECELISTENER : Throw PieceEvent to PieceListeners
                             for (PieceListener listener : pieceListeners) {
                                 PieceEvent pieceEvent = new PieceEvent(this, players.get(i).colour, pieceIndex++, piece.getPosition(), 0);
                                 listener.pieceMoved(pieceEvent);
@@ -413,7 +417,7 @@ public class Ludo {
         for (int i = 0; i < nrOfPlayers(); i++) {
             if (players.get(i).isFinished()) {
 
-                // Trigger playerEvent for player that WON
+                // PLAYERLISTENER : Trigger playerEvent for player that WON
                 for (PlayerListener listener : playerListeners) {
                     PlayerEvent event = new PlayerEvent(this, players.get(i).getColour(), PlayerEvent.WON);
                     listener.playerStateChanged(event);

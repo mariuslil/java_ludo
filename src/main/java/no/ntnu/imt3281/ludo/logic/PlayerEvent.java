@@ -1,10 +1,10 @@
 package no.ntnu.imt3281.ludo.logic;
 
 public class PlayerEvent {
-    protected static final int WAITING = 42;
-    protected static final int PLAYING = 69;
-    protected static final int WON = 420;
-    protected static final int LEFTGAME = 1337;
+    protected static final int WAITING = 100;
+    protected static final int PLAYING = 200;
+    protected static final int WON = 300;
+    protected static final int LEFTGAME = 400;
 
     private Ludo ludo;
     private int color;
