@@ -38,6 +38,7 @@ public class ClientTest {
     public void connectingToServer() {
         assertTrue(server.playerExistInServer("Johan"));
         assertTrue(server.playerExistInServer("Brede"));
+        System.out.println("TEST: connectingToServer complete");
     }
 
     @Test
@@ -54,10 +55,11 @@ public class ClientTest {
         }
 
         assertEquals("MSG:"+message+"§Johan", client2.messages.get(0));
+        System.out.println("TEST: sendMessageToClient complete");
     }
 
     @Test
-    public void testSendDiceEvent(){
+    public void sendDiceEvent(){
         DiceEvent diceEvent = new DiceEvent(new Ludo(), 1, 6); //mock diceEvent
 
         client1.sendDiceEvent(diceEvent);
@@ -67,6 +69,7 @@ public class ClientTest {
 
         }
 
+        System.out.println("TEST: sendDiceEvent complete");
         //TODO: assert event came through correctly, in the mean time check log :)
     }
 }

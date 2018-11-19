@@ -19,6 +19,24 @@ public class LudoController {
 	private Client client = new Client();
 
 	@FXML
+	private void initialize(){
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+		LoginController controller = loader.getController();
+
+		try {
+			AnchorPane gameBoard = loader.load();
+			Tab tab = new Tab("Login");
+			tab.setContent(gameBoard);
+			tabbedPane.getTabs().add(tab);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	@FXML
 	private ResourceBundle resources;
 
 	@FXML

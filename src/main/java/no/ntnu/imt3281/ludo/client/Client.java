@@ -84,10 +84,10 @@ public class Client extends Application {
 					//Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
 						if(tmp.startsWith("JOIN:")){
 							//todo: handle join
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp);
+							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp.replace("JOIN:", ""));
 						}else if(tmp.startsWith("MSG:")){
 							//todo: handle message
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp);
+							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("MSG:",""));
 							messages.add(tmp);
 						}else if(tmp.startsWith("EVENT:")){
 							//todo: handle event
