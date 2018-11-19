@@ -62,7 +62,7 @@ public class ClientTest {
 
         client1.sendDiceEvent(diceEvent);
         try{
-            sleep(2000); //wait 500ms to let the message go through the system.
+            sleep(500); //wait 500ms to let the message go through the system.
         }catch (InterruptedException e){
 
         }

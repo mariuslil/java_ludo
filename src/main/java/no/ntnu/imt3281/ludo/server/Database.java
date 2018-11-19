@@ -7,10 +7,18 @@ import java.sql.Statement;
 
 public class Database {
 
-    Connection dbCon;
+    private Connection dbCon;
 
     public Database(){
         this.dbCon = connectDB();
+    }
+
+    protected void closeDatabase(){
+        try {
+            dbCon.close();
+        }catch (SQLException e){
+            //handle exception.. or don't
+        }
     }
 
     private Connection connectDB(){

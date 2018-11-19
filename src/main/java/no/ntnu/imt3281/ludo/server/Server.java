@@ -57,11 +57,8 @@ public class Server {
     public void killServer(){
         this.shutdown = true;
         executor.shutdown();
-        try{
-            dbCon.close();
-        }catch (SQLException e){
-            //
-        }
+
+        database.closeDatabase();
         try {
             serverSocket.close();
         }catch (IOException e){
@@ -89,7 +86,7 @@ public class Server {
     }*/
 
 	public static void main(String[] args) {
-        Server server = new Server();
+        //Server server = new Server();
 
 	}
 
