@@ -101,6 +101,12 @@ public class Ludo {
         for (Player player : players) {
             if (player.getName() != null && player.getName().equals(name)) {
                 player.setState(false);
+                for (Piece piece: player.getPieces()) {
+                    piece.setPosition(0);
+                }
+                if(player.getName().equals(players.get(activePlayer).getName())){
+                    this.setNextActivePlayer();
+                }
             }
         }
     }
@@ -216,19 +222,22 @@ public class Ludo {
 
     public int getNextActivePlayer() {
 
-        if (this.activePlayer == nrOfPlayers() - 1) {
-            for (int i = 0; i < nrOfPlayers(); i++) {
-                if (players.get(i).getState()) {
-                    return i;
-                }
-            }
-        } else {
+        //try and see
+        if(this.activePlayer+1 < nrOfPlayers()) {
             for (int i = this.activePlayer + 1; i < nrOfPlayers(); i++) {
                 if (players.get(i).getState()) {
                     return i;
                 }
             }
         }
+
+        for (int i = 0; i < nrOfPlayers(); i++) {
+            if (players.get(i).getState()) {
+                return i;
+            }
+        }
+
+
         // TODO : Why is this returned?
         return -1; //should never be returned
     }
