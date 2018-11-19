@@ -13,6 +13,17 @@ public class PieceEvent {
         this.pieceNr = pieceNr;
         this.fromPos = fromPos;
         this.toPos = toPos;
+
+        // TODO : remove this
+        String player = "N/A";
+        switch (color){
+            case 0: player = "RED"; break;
+            case 1: player = "BLUE"; break;
+            case 2: player = "YELLOW"; break;
+            case 3: player = "GREEN"; break;
+        }
+        System.out.println("Player " + player + " moved piece nr. " + pieceNr + " from " + fromPos + " to " + toPos);
+        // TODO : end
     }
 
     /**
