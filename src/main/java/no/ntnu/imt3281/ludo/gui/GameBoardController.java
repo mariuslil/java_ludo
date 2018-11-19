@@ -1,18 +1,30 @@
 package no.ntnu.imt3281.ludo.gui;
 
-/**
- * Sample Skeleton for 'GameBoard.fxml' Controller Class
- */
-
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+
 
 public class GameBoardController {
+
+     GameBoardController() {
+
+         String path = "../../../images/ludo-board.png";
+         Image img = new Image(path);
+
+         GraphicsContext gc = board.getGraphicsContext2D();
+         gc.drawImage(img, img.getWidth(), img.getHeight());
+     }
+
+    @FXML
+    private Canvas board;
 
     @FXML
     private Label player1Name;
