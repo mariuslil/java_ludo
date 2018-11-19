@@ -101,6 +101,10 @@ public class Ludo {
         for (Player player : players) {
             if (player.getName() != null && player.getName().equals(name)) {
                 player.setState(false);
+                for(PlayerListener listener : playerListeners){
+                    PlayerEvent event = new PlayerEvent(this, player.getColour(), PlayerEvent.LEFTGAME);
+                    listener.playerStateChanged(event);
+                }
             }
         }
     }
@@ -215,7 +219,6 @@ public class Ludo {
     }
 
     public int getNextActivePlayer() {
-
         if (this.activePlayer == nrOfPlayers() - 1) {
             for (int i = 0; i < nrOfPlayers(); i++) {
                 if (players.get(i).getState()) {
@@ -374,6 +377,10 @@ public class Ludo {
     public int getWinner() {
         for (int i = 0; i < nrOfPlayers(); i++) {
             if (players.get(i).isFinished()) {
+                for(PlayerListener listener : playerListeners){
+                    PlayerEvent event = new PlayerEvent(this, players.get(i).getColour(), PlayerEvent.WON);
+                    listener.playerStateChanged(event);
+                }
                 return i;
             }
         }
