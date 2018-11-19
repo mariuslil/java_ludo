@@ -3,6 +3,7 @@ package no.ntnu.imt3281.ludo.server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,23 +36,38 @@ public class Server {
     private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String[]> games = new ConcurrentHashMap<>();
 
-
+    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private ServerSocket serverSocket;
     /**
      * Starts the server, creates the serversocket and the threads
      * listening for incomming connections, messages from clients
      * and the thread that sends messages to all clients.
      */
-    public Server(int port) {
+    public Server() {
         this.database = new Database();
         dbCon = database.connectDB();
-        this.PORT = port;
-        ExecutorService executor = Executors.newCachedThreadPool();
+        //ExecutorService executor = Executors.newCachedThreadPool();
         //executor.execute(()->connectionListenerThread());
         executor.execute(()->connectionListenerThread());	// This thread listens for connections from clients
         executor.execute(()->playerListenerThread());		// This thread waits for messages to send to clients, then sends the message(s) to all clients.
         executor.execute(()->messageSenderThread());		// This thread listens for messages from clients
         //EVENTSENDERS
-        //executor.execute(()->eventSenderThread());      // This thread sends events to the users
+        executor.execute(()->eventSenderThread());      // This thread sends events to the users
+    }
+
+    public void killServer(){
+        this.shutdown = true;
+        executor.shutdown();
+        try{
+            dbCon.close();
+        }catch (SQLException e){
+            //
+        }
+        try {
+            serverSocket.close();
+        }catch (IOException e){
+            //
+        }
     }
 
     /*@Override
@@ -79,23 +95,28 @@ public class Server {
 	}
 
     private void connectionListenerThread() {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+        try {
+            this.serverSocket = new ServerSocket(PORT);
             System.out.println("SERVER: Serversocket created on Port: "+PORT);
             while (!shutdown) {		// Run until server stopping
                 Socket s= null;
                 try {
                     s = serverSocket.accept();
                     System.out.println("SERVER: Accepted connection");
+                    try {
+                        addPlayer(s);	// Method that gets username and adds client to hashmap
+                    } catch (IOException e) {
+                        logger.log(Level.FINER, "Unable to establish connection with client", e);
+                    }
                 } catch (IOException e) {
-                    logger.log(Level.SEVERE, "Error while getting client connection: "+PORT, e);
-                    System.exit(0);
+                    //logger.log(Level.SEVERE, "Error while getting client connection: "+PORT, e);
+                    //System.exit(0);
+                    System.out.println("SERVER: Exception thrown when shutting down serversocket\nSERVER: Because serverSocket is shut down from another thread.");
+                    //continue; //jump out of callstack to dodge nullpointers when tossing exception //edit: moved thge addplayer trycatch into this try catch
                 }
-                try {
-                    addPlayer(s);	// Method that gets username and adds client to hashmap
-                } catch (IOException e) {
-                    logger.log(Level.FINER, "Unable to establish connection with client", e);
-                }
+
             }
+
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Unable to listen to port: "+PORT, e);
             System.exit(0);
@@ -133,7 +154,7 @@ public class Server {
                 } else if (msg!=null &&msg.startsWith("EVENT:")) {
                     events.add(player.getName()+msg);   // Add event to event queue
                 } else if (msg!=null && msg.startsWith("MSG:")) {
-                    messages.add(msg+"&§&"+player.getName());	// Add message to message queue
+                    messages.add(msg+"§"+player.getName());	// Add message to message queue
                 }
             });
             try {
@@ -147,17 +168,27 @@ public class Server {
     private void eventSenderThread(){
         while (!shutdown) {
             try {
-                final String event = events.take();		// Blocks until a message is available
-                String[] eventParts = event.split("&§&");
+                final String event = events.take();		// Blocks until an event is available
+                String[] eventParts = event.split("§");
                 String[] playerName = eventParts[0].split("EVENT:"); //player who triggered this event
                 /*
                  * eventParts[0] = EVENT:DICE: or EVENT:PIECE: or EVENT:PLAYER:
                  * eventParts[1] = GAMEHASH/ID
                  * eventParts[2] = Event information
                  */
+                //////////////////MOCK GAME UNTIL I IMPLEMNT IT
+                //TODO: THIS^
+                String[] test = new String[4];
+                test[0] = "Johan";
+                test[1] = "Brede";
+                test[2] = "";
+                test[3] = "";
+                games.put(eventParts[1], test);
+                //////////////////
                 for (String player: games.get(eventParts[1])) { //get players from the game
                     String payload = event.replace(playerName[0], ""); //remove name from string
-                    if(player != playerName[0]) {
+                    if(!player.equals("") && !player.equals(playerName[0])) {
+                        System.out.println("SERVER: Sending player "+player+" new event.");
                         players.get(player).write(payload);           //send these players the event
                     }
                 }

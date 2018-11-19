@@ -34,8 +34,8 @@ public class Client extends Application {
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
 
-	public Client(int port){
-		this.PORT = port;
+	public Client(){
+
 	}
 
 	@Override
@@ -93,13 +93,13 @@ public class Client extends Application {
 							//todo: handle event
 							String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
 							if(event.startsWith("DICE:")){ //dice event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+tmp.replace("DICE:", ""));
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
 								//TODO: handle DICE event
 							}else if(event.startsWith("PIECE:")){ //piece event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+tmp.replace("PIECE:", ""));
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
 								//TODO: handle PIECE event
 							}else if(event.startsWith("PLAYER:")){ //player event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+tmp.replace("PLAYER:", ""));
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
 								//TODO: handle PLAYER event
 							}
 						}else if(tmp.startsWith("DISCONNECTED:")){
@@ -119,7 +119,7 @@ public class Client extends Application {
 	protected void sendDiceEvent(DiceEvent diceEvent){
 		if (connected){
 			try{
-				connection.send("EVENT:DICE:&§&"+diceEvent.getLudoHash()+"&§&"+diceEvent.getColor()+"&§&"+diceEvent.getDiceNr());
+				connection.send("EVENT:DICE:§"+diceEvent.getLudoHash()+"§"+diceEvent.getColor()+"§"+diceEvent.getDiceNr());
 			}catch (IOException e){
 				connection.close();
 			}
