@@ -7,11 +7,13 @@ import java.sql.Statement;
 
 public class Database {
 
+    Connection dbCon;
 
     public Database(){
+        this.dbCon = connectDB();
     }
 
-    protected Connection connectDB(){
+    private Connection connectDB(){
         try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
             System.out.println("DATABASE: Database connected");
             return connect;

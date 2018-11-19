@@ -16,6 +16,8 @@ import java.net.URL;
 
 public class LudoController {
 
+	private Client client = new Client();
+
 	@FXML
 	private ResourceBundle resources;
 
@@ -68,8 +70,7 @@ public class LudoController {
 
 	@FXML
 	void connectToServer(ActionEvent event) {
-		System.out.println("hurray");
-		//client.connect("test");
+		client.connect("test");
 	}
 
 	@FXML

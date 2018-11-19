@@ -45,7 +45,6 @@ public class Server {
      */
     public Server() {
         this.database = new Database();
-        dbCon = database.connectDB();
         //ExecutorService executor = Executors.newCachedThreadPool();
         //executor.execute(()->connectionListenerThread());
         executor.execute(()->connectionListenerThread());	// This thread listens for connections from clients
@@ -90,7 +89,7 @@ public class Server {
     }*/
 
 	public static void main(String[] args) {
-        //Server server = new Server(1234);
+        Server server = new Server();
 
 	}
 
