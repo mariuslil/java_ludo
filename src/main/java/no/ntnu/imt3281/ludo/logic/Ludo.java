@@ -34,10 +34,10 @@ public class Ludo {
 
     public Ludo(String player1, String player2, String player3, String player4) throws NotEnoughPlayersException {
 
-            players.add(RED, new Player(player1, RED));
-            players.add(BLUE, new Player(player2, BLUE));
-            players.add(YELLOW, new Player(player3, YELLOW));
-            players.add(GREEN, new Player(player4, GREEN));
+        players.add(RED, new Player(player1, RED));
+        players.add(BLUE, new Player(player2, BLUE));
+        players.add(YELLOW, new Player(player3, YELLOW));
+        players.add(GREEN, new Player(player4, GREEN));
 
         if (this.nrOfPlayers() < 2) {
             throw new NotEnoughPlayersException();
@@ -101,9 +101,15 @@ public class Ludo {
         for (Player player : players) {
             if (player.getName() != null && player.getName().equals(name)) {
                 player.setState(false);
-                for(PlayerListener listener : playerListeners){
+                for (PlayerListener listener : playerListeners) {
                     PlayerEvent event = new PlayerEvent(this, player.getColour(), PlayerEvent.LEFTGAME);
                     listener.playerStateChanged(event);
+                }
+                for (Piece piece : player.getPieces()) {
+                    piece.setPosition(0);
+                }
+                if (player.getName().equals(players.get(activePlayer).getName())) {
+                    this.setNextActivePlayer();
                 }
             }
         }
@@ -219,20 +225,20 @@ public class Ludo {
     }
 
     public int getNextActivePlayer() {
-        if (this.activePlayer == nrOfPlayers() - 1) {
-            for (int i = 0; i < nrOfPlayers(); i++) {
-                if (players.get(i).getState()) {
-                    return i;
-                }
-            }
-        } else {
-            for (int i = this.activePlayer + 1; i < nrOfPlayers(); i++) {
-                if (players.get(i).getState()) {
-                    return i;
-                }
+        //first check all players after current player
+        for (int i = this.activePlayer + 1; i < nrOfPlayers(); i++) {
+            if (players.get(i).getState()) {
+                return i;
             }
         }
-        // TODO : Why is this returned?
+
+        //then check all players from the beginning
+        for (int i = 0; i < nrOfPlayers(); i++) {
+            if (players.get(i).getState()) {
+                return i;
+            }
+        }
+
         return -1; //should never be returned
     }
 
@@ -377,7 +383,7 @@ public class Ludo {
     public int getWinner() {
         for (int i = 0; i < nrOfPlayers(); i++) {
             if (players.get(i).isFinished()) {
-                for(PlayerListener listener : playerListeners){
+                for (PlayerListener listener : playerListeners) {
                     PlayerEvent event = new PlayerEvent(this, players.get(i).getColour(), PlayerEvent.WON);
                     listener.playerStateChanged(event);
                 }
