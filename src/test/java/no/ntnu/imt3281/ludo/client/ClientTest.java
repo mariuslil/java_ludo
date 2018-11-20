@@ -24,22 +24,20 @@ public class ClientTest {
         this.client2 = new Client();
         client1.connect("REGISTER:", "Johan", "hei");
         client2.connect("REGISTER:", "Brede", "HEI");
+        try{
+            sleep(500); //wait 500ms to let the system connect
+        }catch (InterruptedException e){
+
+        }
     }
 
     @After
     public void tearDown(){
         this.server.killServer();
-
-
     }
 
     @Test
     public void connectingToServer() {
-        try{
-            sleep(1000); //wait 500ms to let the server and clients connect
-        }catch (InterruptedException e){
-
-        }
         assertTrue(server.playerExistInServer("Johan"));
         assertTrue(server.playerExistInServer("Brede"));
         System.out.println("TEST: connectingToServer complete");
@@ -47,12 +45,6 @@ public class ClientTest {
 
     @Test
     public void loggingInToServer(){
-        try{
-            sleep(1000); //wait 500ms to let the server and clients connect
-        }catch (InterruptedException e){
-
-        }
-
         assertTrue(client1.isLoggedIn());
         assertTrue(client2.isLoggedIn());
         System.out.println("TEST: loggingInToServer complete");
@@ -62,12 +54,6 @@ public class ClientTest {
     public void sendMessageToClient(){
 
         String message = "Testing123";
-
-        try{
-            sleep(500); //wait 500ms to let the server and clients connect
-        }catch (InterruptedException e){
-
-        }
 
         client1.sendText(message);
 
@@ -91,6 +77,8 @@ public class ClientTest {
         }catch (InterruptedException e){
 
         }
+
+        assertTrue(client2.test);
 
         System.out.println("TEST: sendDiceEvent complete");
         //TODO: assert event came through correctly, in the mean time check log :)

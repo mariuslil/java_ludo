@@ -35,6 +35,8 @@ public class Client {
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
+	protected boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
+
 	private String cookie = "";
 
 
@@ -88,6 +90,7 @@ public class Client {
 							if(event.startsWith("DICE:")){ //dice event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
 								//TODO: handle DICE event
+								this.test = true;
 							}else if(event.startsWith("PIECE:")){ //piece event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
 								//TODO: handle PIECE event
