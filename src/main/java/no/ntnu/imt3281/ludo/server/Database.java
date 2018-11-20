@@ -57,37 +57,18 @@ public class Database {
         }
     }
 
-    protected boolean registerUser(String username, String pass){
+    protected boolean registerUser(String username, String password){
         String hashPass = "";
         String cookie = "";
 
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
-            md.update("brede".getBytes());
+        try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
 
-            byte[] hashedPassword = md.digest(pass.getBytes(StandardCharsets.UTF_8));
+            hashPass = hashFunc(password);
 
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i< hashedPassword.length ;i++){
-                sb.append(Integer.toString((hashedPassword[i] & 0xff) + 0x100, 16).substring(1));
-            }
+            cookie = hashFunc(username+password);
 
-            hashPass = sb.toString();
+            if(hashPass!=""&&cookie!=""){
 
-            byte[] cookieHash = md.digest((""+username+pass).getBytes(StandardCharsets.UTF_8));
-
-            StringBuilder sb2 = new StringBuilder();
-            for(int i=0; i< cookieHash.length ;i++){
-                sb2.append(Integer.toString((cookieHash[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            cookie = sb2.toString();
-        }catch (NoSuchAlgorithmException e){
-            //fu
-            return false;
-        }
-
-        if(hashPass!=""&&cookie!=""){
-            try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
                 //insert mock data
                 String sql1 = "INSERT INTO USERS (Name, Password, Cookie, Wins) VALUES (?,?,?,?)";
                 PreparedStatement stmnt1 = connect.prepareStatement(sql1);
@@ -98,14 +79,14 @@ public class Database {
                 int rows = stmnt1.executeUpdate();
 
                 System.out.println("DATABASE: Rows inserted: " + rows);
-            }catch (SQLException e){
-                //shit bricks
-                System.out.println(e.getMessage());
-                return false;
+
             }
+
+        }catch (SQLException e){
+            //shit bricks
+            System.out.println(e.getMessage());
+            return false;
         }
-
-
         return true;
     }
 
@@ -113,27 +94,10 @@ public class Database {
 
         String hashPass;
 
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
-            md.update("brede".getBytes());
-
-            byte[] hashedPassword = md.digest(pass.getBytes(StandardCharsets.UTF_8));
-
-
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i< hashedPassword.length ;i++){
-                sb.append(Integer.toString((hashedPassword[i] & 0xff) + 0x100, 16).substring(1));
-            }
-
-            hashPass = sb.toString();
-
-        }catch (NoSuchAlgorithmException e){
-            //fu
-            return null;
-        }
-
-
         try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
+
+            hashPass = hashFunc(pass);
+
             String sql2 = "SELECT NAME, COOKIE FROM USERS WHERE Name LIKE (?) AND Password LIKE (?)";
             PreparedStatement stmnt2 = connect.prepareStatement(sql2);
             stmnt2.setString(1, username);
@@ -144,37 +108,52 @@ public class Database {
                 return res.getString("Cookie");
             }
 
+        }catch (SQLException e) {
+            //rip
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    protected boolean userExists(String username){
+        try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
+            String sql2 = "SELECT NAME FROM USERS WHERE Name LIKE (?)";
+            PreparedStatement stmnt2 = connect.prepareStatement(sql2);
+            stmnt2.setString(1, username);
+            ResultSet res = stmnt2.executeQuery();
+
+
+            if (res.next()){
+                return (res.getString("Name").equals(username));
+            }
+
 
         }catch (SQLException e){
             //rip
             System.out.println(e.getMessage());
         }
 
-
-        return null;
+        return false;
     }
 
-    /*
-    private void getData(){
-        try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB;create=true")) {
-            String sql2 = "SELECT * FROM USERS";
-            Statement stmnt2 = connect.createStatement();
-            ResultSet res = stmnt2.executeQuery(sql2);
-            ResultSetMetaData meta = res.getMetaData();
-
-            System.out.println(meta.getColumnCount());
-
-            if (res.next()) {
-                //System.out.println("TEST: "+res.getString(2));
-                if (connected != null) {
-
-                    connected.setText("" + res.getString(2));
-                }
+    private String hashFunc(String hashPls){
+        try{
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update("brede".getBytes()); //salt
 
 
+            ///PASSWORD HASH CREATION///
+            byte[] hashedPassword = md.digest(hashPls.getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< hashedPassword.length ;i++){
+                sb.append(Integer.toString((hashedPassword[i] & 0xff) + 0x100, 16).substring(1));
             }
-        }catch (SQLException e){
-            //poop
+            return sb.toString();
+        }catch (NoSuchAlgorithmException e){
+            return null;
         }
-    }*/
+    }
+
 }

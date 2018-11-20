@@ -213,11 +213,16 @@ public class Server {
             String trim = player.connectionString.replace("REGISTER:", "");
             String[] namePass = trim.split("§");
             if(namePass.length == 2){
-                boolean registered = database.registerUser(namePass[0],namePass[1]);
-                if(registered){
-                    player.setName(namePass[0]);
+                if(database.userExists(namePass[0])){
                     player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:");
-                    loginPlayer(player); //login player after registering
+                   loginPlayer(player);
+                }else {
+                    boolean registered = database.registerUser(namePass[0], namePass[1]);
+                    if (registered) {
+                        player.setName(namePass[0]);
+                        player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:");
+                        loginPlayer(player); //login player after registering
+                    }
                 }
             }
         }
@@ -225,9 +230,10 @@ public class Server {
 
     private void loginPlayer(Player player){
         if(player.connectionString.startsWith("LOGIN:")){
-            System.out.println("SERVER: Logging in user: "+player.getName());
+
             String trim = player.connectionString.replace("LOGIN:", "");
             String[] namePass = trim.split("§");
+            System.out.println("SERVER: Logging in user: "+namePass[0]);
             if(namePass.length == 2){
                 String cookie = database.loginUser(namePass[0],namePass[1]);
                  if(cookie != null){

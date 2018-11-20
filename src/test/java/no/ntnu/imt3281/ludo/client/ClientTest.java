@@ -23,8 +23,8 @@ public class ClientTest {
         this.server = new Server();
         this.client1 = new Client();
         this.client2 = new Client();
-        client1.connect("LOGIN:", "Johan", "hei");
-        client2.connect("LOGIN:", "Brede", "HEI");
+        client1.connect("REGISTER:", "Johan", "hei");
+        client2.connect("REGISTER:", "Brede", "HEI");
     }
 
     @After
@@ -37,7 +37,7 @@ public class ClientTest {
     @Test
     public void connectingToServer() {
         try{
-            sleep(500); //wait 500ms to let the message go through the system.
+            sleep(500); //wait 500ms to let the server and clients connect
         }catch (InterruptedException e){
 
         }
@@ -51,10 +51,16 @@ public class ClientTest {
 
         String message = "Testing123";
 
+        try{
+            sleep(500); //wait 500ms to let the server and clients connect
+        }catch (InterruptedException e){
+
+        }
+
         client1.sendText(message);
 
         try{
-            sleep(500); //wait 500ms to let the message go through the system.
+            sleep(100); //wait 100ms to let the message go through the system.
         }catch (InterruptedException e){
 
         }
