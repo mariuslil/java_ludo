@@ -96,6 +96,7 @@ public class LudoController {
 		stage.setScene(scene);
 		stage.showAndWait();
 
+		//TODO: close stage when logged In or registered.
 
 	}
 
