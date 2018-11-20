@@ -35,4 +35,10 @@ public class PlayerEvent {
         PlayerEvent event = (PlayerEvent) obj;
         return (event.ludo == ludo) && (event.color == color) && (event.status == status);
     }
+
+    @Override
+    public int hashCode() {
+        /* ... */
+        return 69;
+    }
 }
