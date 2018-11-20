@@ -1004,7 +1004,7 @@ public class LudoTest {
         order.verify(playerListener).playerStateChanged(ple);
         ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
         order.verify(playerListener).playerStateChanged(ple);
-        de = new DiceEvent(ludo, Ludo.BLUE, 1); // RED threw a six
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
         order.verify(diceListener).diceThrown(de);
         pe = new PieceEvent(ludo, Ludo.BLUE, 0, 1, 2);
         order.verify(pieceListener).pieceMoved(pe);
@@ -1014,10 +1014,11 @@ public class LudoTest {
         order.verify(diceListener).diceThrown(de);
         pe = new PieceEvent(ludo, Ludo.RED, 3, 52, 58);
         order.verify(pieceListener).pieceMoved(pe);
-        de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a six
+        de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
         order.verify(diceListener).diceThrown(de);
-        pe = new PieceEvent(ludo, Ludo.RED, 3, 59, 59);
-        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WON);
-        order.verify(playerListener).playerStateChanged(ple); // HURRAY, we have a winner
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 58, 59);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WON); // HURRAY, we have a winner
+        order.verify(playerListener).playerStateChanged(ple);
     }
 }
