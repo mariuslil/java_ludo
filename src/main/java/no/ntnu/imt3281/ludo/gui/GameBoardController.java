@@ -14,14 +14,18 @@ import javafx.scene.image.Image;
 
 public class GameBoardController {
 
-     GameBoardController() {
+    public GameBoardController() {
 
+
+        /*
          String path = "../../../images/ludo-board.png";
          Image img = new Image(path);
 
          GraphicsContext gc = board.getGraphicsContext2D();
          gc.drawImage(img, img.getWidth(), img.getHeight());
-     }
+         */
+    }
+
 
     @FXML
     private Canvas board;

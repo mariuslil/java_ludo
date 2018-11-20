@@ -22,20 +22,21 @@ import java.net.URL;
 
 public class LudoController {
 
-
-	LudoController() {
-	    tabbedPane = new TabPane();
-	    Tab tab = new Tab();
-	    tab.setText("Master");
-	    tab.setContent(new VBox(new TextArea(), new HBox(new TextField(), new Button("%ludogameboard.saybutton"))));
-	    tabbedPane.getTabs().add(tab);
-    }
-
 	private Client client = new Client();
 
 	@FXML
 	private void initialize(){
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
+		try {
+			AnchorPane chat = loader.load();
+			Tab tab = new Tab("Chat: Global");
+			tab.setContent(chat);
+			tabbedPane.getTabs().add(tab);
+		} catch (IOException el) {
+			el.printStackTrace();
+		}
 	}
 
 	@FXML
