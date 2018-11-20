@@ -46,6 +46,19 @@ public class ClientTest {
     }
 
     @Test
+    public void loggingInToServer(){
+        try{
+            sleep(1000); //wait 500ms to let the server and clients connect
+        }catch (InterruptedException e){
+
+        }
+
+        assertTrue(client1.isLoggedIn());
+        assertTrue(client2.isLoggedIn());
+        System.out.println("TEST: loggingInToServer complete");
+    }
+
+    @Test
     public void sendMessageToClient(){
 
         String message = "Testing123";

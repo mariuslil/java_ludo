@@ -232,6 +232,7 @@ public class Server {
 
             String trim = player.connectionString.replace("LOGIN:", "");
             String[] namePass = trim.split("§");
+            System.out.println("AAAAAAAAAAAAAAAAAAAAA"+trim);
             System.out.println("SERVER: Logging in user: "+namePass[0]);
             if(namePass.length == 2){
                 String cookie = database.loginUser(namePass[0],namePass[1]);

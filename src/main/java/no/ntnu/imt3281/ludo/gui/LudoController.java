@@ -135,7 +135,7 @@ public class LudoController {
 	}
 
 	public void registerUser(String username, String password){
-		System.out.println("CONTROLLER: registerUser triggered");
+		System.out.println("CONTROLLER: User "+username+" is registering in");
 		if(username!=null && password!=null) {
 			client.connect("REGISTER:", username, password);
 		}

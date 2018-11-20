@@ -25,47 +25,34 @@ import java.util.concurrent.Executors;
  * @author 
  *
  */
-public class Client extends Application {
+public class Client {
 
 	protected String name = "";
 	protected List<String> messages = new ArrayList<>();
 	private boolean connected = false;
+	private boolean loggedIn = false;
 	private int PORT = 1234;
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
+
+	private String cookie = "";
 
 
 	public Client(){
 
 	}
 
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("../gui/Ludo.fxml"));
-			Scene scene = new Scene(root);
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	public void connect(String type, String username, String password) {
 		if (connected) {				// Currently connected, disconnect from server
 			connected = false;
 			connection.close();			// This will send a message to the server notifying the server about this client leaving
-
+			loggedIn = false;
 		} else {
 			try {
 				System.out.println("CLIENT: "+username+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
-				connected = true;
-				connection.send(type+username+"§"+password); 	// Send username
+				connected = true; //connected but not logged in
+				connection.send(type+username+"§"+password); 	// Send username&password
 				this.name = username;
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
 			} catch (UnknownHostException e) {
@@ -88,8 +75,9 @@ public class Client extends Application {
 							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp.replace("JOIN:", ""));
 						}else if(tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
-							//todo: cookie looks like this "COOKIE:DKPAOSJDNGFA8Y90NGA0NAEGR0YN9AG"
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
+							this.cookie = tmp.replace("COOKIE:",""); //set cookie
+							this.loggedIn = true; //Client is logged in :)
 						}else if(tmp.startsWith("MSG:")){
 							//todo: handle message
 							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("MSG:",""));
@@ -109,6 +97,7 @@ public class Client extends Application {
 							}
 						}else if(tmp.startsWith("DISCONNECTED:")){
 							//todo: handle disconnect
+
 						}
 					//});
 				}
@@ -122,7 +111,7 @@ public class Client extends Application {
 	}
 
 	protected void sendDiceEvent(DiceEvent diceEvent){
-		if (connected){
+		if (connected && loggedIn){
 			try{
 				connection.send("EVENT:DICE:§"+diceEvent.getLudoHash()+"§"+diceEvent.getColor()+"§"+diceEvent.getDiceNr());
 			}catch (IOException e){
@@ -132,13 +121,17 @@ public class Client extends Application {
 	}
 
 	protected void sendText(String message){
-		if (connected){
+		if (connected  && loggedIn){
 			try{
 				connection.send("MSG:"+message);
 			}catch (IOException e){
 				connection.close();
 			}
 		}
+	}
+
+	public boolean isLoggedIn() {
+		return loggedIn;
 	}
 
 	class Connection {

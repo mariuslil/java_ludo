@@ -39,11 +39,11 @@ public class LoginController {
     @FXML
     void register(ActionEvent event) {
 
-        String username = this.loginUsername.getText();
-        String password = this.loginPassword.getText();
+        String username = this.registerUsername.getText();
+        String password = this.registerPassword.getText();
 
         if(username!=null || password!=null){
-            ludoController.loginUser(username, password);
+            ludoController.registerUser(username, password);
         }
     }
 }
