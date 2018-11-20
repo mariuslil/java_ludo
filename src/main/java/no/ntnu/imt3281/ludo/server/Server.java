@@ -33,10 +33,10 @@ public class Server {
     private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
     private final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
     private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, List<String>> games = new ConcurrentHashMap<>();
+    protected final ConcurrentHashMap<String, LinkedBlockingQueue<String>> games = new ConcurrentHashMap<>();
     private final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
 
-    List<Player> waitingPlayers = new ArrayList<>();
+    ConcurrentHashMap<String, Player> waitingPlayers = new ConcurrentHashMap<>();
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
@@ -125,37 +125,57 @@ public class Server {
     }
 
     private void assignGameThread(){
-        List<String> newGame = new ArrayList<>();
+        LinkedBlockingQueue<String> newGame = new LinkedBlockingQueue<>();
 
         int ticktock = 0;
         while (!shutdown){
 
-            while(newGame.size() < 4){
-                try{
-                    Player player = wannaGame.take();
-                    waitingPlayers.add(player);
+            System.out.println("SERVER: TICKTOCK: "+String.valueOf(ticktock));
+
+            try{
+                if(wannaGame.size()>0) {
+                    Player player = wannaGame.take(); //this fucker
+
+                    System.out.println("SERVER: Player "+player.getName()+" added to game waiting list.");
+
+                    waitingPlayers.put(player.getName(), player);
                     newGame.add(player.getName());
-                    player.write("RANDOMGAMEREQUESTUPDATE: "+player.getName().toUpperCase()+" added to queue");
-                }catch (InterruptedException e){
-                    //meep
+
+                    waitingPlayers.forEachValue(100, waitingPlayer -> {
+                        waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: "+player.getName().toUpperCase()+" added to queue");
+                    });
+                    ticktock = 0;
                 }
+            }catch (InterruptedException e){
+                //meep
             }
 
             if(newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)){
                 String uniqID = "pels"; //TODO: make it uniqueid
                 games.put(uniqID, newGame);
 
+                System.out.println("SERVER: Starting game: "+uniqID);
+
                 //TODO: do this more efficiently
-                for (Player player:waitingPlayers) {
+                waitingPlayers.forEachValue(100, waitingPlayer -> {
                     for (String playerName:newGame) {
-                        if(playerName.equals(player.getName())){
-                            player.write("STARTGAME:"+uniqID);
+                        if (waitingPlayer.getName().equals(playerName)) {
+                            waitingPlayer.write("STARTGAME:"+uniqID);
+                            waitingPlayer.activeGames.add(uniqID);
+                            waitingPlayers.remove(waitingPlayer.name);
+                            System.out.println("SERVER: WAITING PLAYERS: "+waitingPlayers.size());
                         }
                     }
-                }
+                });
+
+
+
+                //waitingPlayers.get(newGame.r)
+
                 for (String name:newGame) {
-                    newGame.remove(0); //reset newGame
+                    newGame.remove(name); //reset newGame
                 }
+
                 ticktock = 0;
             }
 
@@ -170,9 +190,9 @@ public class Server {
 
     private void pingWaitingPlayers(){
         while(!shutdown){
-            for (Player player:waitingPlayers) {
-                player.write("RANDOMGAMEREQUESTUPDATE: SERVER: Waiting for players..");
-            }
+            waitingPlayers.forEachValue(100, waitingPlayer -> {
+                waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: SERVER: Waiting for players..");
+            });
             try{
                 sleep(1000); //wait one second
             }catch (InterruptedException e){
@@ -220,7 +240,7 @@ public class Server {
                  */
                 //////////////////MOCK GAME UNTIL I IMPLEMNT IT
                 //TODO: THIS^
-                List<String> test = new ArrayList<>();
+                LinkedBlockingQueue<String> test = new LinkedBlockingQueue<>();
                 test.add("Johan");
                 test.add("Brede");
                 games.put(eventParts[1], test);
@@ -309,6 +329,10 @@ public class Server {
 
     public boolean playerExistInServer(String username) {
         return (players.get(username) != null);
+    }
+
+    public boolean playerInGame(String username, String game) {
+        return players.get(username).activeGames.contains(game);
     }
 
     class Player {

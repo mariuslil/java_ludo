@@ -23,6 +23,7 @@ public class Client {
 
 	protected String name = "";
 	protected List<String> messages = new ArrayList<>();
+	protected List<String> activeGames = new ArrayList<>();
 	private boolean connected = false;
 	private boolean loggedIn = false;
 	private boolean lookingForGame = false;
@@ -127,14 +128,15 @@ public class Client {
 							System.out.println("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
 
 							//NEWGAME//
-						}else if(tmp.startsWith("NEWGAME:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":NEWGAME: "+tmp.replace("NEWGAME:", ""));
-							String game = tmp.replace("NEWGAME:","");
+						}else if(tmp.startsWith("STARTGAME:")){
+							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
+							String game = tmp.replace("STARTGAME:","");
 							if(this.lookingForGame){
+								activeGames.add(game);
 								//startNewGame(game); //TODO this
 							}
-						}else if(tmp.startsWith("RANDOMGAMEREQUESTUPDATE")){
-							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE", "");
+						}else if(tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
+							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
 							if(ludoController!=null){
 								ludoController.updateWaitDialog(update);
 							}
@@ -174,6 +176,7 @@ public class Client {
 		if (connected  && loggedIn){
 			try{
 				connection.send("JOINRANDOMGAME");
+				this.lookingForGame = true;
 				if(ludoController!=null){
 					ludoController.startWaitForGame();
 				}
