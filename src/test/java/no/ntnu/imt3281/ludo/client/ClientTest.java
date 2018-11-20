@@ -36,7 +36,7 @@ public class ClientTest {
     @Test
     public void connectingToServer() {
         try{
-            sleep(500); //wait 500ms to let the server and clients connect
+            sleep(1000); //wait 500ms to let the server and clients connect
         }catch (InterruptedException e){
 
         }

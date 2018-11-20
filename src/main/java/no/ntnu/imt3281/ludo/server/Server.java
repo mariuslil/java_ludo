@@ -85,7 +85,7 @@ public class Server {
     }*/
 
 	public static void main(String[] args) {
-        //Server server = new Server();
+        Server server = new Server();
 
 	}
 
@@ -238,7 +238,7 @@ public class Server {
                  if(cookie != null){
                     player.setName(namePass[0]);
                     player.write("COOKIE:"+cookie); //send cookie to client for it to keep
-                    players.forEachValue(100, player1 -> player1.write("JOIN:"+player.getName()));
+                    players.forEachValue(100, player1 -> player.write("JOIN:"+player1.getName()));
 
                     players.put(player.getName(), player);
                     messages.add("JOIN:" +player.getName());

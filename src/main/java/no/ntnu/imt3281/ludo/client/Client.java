@@ -1,6 +1,8 @@
 package no.ntnu.imt3281.ludo.client;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -108,7 +110,7 @@ public class Client extends Application {
 						}else if(tmp.startsWith("DISCONNECTED:")){
 							//todo: handle disconnect
 						}
-				//	});
+					//});
 				}
 				Thread.sleep(50); 	// Prevent client from using 100% CPU
 			} catch (IOException e) {
