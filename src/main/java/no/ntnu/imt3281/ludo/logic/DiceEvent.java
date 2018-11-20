@@ -15,17 +15,6 @@ public class DiceEvent {
         this.ludo = ludo;
         this.color = color;
         this.diceNr = diceNr;
-
-        // TODO : remove this
-        String player = "N/A";
-        switch (color){
-            case 0: player = "RED"; break;
-            case 1: player = "BLUE"; break;
-            case 2: player = "YELLOW"; break;
-            case 3: player = "GREEN"; break;
-        }
-        System.out.println("Player " + player + " threw a " + diceNr);
-        // TODO : end
     }
 
     /**

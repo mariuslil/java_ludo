@@ -104,14 +104,15 @@ public class Ludo {
                 for (Piece piece : player.getPieces()) {
                     piece.setPosition(0);
                 }
-                if (player.getName().equals(players.get(activePlayer).getName())) {
-                    this.setNextActivePlayer();
-                }
 
                 // PLAYERLISTENER : Trigger playerEvent for player that LEFTGAME
                 for (PlayerListener listener : playerListeners) {
                     PlayerEvent event = new PlayerEvent(this, player.getColour(), PlayerEvent.LEFTGAME);
                     listener.playerStateChanged(event);
+                }
+
+                if (player.getName().equals(players.get(activePlayer).getName())) {
+                    this.setNextActivePlayer();
                 }
             }
         }
@@ -203,12 +204,12 @@ public class Ludo {
 
         //set next turn
         if (nextTurn) {
-            this.setNextActivePlayer();
             // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
             for (PlayerListener listener : playerListeners) {
                 PlayerEvent event = new PlayerEvent(this, this.activePlayer, PlayerEvent.WAITING);
                 listener.playerStateChanged(event);
             }
+            this.setNextActivePlayer();
         }
 
         return number;
@@ -344,6 +345,7 @@ public class Ludo {
 
                 if (players.get(player).pieceFinished()) {
                     this.status = "Finished";
+                    getWinner();
                 }
             }
 

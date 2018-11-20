@@ -692,8 +692,6 @@ public class LudoTest {
         ludo.throwDice(1);
         ludo.movePiece(Ludo.RED, 58, 59); // Red wins!
 
-        // TODO : remove this
-        System.out.println("///////////////////////////////////////////////");
         // *************************************************************************
         // Below is all events we are supposed to receive during the above gameplay
         // *************************************************************************

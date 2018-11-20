@@ -54,11 +54,10 @@ public class Player {
 
     public boolean inStartingPosition(){
         for (Piece piece: pieces) {
-            if(piece.getPosition() != 0 || piece.getPosition() == 59){
+            if(piece.getPosition() != 0 && piece.getPosition() != 59){
                 return false;
             }
         }
-
         return true;
     }
 
