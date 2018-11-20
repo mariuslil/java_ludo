@@ -94,6 +94,7 @@ public class Database {
     protected String loginUser(String username, String pass){
 
         String hashPass;
+        String cookie = null;
 
         try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
 
@@ -104,39 +105,40 @@ public class Database {
             stmnt.setString(1, username);
             stmnt.setString(2, hashPass);
             ResultSet res = stmnt.executeQuery();
-            stmnt.close();
+
 
             if (res.next()){
-                return res.getString("Cookie");
-            }
+                cookie = res.getString("Cookie");
 
+            }
+            stmnt.close();
         }catch (SQLException e) {
             //rip
             System.out.println(e.getMessage());
         }
 
-        return null;
+        return cookie;
     }
 
     protected boolean userExists(String username){
+        boolean exists = false;
         try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
             String sql = "SELECT NAME FROM USERS WHERE Name LIKE (?)";
             PreparedStatement stmnt = connect.prepareStatement(sql);
             stmnt.setString(1, username);
             ResultSet res = stmnt.executeQuery();
-            stmnt.close();
+
 
             if (res.next()){
-                return (res.getString("Name").equals(username));
+                exists = (res.getString("Name").equals(username));
             }
-
-
+            stmnt.close();
         }catch (SQLException e){
             //rip
             System.out.println(e.getMessage());
         }
 
-        return false;
+        return exists;
     }
 
     private String hashFunc(String hashPls){
