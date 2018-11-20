@@ -6,10 +6,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
@@ -33,7 +30,7 @@ public class LudoController {
 			AnchorPane chat = loader.load();
 			Tab tab = new Tab("Chat: Global");
 			tab.setContent(chat);
-			tabbedPane.getTabs().add(tab);
+			chatTab.getTabs().add(tab);
 		} catch (IOException el) {
 			el.printStackTrace();
 		}
@@ -68,6 +65,9 @@ public class LudoController {
 
 	@FXML
 	private TabPane tabbedPane;
+
+	@FXML
+	private TabPane chatTab;
 
 	@FXML
 	void ListRooms(ActionEvent event) {

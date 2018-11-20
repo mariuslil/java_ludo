@@ -39,9 +39,12 @@
               </menus>
             </MenuBar>
          </top>
-         <center>
-            <TabPane fx:id="tabbedPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
-         </center>
+         <left>
+            <TabPane fx:id="tabbedPane" prefHeight="771.0" prefWidth="1017.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <TabPane fx:id="chatTab" prefHeight="771.0" prefWidth="383.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+         </right>
       </BorderPane>
    </children>
 </AnchorPane>

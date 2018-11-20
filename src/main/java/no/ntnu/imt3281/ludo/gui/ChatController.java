@@ -16,4 +16,6 @@ public class ChatController {
     @FXML
     private Button sendTextButton;
 
+
+
 }
