@@ -248,7 +248,7 @@ public class Server {
         }else if(player.connectionString.startsWith("SESSION:")) {
             System.out.println("SERVER: client trying to connect through session key.");
             String trim = player.connectionString.replace("SESSION:", "");
-            //TODO: THIS
+            //TODO: THIS -> login client with only the cookie
         }else{
             System.out.println("SERVER: Something wrong validating user.");
         }
