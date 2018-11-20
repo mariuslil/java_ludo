@@ -6,4 +6,9 @@ target
 /target/
 .idea
 *.iml
+<<<<<<< HEAD
 out/*
+=======
+derby*
+LudoDB/*
+>>>>>>> e331c88ce8a001dbbc22ae4fe828eea78e79ffd1
