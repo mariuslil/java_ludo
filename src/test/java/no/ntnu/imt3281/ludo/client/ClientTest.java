@@ -23,8 +23,8 @@ public class ClientTest {
         this.server = new Server();
         this.client1 = new Client();
         this.client2 = new Client();
-        client1.connect("REGISTER:", "Johan", "hei");
-        client2.connect("REGISTER:", "Brede", "HEI");
+        client1.connect("LOGIN:", "Johan", "hei");
+        client2.connect("LOGIN:", "Brede", "HEI");
     }
 
     @After

@@ -201,6 +201,14 @@ public class Server {
         final Player player = new Player(s);
         //players.forEachKey(100, name-> player.write("JOIN:"+name)); // Let the new client know the name of the existing clients
 
+        if(player.connectionString.startsWith("REGISTER:")) {
+            registerPlayer(player);
+        }else {
+            loginPlayer(player);
+        }
+    }
+
+    private void registerPlayer(Player player){
         if(player.connectionString.startsWith("REGISTER:")){
             String trim = player.connectionString.replace("REGISTER:", "");
             String[] namePass = trim.split("§");
@@ -209,19 +217,35 @@ public class Server {
                 if(registered){
                     player.setName(namePass[0]);
                     player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:");
+                    loginPlayer(player); //login player after registering
                 }
             }
         }
+    }
 
+    private void loginPlayer(Player player){
         if(player.connectionString.startsWith("LOGIN:")){
             System.out.println("SERVER: Logging in user: "+player.getName());
+            String trim = player.connectionString.replace("LOGIN:", "");
+            String[] namePass = trim.split("§");
+            if(namePass.length == 2){
+                String cookie = database.loginUser(namePass[0],namePass[1]);
+                 if(cookie != null){
+                    player.setName(namePass[0]);
+                    player.write("COOKIE:"+cookie); //send cookie to client for it to keep
+                    players.forEachValue(100, player1 -> player1.write("JOIN:"+player.getName()));
+
+                    players.put(player.getName(), player);
+                    messages.add("JOIN:" +player.getName());
+                }
+            }
+        }else if(player.connectionString.startsWith("SESSION:")) {
+            System.out.println("SERVER: client trying to connect through session key.");
+            String trim = player.connectionString.replace("SESSION:", "");
+            //TODO: THIS
         }else{
             System.out.println("SERVER: Something wrong validating user.");
         }
-
-        players.put(player.getName(), player);
-        messages.add("JOIN:" +player.getName());
-
     }
 
     public boolean playerExistInServer(String username){

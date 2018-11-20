@@ -85,6 +85,10 @@ public class Client extends Application {
 						if(tmp.startsWith("JOIN:")){
 							//todo: handle join
 							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp.replace("JOIN:", ""));
+						}else if(tmp.startsWith("COOKIE:")){
+							//todo: STORE COOKIE LOCALLY
+							//todo: cookie looks like this "COOKIE:DKPAOSJDNGFA8Y90NGA0NAEGR0YN9AG"
+							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 						}else if(tmp.startsWith("MSG:")){
 							//todo: handle message
 							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("MSG:",""));
