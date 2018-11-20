@@ -24,11 +24,14 @@ import java.net.URL;
 public class LudoController {
 
 	private Client client = new Client(this);
+	private ChatController chatController = new ChatController(this);
 
 	@FXML
 	private void initialize(){
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+		loader.setController(chatController);
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
 
 		try {
 			AnchorPane chat = loader.load();
@@ -98,7 +101,6 @@ public class LudoController {
 		LoginController loginController = new LoginController(this); //create controller that points to this controller
 		loader.setController(loginController);										//set controller to this custom controller
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
-
 		Parent parent = loader.load();
 
 
@@ -156,18 +158,13 @@ public class LudoController {
 	}
 
 	public void setMessageInGlobalTextBox(String sender, String message){
-		String completeMessage = String.format("%s sent: %s", sender, message);
 		Platform.runLater(() ->{
-			// TODO : Set text in textbox
-			// .setText(completeMessage);
-			System.out.println(completeMessage);
+			chatController.setTextInChat(sender, message);
 		});
 	}
 
-	public void sendMessageFromGlobal(){
+	public void sendMessageFromGlobal(String message){
 		// TODO : change this so I can get the actual message
-		String message = "Message that is sent"; // .getText.toString();
-
 		if(message != null && !message.isEmpty()){
 			client.sendGLOBALText(message);
 		}

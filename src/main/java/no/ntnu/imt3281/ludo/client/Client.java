@@ -2,6 +2,7 @@ package no.ntnu.imt3281.ludo.client;
 
 import no.ntnu.imt3281.ludo.gui.LudoController;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
+import org.apache.derby.impl.sql.catalog.SYSCOLUMNSRowFactory;
 
 import java.io.*;
 import java.net.Socket;
@@ -145,6 +146,7 @@ public class Client {
 	public void sendGLOBALText(String message){
 		if (connected  && loggedIn){
 			try{
+				System.out.println("Client");
 				connection.send("GLOBALMSG:"+message);
 			}catch (IOException e){
 				connection.close();
@@ -152,7 +154,7 @@ public class Client {
 		}
 	}
 
-	public void senLOCALText(String message, String ludoID){
+	public void sendLOCALText(String message, String ludoID){
 		if(connected && loggedIn){
 			try{
 				connection.send("GAMEMSG:"+message);
