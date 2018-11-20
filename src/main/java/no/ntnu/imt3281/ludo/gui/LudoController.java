@@ -3,6 +3,7 @@ package no.ntnu.imt3281.ludo.gui;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +22,12 @@ import java.net.URL;
 public class LudoController {
 
 	private Client client = new Client(this);
+
+	@FXML
 	private WaitDialogController waitDialogController;
+
+	@FXML
+	private Stage waitDialogStage;
 
 	@FXML
 	private void initialize(){
@@ -92,10 +98,10 @@ public class LudoController {
 
 
 		Scene scene = new Scene(parent, 600, 340);
-		Stage stage = new Stage();
-		stage.initModality(Modality.APPLICATION_MODAL);
-		stage.setScene(scene);
-		stage.showAndWait();
+		this.waitDialogStage = new Stage();
+		this.waitDialogStage.initModality(Modality.APPLICATION_MODAL);
+		this.waitDialogStage.setScene(scene);
+		this.waitDialogStage.showAndWait();
 
 
 		//TODO: close stage when logged In or registered.
@@ -117,20 +123,22 @@ public class LudoController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
-		//GameBoardController controller = loader.getController(); //TODO: this
+		GameBoardController controller = loader.getController(); //TODO: this
 		// Use controller to set up communication for this game.
 		// Note, a new game tab would be created due to some communication from the server
 		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
+		Platform.runLater(()-> {
+			try {
+				AnchorPane gameBoard = loader.load();
+				Tab tab = new Tab(gameHash);
+				tab.setContent(gameBoard);
+				this.tabbedPane.getTabs().add(tab);
 
-		try {
-			AnchorPane gameBoard = loader.load();
-			Tab tab = new Tab("Game");
-			tab.setContent(gameBoard);
-			tabbedPane.getTabs().add(tab);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 	}
 
 	@FXML
@@ -173,9 +181,17 @@ public class LudoController {
 		//TODO: close login dialog
 	}
 
+	@FXML
 	public void updateWaitDialog(String update){
 		if(waitDialogController!=null){
-			waitDialogController.updateTextArea(update);
+			Platform.runLater(()-> waitDialogController.updateTextArea(update));
+		}
+	}
+
+	@FXML
+	public void removeWaitDialog(){
+		if(waitDialogController!=null){
+			Platform.runLater(()-> waitDialogStage.close());
 		}
 	}
 }

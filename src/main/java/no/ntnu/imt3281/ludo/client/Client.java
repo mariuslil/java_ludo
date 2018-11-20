@@ -133,7 +133,10 @@ public class Client {
 							String game = tmp.replace("STARTGAME:","");
 							if(this.lookingForGame){
 								activeGames.add(game);
-								//startNewGame(game); //TODO this
+								if(ludoController!=null) {
+									ludoController.startNewGame(game);
+									ludoController.removeWaitDialog();
+								}
 							}
 						}else if(tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
 							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
