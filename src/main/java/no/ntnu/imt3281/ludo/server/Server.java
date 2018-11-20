@@ -146,9 +146,13 @@ public class Server {
 
                 } else if (msg != null && msg.startsWith("EVENT:")) {
                     events.add(player.getName() + msg);   // Add event to event queue
-                } else if (msg != null && msg.startsWith("MSG:")) {
-                    messages.add(msg + "§" + player.getName());    // Add message to message queue
-                }//TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
+                } else if (msg != null && msg.startsWith("GLOBALMSG:")) {
+                    messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
+                } /*else if (msg != null && msg.startsWith("GAMEMSG:")){
+                    // TODO : Get ludo-game id
+                     messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
+                }*/
+                //TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
                 Thread.sleep(10);    // Prevent excessive processor usage

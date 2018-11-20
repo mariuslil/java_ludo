@@ -3,6 +3,7 @@ package no.ntnu.imt3281.ludo.gui;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,12 +20,15 @@ import java.net.URL;
 
 public class LudoController {
 
-	private Client client = new Client();
+	private Client client = new Client(this);
+	private ChatController chatController = new ChatController(this);
 
 	@FXML
 	private void initialize(){
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+		loader.setController(chatController);
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
 
 		try {
 			AnchorPane chat = loader.load();
@@ -97,7 +101,6 @@ public class LudoController {
 		LoginController loginController = new LoginController(this); //create controller that points to this controller
 		loader.setController(loginController);										//set controller to this custom controller
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
-
 		Parent parent = loader.load();
 
 
@@ -151,6 +154,19 @@ public class LudoController {
 		System.out.println("CONTROLLER: User "+username+" is registering in");
 		if(username!=null && password!=null) {
 			client.connect("REGISTER:", username, password);
+		}
+	}
+
+	public void setMessageInGlobalTextBox(String sender, String message){
+		Platform.runLater(() ->{
+			chatController.setTextInChat(sender, message);
+		});
+	}
+
+	public void sendMessageFromGlobal(String message){
+		// TODO : change this so I can get the actual message
+		if(message != null && !message.isEmpty()){
+			client.sendGLOBALText(message);
 		}
 	}
 }
