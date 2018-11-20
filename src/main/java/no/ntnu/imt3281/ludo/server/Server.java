@@ -23,7 +23,6 @@ import static java.lang.Thread.sleep;
  */
 public class Server {
 
-    private Connection dbCon = null;
     private Database database = null;
     private int PORT = 1234;
 
@@ -100,7 +99,6 @@ public class Server {
         } catch (IOException e) {
             System.out.println("SERVER: Unable to listen to port: " + PORT);
             logger.log(Level.SEVERE, "Unable to listen to port: " + PORT, e);
-            System.exit(0);
         }
     }
 
@@ -320,7 +318,7 @@ public class Server {
             }
         } else if (player.connectionString.startsWith("SESSION:")) { //login user through a session key instead
             System.out.println("SERVER: client trying to connect through session key.");
-            String trim = player.connectionString.replace("SESSION:", "");
+            //String trim = player.connectionString.replace("SESSION:", "");
             //TODO: THIS -> login client with only the cookie
         } else {
             System.out.println("SERVER: Something wrong validating user.");
@@ -363,7 +361,7 @@ public class Server {
          *
          * @return the data read from the client or null if no data was available.
          */
-        public String read() {
+        private String read() {
             try {
                 if (input.ready()) {
                     return input.readLine();
@@ -376,7 +374,7 @@ public class Server {
             }
         }
 
-        public void write(String msg) {
+        private void write(String msg) {
             try {
                 output.write(msg);
                 output.newLine();    // Must send newline for client to be able to read

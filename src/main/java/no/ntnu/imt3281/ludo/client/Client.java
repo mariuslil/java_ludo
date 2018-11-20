@@ -74,25 +74,25 @@ public class Client {
 					String tmp = connection.input.readLine();
 					//Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
 							//JOIN//
-						if(tmp.startsWith("JOIN:")){
+						if(tmp != null && tmp.startsWith("JOIN:")){
 							//todo: handle join
 							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp.replace("JOIN:", ""));
 
 							//COOKIE//
-						}else if(tmp.startsWith("COOKIE:")){
+						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 							this.cookie = tmp.replace("COOKIE:",""); //set cookie
 							this.loggedIn = true; //Client is logged in :)
 
 							//MSG//
-						}else if(tmp.startsWith("MSG:")){
+						}else if(tmp != null && tmp.startsWith("MSG:")){
 							//todo: handle message
 							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("MSG:",""));
 							messages.add(tmp);
 
 							//EVEN//
-						}else if(tmp.startsWith("EVENT:")){
+						}else if(tmp != null && tmp.startsWith("EVENT:")){
 							//todo: handle event
 							String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
 
@@ -115,12 +115,12 @@ public class Client {
 							}
 
 							//DISCONNECTED//
-						}else if(tmp.startsWith("DISCONNECTED:")){
+						}else if(tmp != null && tmp.startsWith("DISCONNECTED:")){
 							//todo: handle disconnect
 							//remove disconnected user from thing
 
 							//LOGINERROR//
-						}else if(tmp.startsWith("LOGINERROR:")){
+						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){
 							System.out.println("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
 							this.connected = false;
 							connection.close();
@@ -128,14 +128,14 @@ public class Client {
 							System.out.println("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
 
 							//NEWGAME//
-						}else if(tmp.startsWith("STARTGAME:")){
+						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
 							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
 							String game = tmp.replace("STARTGAME:","");
 							if(this.lookingForGame){
 								activeGames.add(game);
 								//startNewGame(game); //TODO this
 							}
-						}else if(tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
+						}else if(tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
 							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
 							if(ludoController!=null){
 								ludoController.updateWaitDialog(update);

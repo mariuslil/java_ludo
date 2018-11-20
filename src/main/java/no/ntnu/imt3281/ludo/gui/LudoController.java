@@ -117,7 +117,7 @@ public class LudoController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
-		GameBoardController controller = loader.getController();
+		//GameBoardController controller = loader.getController(); //TODO: this
 		// Use controller to set up communication for this game.
 		// Note, a new game tab would be created due to some communication from the server
 		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
