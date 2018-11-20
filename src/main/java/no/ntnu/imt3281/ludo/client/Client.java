@@ -103,7 +103,7 @@ public class Client {
 							this.connected = false;
 							connection.close();
 							this.loggedIn = false;
-
+							System.out.println("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
 						}
 					//});
 				}
