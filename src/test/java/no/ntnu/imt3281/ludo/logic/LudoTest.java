@@ -8,10 +8,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceListener;
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceEvent;
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.PieceListener;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -550,479 +546,479 @@ public class LudoTest {
      */
     @Test
     public void checkActivePlayerEventTest() {
-/*		Ludo ludo = new Ludo("Player1", "Player2", "Player3", null);
+        Ludo ludo = new Ludo("Player1", "Player2", "Player3", null);
 
-		// Create a mock DiceListener
-		DiceListener diceListener = mock(DiceListener.class);
+        // Create a mock DiceListener
+        DiceListener diceListener = mock(DiceListener.class);
 
-		// Create a mock PieceListener
-		PieceListener pieceListener = mock(PieceListener.class);
+        // Create a mock PieceListener
+        PieceListener pieceListener = mock(PieceListener.class);
 
-		// Create a mock PlayerListener
-		PlayerListener playerListener = mock(PlayerListener.class);
+        // Create a mock PlayerListener
+        PlayerListener playerListener = mock(PlayerListener.class);
 
-		ludo.addDiceListener(diceListener);
-		ludo.addPieceListener(pieceListener);
-		ludo.addPlayerListener(playerListener);
+        ludo.addDiceListener(diceListener);
+        ludo.addPieceListener(pieceListener);
+        ludo.addPlayerListener(playerListener);
 
-		// Play a game of Ludo
-		// Red and blue get out, yellow is stuck
-		ludo.throwDice(6); // Lucky red, threw a six
-		ludo.movePiece(Ludo.RED, 0, 1); //
-		ludo.throwDice(6); // Lucky blue as well, threw a six
-		ludo.movePiece(Ludo.BLUE, 0, 1); //
-		ludo.throwDice(1);
-		ludo.throwDice(2);
-		ludo.throwDice(3); // Yellow threw three times, got nowhere
+        // Play a game of Ludo
+        // Red and blue get out, yellow is stuck
+        ludo.throwDice(6); // Lucky red, threw a six
+        ludo.movePiece(Ludo.RED, 0, 1); //
+        ludo.throwDice(6); // Lucky blue as well, threw a six
+        ludo.movePiece(Ludo.BLUE, 0, 1); //
+        ludo.throwDice(1);
+        ludo.throwDice(2);
+        ludo.throwDice(3); // Yellow threw three times, got nowhere
 
-		// Red and blue moving along, yellow gives up after two throws
-		ludo.throwDice(6); // Red threw another six
-		ludo.movePiece(Ludo.RED, 1, 7);
-		ludo.throwDice(1); // Red threw a one
-		ludo.movePiece(Ludo.RED, 7, 8);
-		ludo.throwDice(1); // Blue threw a one
-		ludo.movePiece(Ludo.BLUE, 1, 2);
-		ludo.throwDice(4);
-		ludo.throwDice(5);
-		ludo.removePlayer("Player3"); // Player gives up, with one more throw to go
+        // Red and blue moving along, yellow gives up after two throws
+        ludo.throwDice(6); // Red threw another six
+        ludo.movePiece(Ludo.RED, 1, 7);
+        ludo.throwDice(1); // Red threw a one
+        ludo.movePiece(Ludo.RED, 7, 8);
+        ludo.throwDice(1); // Blue threw a one
+        ludo.movePiece(Ludo.BLUE, 1, 2);
+        ludo.throwDice(4);
+        ludo.throwDice(5);
+        ludo.removePlayer("Player3"); // Player gives up, with one more throw to go
 
-		// Red and blue moving on (***MOVE3***)
-		for (int i = 0; i < 3; i++) {
-			ludo.throwDice(6);
-			ludo.movePiece(Ludo.RED, (17 * i) + 8, (17 * i) + 14);
-			ludo.throwDice(6);
-			ludo.movePiece(Ludo.RED, (17 * i) + 14, (17 * i) + 20);
-			ludo.throwDice(5);
-			ludo.movePiece(Ludo.RED, (17 * i) + 20, (17 * i) + 25);
-			ludo.throwDice(1);
-			ludo.movePiece(Ludo.BLUE, i + 2, i + 3);
-		}
-		// RED piece 0 has reached finish point, blue piece 0 has reached 5
+        // Red and blue moving on (***MOVE3***)
+        for (int i = 0; i < 3; i++) {
+            ludo.throwDice(6);
+            ludo.movePiece(Ludo.RED, (17 * i) + 8, (17 * i) + 14);
+            ludo.throwDice(6);
+            ludo.movePiece(Ludo.RED, (17 * i) + 14, (17 * i) + 20);
+            ludo.throwDice(5);
+            ludo.movePiece(Ludo.RED, (17 * i) + 20, (17 * i) + 25);
+            ludo.throwDice(1);
+            ludo.movePiece(Ludo.BLUE, i + 2, i + 3);
+        }
+        // RED piece 0 has reached finish point, blue piece 0 has reached 5
 
-		// Red move one more out of start, blue moves to 6 (***MOVE4***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 0, 1);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.BLUE, 5, 6);
+        // Red move one more out of start, blue moves to 6 (***MOVE4***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 0, 1);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.BLUE, 5, 6);
 
-		// Move red piece 1 towards finish (red moved to 52, blue to 9) (***MOVE5***)
-		for (int i = 0; i < 3; i++) {
-			ludo.throwDice(6);
-			ludo.movePiece(Ludo.RED, (i * 17) + 1, (i * 17) + 7);
-			ludo.throwDice(6);
-			ludo.movePiece(Ludo.RED, (i * 17) + 7, (i * 17) + 13);
-			ludo.throwDice(5);
-			ludo.movePiece(Ludo.RED, (i * 17) + 13, (i * 17) + 18);
-			ludo.throwDice(1);
-			ludo.movePiece(Ludo.BLUE, i + 6, i + 7);
-		}
+        // Move red piece 1 towards finish (red moved to 52, blue to 9) (***MOVE5***)
+        for (int i = 0; i < 3; i++) {
+            ludo.throwDice(6);
+            ludo.movePiece(Ludo.RED, (i * 17) + 1, (i * 17) + 7);
+            ludo.throwDice(6);
+            ludo.movePiece(Ludo.RED, (i * 17) + 7, (i * 17) + 13);
+            ludo.throwDice(5);
+            ludo.movePiece(Ludo.RED, (i * 17) + 13, (i * 17) + 18);
+            ludo.throwDice(1);
+            ludo.movePiece(Ludo.BLUE, i + 6, i + 7);
+        }
 
-		// Move red piece 1 to finish, blue to 10 (***MOVE6***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 52, 58);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.RED, 58, 59);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.BLUE, 9, 10);
+        // Move red piece 1 to finish, blue to 10 (***MOVE6***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 52, 58);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.RED, 58, 59);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.BLUE, 9, 10);
 
-		// Move red piece number three out of start, blue moves to 11 (***MOVE7***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 0, 1);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.BLUE, 10, 11);
+        // Move red piece number three out of start, blue moves to 11 (***MOVE7***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 0, 1);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.BLUE, 10, 11);
 
-		// Move red piece 2 towards finish (red moved to 52, blue to 14) (***MOVE8***)
-		for (int i = 0; i < 3; i++) {
-			ludo.throwDice(6);
-			ludo.movePiece(Ludo.RED, (i * 17) + 1, (i * 17) + 7);
-			ludo.throwDice(6);
-			ludo.movePiece(Ludo.RED, (i * 17) + 7, (i * 17) + 13);
-			ludo.throwDice(5);
-			ludo.movePiece(Ludo.RED, (i * 17) + 13, (i * 17) + 18);
-			ludo.throwDice(1);
-			ludo.movePiece(Ludo.BLUE, i + 11, i + 12);
-		}
+        // Move red piece 2 towards finish (red moved to 52, blue to 14) (***MOVE8***)
+        for (int i = 0; i < 3; i++) {
+            ludo.throwDice(6);
+            ludo.movePiece(Ludo.RED, (i * 17) + 1, (i * 17) + 7);
+            ludo.throwDice(6);
+            ludo.movePiece(Ludo.RED, (i * 17) + 7, (i * 17) + 13);
+            ludo.throwDice(5);
+            ludo.movePiece(Ludo.RED, (i * 17) + 13, (i * 17) + 18);
+            ludo.throwDice(1);
+            ludo.movePiece(Ludo.BLUE, i + 11, i + 12);
+        }
 
-		// Move red piece 2 to finish, blue to 15 (***MOVE9***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 52, 58);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.RED, 58, 59);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.BLUE, 14, 15);
+        // Move red piece 2 to finish, blue to 15 (***MOVE9***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 52, 58);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.RED, 58, 59);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.BLUE, 14, 15);
 
-		// *********** Red has three pieces finished, blue has one piece at 15
+        // *********** Red has three pieces finished, blue has one piece at 15
 
-		// Move red final piece out of start, blue moves to 16 (***MOVE10***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 0, 1);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.BLUE, 15, 16);
+        // Move red final piece out of start, blue moves to 16 (***MOVE10***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 0, 1);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.BLUE, 15, 16);
 
-		// Move red final piece to 18, blue to 17 (***MOVE11***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 1, 7);
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 7, 13);
-		ludo.throwDice(5);
-		ludo.movePiece(Ludo.RED, 13, 18);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.BLUE, 16, 17);
+        // Move red final piece to 18, blue to 17 (***MOVE11***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 1, 7);
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 7, 13);
+        ludo.throwDice(5);
+        ludo.movePiece(Ludo.RED, 13, 18);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.BLUE, 16, 17);
 
-		// Move red final piece to 30 (this is blue 17), knocks blue back to start
-		// then move red to 35, blue gets back out of start (***MOVE12***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 18, 24);
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 24, 30); // this knock blue back to start
-		ludo.throwDice(5);
-		ludo.movePiece(Ludo.RED, 30, 35);
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.BLUE, 0, 1);
+        // Move red final piece to 30 (this is blue 17), knocks blue back to start
+        // then move red to 35, blue gets back out of start (***MOVE12***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 18, 24);
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 24, 30); // this knock blue back to start
+        ludo.throwDice(5);
+        ludo.movePiece(Ludo.RED, 30, 35);
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.BLUE, 0, 1);
 
-		// Move red final piece to 52, blue to 2 (***MOVE13***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 35, 41);
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 41, 47);
-		ludo.throwDice(5);
-		ludo.movePiece(Ludo.RED, 47, 52);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.BLUE, 1, 2);
+        // Move red final piece to 52, blue to 2 (***MOVE13***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 35, 41);
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 41, 47);
+        ludo.throwDice(5);
+        ludo.movePiece(Ludo.RED, 47, 52);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.BLUE, 1, 2);
 
-		// Move red final piece to finish, red wins (***MOVE14***)
-		ludo.throwDice(6);
-		ludo.movePiece(Ludo.RED, 52, 58);
-		ludo.throwDice(1);
-		ludo.movePiece(Ludo.RED, 58, 59); // Red wins!
+        // Move red final piece to finish, red wins (***MOVE14***)
+        ludo.throwDice(6);
+        ludo.movePiece(Ludo.RED, 52, 58);
+        ludo.throwDice(1);
+        ludo.movePiece(Ludo.RED, 58, 59); // Red wins!
 
-		// *************************************************************************
-		// Below is all events we are supposed to receive during the above gameplay
-		// *************************************************************************
-		InOrder order = inOrder(diceListener, pieceListener, playerListener);
-		DiceEvent de;
-		PieceEvent pe;
-		PlayerEvent ple;
-		// Red and blue get out of start, yellow stuck in starting position
-		de = new DiceEvent(ludo, Ludo.RED, 6); // First RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 0, 0, 1); // Red moved piece 0 out from start
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 0, 1);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.YELLOW, 1); // Yellow threw a one
-		order.verify(diceListener).diceThrown(de);
-		de = new DiceEvent(ludo, Ludo.YELLOW, 2); // Yellow threw a two
-		order.verify(diceListener).diceThrown(de);
-		de = new DiceEvent(ludo, Ludo.YELLOW, 3); // Yellow threw a three
-		order.verify(diceListener).diceThrown(de);
-		ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.WAITING); // No more throws for YELLOW
-		order.verify(playerListener).playerStateChanged(ple);
+        // *************************************************************************
+        // Below is all events we are supposed to receive during the above gameplay
+        // *************************************************************************
+        InOrder order = inOrder(diceListener, pieceListener, playerListener);
+        DiceEvent de;
+        PieceEvent pe;
+        PlayerEvent ple;
+        // Red and blue get out of start, yellow stuck in starting position
+        de = new DiceEvent(ludo, Ludo.RED, 6); // First RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 0, 0, 1); // Red moved piece 0 out from start
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 0, 1);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.YELLOW, 1); // Yellow threw a one
+        order.verify(diceListener).diceThrown(de);
+        de = new DiceEvent(ludo, Ludo.YELLOW, 2); // Yellow threw a two
+        order.verify(diceListener).diceThrown(de);
+        de = new DiceEvent(ludo, Ludo.YELLOW, 3); // Yellow threw a three
+        order.verify(diceListener).diceThrown(de);
+        ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.WAITING); // No more throws for YELLOW
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// Red and blue moving along, yellow giving up
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING); // Move on to RED
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 0, 1, 7); // Red moved piece from 1 to 7
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 0, 7, 8); // Red moved piece from 7 to 8
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 1, 2); // Red moved piece from 1 to 7
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.YELLOW, 4); // YELLOW threw a four
-		order.verify(diceListener).diceThrown(de);
-		de = new DiceEvent(ludo, Ludo.YELLOW, 5); // YELLOW threw a five
-		order.verify(diceListener).diceThrown(de);
-		ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.LEFTGAME);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
+        // Red and blue moving along, yellow giving up
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING); // Move on to RED
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 0, 1, 7); // Red moved piece from 1 to 7
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 0, 7, 8); // Red moved piece from 7 to 8
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 1, 2); // Red moved piece from 1 to 7
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.YELLOW, 4); // YELLOW threw a four
+        order.verify(diceListener).diceThrown(de);
+        de = new DiceEvent(ludo, Ludo.YELLOW, 5); // YELLOW threw a five
+        order.verify(diceListener).diceThrown(de);
+        ple = new PlayerEvent(ludo, Ludo.YELLOW, PlayerEvent.LEFTGAME);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// Red and blue moving along (***MOVE3***)
-		for (int i = 0; i < 3; i++) { // RED piece 0 moves to finish, BLUE piece 0 moves to 5
-			de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 0, (17 * i) + 8, (17 * i) + 14);
-			order.verify(pieceListener).pieceMoved(pe);
-			de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 0, (17 * i) + 14, (17 * i) + 20);
-			order.verify(pieceListener).pieceMoved(pe);
-			de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a five
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 0, (17 * i) + 20, (17 * i) + 25);
-			order.verify(pieceListener).pieceMoved(pe);
-			ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-			order.verify(playerListener).playerStateChanged(ple);
-			ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-			order.verify(playerListener).playerStateChanged(ple);
-			de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.BLUE, 0, i + 2, i + 3);
-			ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-			order.verify(playerListener).playerStateChanged(ple);
-			ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-			order.verify(playerListener).playerStateChanged(ple);
-		}
+        // Red and blue moving along (***MOVE3***)
+        for (int i = 0; i < 3; i++) { // RED piece 0 moves to finish, BLUE piece 0 moves to 5
+            de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 0, (17 * i) + 8, (17 * i) + 14);
+            order.verify(pieceListener).pieceMoved(pe);
+            de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 0, (17 * i) + 14, (17 * i) + 20);
+            order.verify(pieceListener).pieceMoved(pe);
+            de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a five
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 0, (17 * i) + 20, (17 * i) + 25);
+            order.verify(pieceListener).pieceMoved(pe);
+            ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+            order.verify(playerListener).playerStateChanged(ple);
+            ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+            order.verify(playerListener).playerStateChanged(ple);
+            de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.BLUE, 0, i + 2, i + 3);
+            ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+            order.verify(playerListener).playerStateChanged(ple);
+            ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+            order.verify(playerListener).playerStateChanged(ple);
+        }
 
-		// (***MOVE4***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 1, 0, 1);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 5, 6);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
+        // (***MOVE4***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 1, 0, 1);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 5, 6);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// (***MOVE5***)
-		for (int i = 0; i < 3; i++) {
-			de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 1, (i * 17) + 1, (i * 17) + 7);
-			order.verify(pieceListener).pieceMoved(pe);
-			de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 1, (i * 17) + 7, (i * 17) + 13);
-			order.verify(pieceListener).pieceMoved(pe);
-			de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 1, (i * 17) + 13, (i * 17) + 18);
-			order.verify(pieceListener).pieceMoved(pe);
-			ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-			order.verify(playerListener).playerStateChanged(ple);
-			ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-			order.verify(playerListener).playerStateChanged(ple);
-			de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.BLUE, 0, i + 6, i + 7);
-			order.verify(pieceListener).pieceMoved(pe);
-			ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-			order.verify(playerListener).playerStateChanged(ple);
-			ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-			order.verify(playerListener).playerStateChanged(ple);
-		}
+        // (***MOVE5***)
+        for (int i = 0; i < 3; i++) {
+            de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 1, (i * 17) + 1, (i * 17) + 7);
+            order.verify(pieceListener).pieceMoved(pe);
+            de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 1, (i * 17) + 7, (i * 17) + 13);
+            order.verify(pieceListener).pieceMoved(pe);
+            de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 1, (i * 17) + 13, (i * 17) + 18);
+            order.verify(pieceListener).pieceMoved(pe);
+            ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+            order.verify(playerListener).playerStateChanged(ple);
+            ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+            order.verify(playerListener).playerStateChanged(ple);
+            de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.BLUE, 0, i + 6, i + 7);
+            order.verify(pieceListener).pieceMoved(pe);
+            ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+            order.verify(playerListener).playerStateChanged(ple);
+            ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+            order.verify(playerListener).playerStateChanged(ple);
+        }
 
-		// (***MOVE6***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 1, 52, 58);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 1, 58, 59);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 9, 10);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
+        // (***MOVE6***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 1, 52, 58);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 1, 58, 59);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 9, 10);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// (***MOVE7***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 2, 0, 1);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 10, 11);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
+        // (***MOVE7***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 2, 0, 1);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 10, 11);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// (***MOVE8***)
-		for (int i = 0; i < 3; i++) {
-			de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 2, (i * 17) + 1, (i * 17) + 7);
-			order.verify(pieceListener).pieceMoved(pe);
-			de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 2, (i * 17) + 7, (i * 17) + 13);
-			order.verify(pieceListener).pieceMoved(pe);
-			de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.RED, 2, (i * 17) + 13, (i * 17) + 18);
-			order.verify(pieceListener).pieceMoved(pe);
-			ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-			order.verify(playerListener).playerStateChanged(ple);
-			ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-			order.verify(playerListener).playerStateChanged(ple);
-			de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
-			order.verify(diceListener).diceThrown(de);
-			pe = new PieceEvent(ludo, Ludo.BLUE, 0, i + 11, i + 12);
-			order.verify(pieceListener).pieceMoved(pe);
-			ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-			order.verify(playerListener).playerStateChanged(ple);
-			ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-			order.verify(playerListener).playerStateChanged(ple);
-		}
+        // (***MOVE8***)
+        for (int i = 0; i < 3; i++) {
+            de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 2, (i * 17) + 1, (i * 17) + 7);
+            order.verify(pieceListener).pieceMoved(pe);
+            de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 2, (i * 17) + 7, (i * 17) + 13);
+            order.verify(pieceListener).pieceMoved(pe);
+            de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.RED, 2, (i * 17) + 13, (i * 17) + 18);
+            order.verify(pieceListener).pieceMoved(pe);
+            ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+            order.verify(playerListener).playerStateChanged(ple);
+            ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+            order.verify(playerListener).playerStateChanged(ple);
+            de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
+            order.verify(diceListener).diceThrown(de);
+            pe = new PieceEvent(ludo, Ludo.BLUE, 0, i + 11, i + 12);
+            order.verify(pieceListener).pieceMoved(pe);
+            ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+            order.verify(playerListener).playerStateChanged(ple);
+            ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+            order.verify(playerListener).playerStateChanged(ple);
+        }
 
-		// (***MOVE9***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 2, 52, 58);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 2, 58, 59);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 14, 15);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
+        // (***MOVE9***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 2, 52, 58);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 2, 58, 59);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 14, 15);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// *********** Red has three pieces finished, blue has one piece at 15
-		// (***MOVE10***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 0, 1);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 15, 16);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
+        // *********** Red has three pieces finished, blue has one piece at 15
+        // (***MOVE10***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 0, 1);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a two
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 15, 16);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// (***MOVE11***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 1, 7);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 7, 13);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a five
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 13, 18);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 16, 17);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
+        // (***MOVE11***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 1, 7);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 7, 13);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a five
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 13, 18);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 16, 17);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
 
-		// (***MOVE12***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 18, 24);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 24, 30);
-		order.verify(pieceListener).pieceMoved(pe);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 17, 0); // Blue gets knocked back to start
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 30, 35);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 0, 1);
-		order.verify(pieceListener).pieceMoved(pe);
+        // (***MOVE12***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 18, 24);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 24, 30);
+        order.verify(pieceListener).pieceMoved(pe);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 17, 0); // Blue gets knocked back to start
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 30, 35);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 0, 1);
+        order.verify(pieceListener).pieceMoved(pe);
 
-		// (***MOVE12***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 35, 41);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 41, 47);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 47, 52);
-		order.verify(pieceListener).pieceMoved(pe);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
-		order.verify(playerListener).playerStateChanged(ple);
-		ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
-		order.verify(playerListener).playerStateChanged(ple);
-		de = new DiceEvent(ludo, Ludo.BLUE, 1); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.BLUE, 0, 1, 2);
-		order.verify(pieceListener).pieceMoved(pe);
+        // (***MOVE12***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 35, 41);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 41, 47);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 5); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 47, 52);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WAITING);
+        order.verify(playerListener).playerStateChanged(ple);
+        ple = new PlayerEvent(ludo, Ludo.BLUE, PlayerEvent.PLAYING);
+        order.verify(playerListener).playerStateChanged(ple);
+        de = new DiceEvent(ludo, Ludo.BLUE, 1); // BLUE threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.BLUE, 0, 1, 2);
+        order.verify(pieceListener).pieceMoved(pe);
 
-		// (***MOVE13***)
-		de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 52, 58);
-		order.verify(pieceListener).pieceMoved(pe);
-		de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a six
-		order.verify(diceListener).diceThrown(de);
-		pe = new PieceEvent(ludo, Ludo.RED, 3, 59, 59);
-		ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WON);
-		order.verify(playerListener).playerStateChanged(ple); // HURRAY, we have a winner
-*/
+        // (***MOVE13***)
+        de = new DiceEvent(ludo, Ludo.RED, 6); // RED threw a six
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 52, 58);
+        order.verify(pieceListener).pieceMoved(pe);
+        de = new DiceEvent(ludo, Ludo.RED, 1); // RED threw a one
+        order.verify(diceListener).diceThrown(de);
+        pe = new PieceEvent(ludo, Ludo.RED, 3, 58, 59);
+        order.verify(pieceListener).pieceMoved(pe);
+        ple = new PlayerEvent(ludo, Ludo.RED, PlayerEvent.WON); // HURRAY, we have a winner
+        order.verify(playerListener).playerStateChanged(ple);
     }
 }

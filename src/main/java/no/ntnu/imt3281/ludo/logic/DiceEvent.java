@@ -1,7 +1,5 @@
-package no.ntnu.imt3281.ludo.logic.ListenerAndEvents;
+package no.ntnu.imt3281.ludo.logic;
 
-
-import no.ntnu.imt3281.ludo.logic.Ludo;
 
 public class DiceEvent {
     private Ludo ludo;
@@ -35,5 +33,17 @@ public class DiceEvent {
         // Cast to DiceEvent object and check if all values equals to obj
         DiceEvent event = (DiceEvent) obj;
         return (event.ludo == ludo) && (event.color == color) && (event.diceNr == diceNr);
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public int getDiceNr() {
+        return diceNr;
+    }
+
+    public int getLudoHash() {
+        return ludo.hashCode();
     }
 }
