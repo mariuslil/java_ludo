@@ -199,7 +199,26 @@ public class Server {
 
     private void addPlayer(Socket s) throws IOException {
         final Player player = new Player(s);
-       // players.forEachKey(100, name-> player.write("JOIN:"+name)); // Let the new client know the name of the existing clients
+        //players.forEachKey(100, name-> player.write("JOIN:"+name)); // Let the new client know the name of the existing clients
+
+        if(player.connectionString.startsWith("REGISTER:")){
+            String trim = player.connectionString.replace("REGISTER:", "");
+            String[] namePass = trim.split("§");
+            if(namePass.length == 2){
+                boolean registered = database.registerUser(namePass[0],namePass[1]);
+                if(registered){
+                    player.setName(namePass[0]);
+                    player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:");
+                }
+            }
+        }
+
+        if(player.connectionString.startsWith("LOGIN:")){
+            System.out.println("SERVER: Logging in user: "+player.getName());
+        }else{
+            System.out.println("SERVER: Something wrong validating user.");
+        }
+
         players.put(player.getName(), player);
         messages.add("JOIN:" +player.getName());
 
@@ -210,7 +229,8 @@ public class Server {
     }
 
     class Player {
-        private String name;
+        private String name = "";
+        public String connectionString;
         private Socket s;
         private BufferedReader input;
         private BufferedWriter output;
@@ -227,7 +247,7 @@ public class Server {
             this.s = s;
             input = new BufferedReader(new InputStreamReader(s.getInputStream()));
             output = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-            name = input.readLine();
+            connectionString = input.readLine();
         }
 
         /**
@@ -257,6 +277,10 @@ public class Server {
             } catch (IOException e) {
                 active = false; // If unable to write (IO error) mark as inactive, this will remove the client from the server
             }
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public boolean getActive() {

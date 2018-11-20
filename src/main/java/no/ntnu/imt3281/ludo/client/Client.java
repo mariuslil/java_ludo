@@ -54,7 +54,7 @@ public class Client extends Application {
 		launch(args);
 	}
 
-	public void connect(String username) {
+	public void connect(String type, String username, String password) {
 		if (connected) {				// Currently connected, disconnect from server
 			connected = false;
 			connection.close();			// This will send a message to the server notifying the server about this client leaving
@@ -64,7 +64,7 @@ public class Client extends Application {
 				System.out.println("CLIENT: "+username+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true;
-				connection.send(username); 	// Send username
+				connection.send(type+username+"§"+password); 	// Send username
 				this.name = username;
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
 			} catch (UnknownHostException e) {

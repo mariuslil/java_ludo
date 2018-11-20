@@ -1,5 +1,8 @@
 package no.ntnu.imt3281.ludo.server;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -54,6 +57,23 @@ public class Database {
             System.out.println("DATABASE: Something is wrong with the database: "+e1.getMessage());
             return null;
         }
+    }
+
+    protected boolean registerUser(String username, String pass){
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update("brede".getBytes());
+
+            byte[] hashedPassword = md.digest(pass.getBytes(StandardCharsets.UTF_8));
+        }catch (NoSuchAlgorithmException e){
+            //fu
+            return false;
+        }
+
+
+
+
+        return true;
     }
 
     /*

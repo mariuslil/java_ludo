@@ -23,8 +23,8 @@ public class ClientTest {
         this.server = new Server();
         this.client1 = new Client();
         this.client2 = new Client();
-        client1.connect("Johan");
-        client2.connect("Brede");
+        client1.connect("REGISTER:", "Johan", "hei");
+        client2.connect("REGISTER:", "Brede", "HEI");
     }
 
     @After
@@ -36,6 +36,11 @@ public class ClientTest {
 
     @Test
     public void connectingToServer() {
+        try{
+            sleep(500); //wait 500ms to let the message go through the system.
+        }catch (InterruptedException e){
+
+        }
         assertTrue(server.playerExistInServer("Johan"));
         assertTrue(server.playerExistInServer("Brede"));
         System.out.println("TEST: connectingToServer complete");
