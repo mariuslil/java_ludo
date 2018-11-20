@@ -59,27 +59,27 @@ public class LudoController {
 
 	@FXML
 	void ListRooms(ActionEvent event) {
-
+		//TODO: this
 	}
 
 	@FXML
 	void about(ActionEvent event) {
-
+		//TODO: this
 	}
 
 	@FXML
 	void challengePlayer(ActionEvent event) {
-
+		//TODO: this
 	}
 
 	@FXML
 	void closeApp(ActionEvent event) {
-
+		//TODO: this
 	}
 
 	@FXML
 	void connectToServer(ActionEvent event) throws IOException {
-		//client.connect("test");
+
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
 
 		LoginController loginController = new LoginController(this); //create controller that points to this controller
@@ -102,7 +102,7 @@ public class LudoController {
 
 	@FXML
 	void joinChat(ActionEvent event) {
-
+		//TODO: this
 	}
 
     @FXML
