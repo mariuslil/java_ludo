@@ -3,7 +3,6 @@ package no.ntnu.imt3281.ludo.server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

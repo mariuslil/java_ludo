@@ -1,11 +1,10 @@
 package no.ntnu.imt3281.ludo.client;
 
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.DiceEvent;
 import no.ntnu.imt3281.ludo.logic.Ludo;
 import no.ntnu.imt3281.ludo.server.Server;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static java.lang.Thread.sleep;

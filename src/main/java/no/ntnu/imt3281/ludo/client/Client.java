@@ -1,12 +1,11 @@
 package no.ntnu.imt3281.ludo.client;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import no.ntnu.imt3281.ludo.logic.ListenerAndEvents.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.DiceEvent;
 
 import java.io.*;
 import java.net.Socket;
