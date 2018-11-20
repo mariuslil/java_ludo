@@ -335,7 +335,7 @@ public class Server {
 
     class Player {
         private String name = "";
-        public String connectionString;
+        private String connectionString;
         private Socket s;
         private BufferedReader input;
         private BufferedWriter output;
@@ -394,6 +394,10 @@ public class Server {
 
         public String getName() {
             return name;
+        }
+
+        public String getConnectionString() {
+            return connectionString;
         }
 
         public Socket getSocket() {
