@@ -7,54 +7,26 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 /**
- * 
- * This is the main class for the client. 
+ * This is the main class for the client.
  * **Note, change this to extend other classes if desired.**
- * 
- * @author 
  *
+ * @author
  */
 public class Client extends Application {
 
-	private boolean connected = false;
-	private Connection connection;
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("../gui/Ludo.fxml"));
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("../gui/Ludo.fxml"));
-			Scene scene = new Scene(root);
-			primaryStage.setScene(scene);
-			// primaryStage.setTitle("");
-			primaryStage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-	void connect(){
-		if(connected){
-			// Disconnect
-		} else{
-			// Connect
-		}
-	}
-
-	private void listen(){
-		while (connected){
-
-		}
-	}
-
-	void sendMessage(){
-		if(connected){
-
-		}
-	}
-
-
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
