@@ -133,6 +133,11 @@ public class Client {
 							if(this.lookingForGame){
 								//startNewGame(game); //TODO this
 							}
+						}else if(tmp.startsWith("RANDOMGAMEREQUESTUPDATE")){
+							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE", "");
+							if(ludoController!=null){
+								ludoController.updateWaitDialog(update);
+							}
 						}
 					//});
 				}
@@ -163,6 +168,20 @@ public class Client {
 				connection.close();
 			}
 		}
+	}
+
+	public void requestNewGame(){
+		if (connected  && loggedIn){
+			try{
+				connection.send("JOINRANDOMGAME");
+				if(ludoController!=null){
+					ludoController.startWaitForGame();
+				}
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+
 	}
 
 	public void request(String request){

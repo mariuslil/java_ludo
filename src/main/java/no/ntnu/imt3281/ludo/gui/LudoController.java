@@ -21,6 +21,7 @@ import java.net.URL;
 public class LudoController {
 
 	private Client client = new Client(this);
+	private WaitDialogController waitDialogController;
 
 	@FXML
 	private void initialize(){
@@ -108,11 +109,11 @@ public class LudoController {
 
     @FXML
     public void joinRandomGame(ActionEvent e) {
-		client.request("JOINRANDOMGAME");
+		client.requestNewGame();
     }
 
     @FXML
-    public void startNewGame(String gameHash){
+	public void startNewGame(String gameHash) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
@@ -130,6 +131,26 @@ public class LudoController {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+	}
+
+	@FXML
+	public void startWaitForGame() throws IOException{
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("WaitDialog.fxml"));
+		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+		WaitDialogController controller = new WaitDialogController();
+		loader.setController(controller);
+		this.waitDialogController = controller;
+
+		Parent parent = loader.load();
+
+		Scene scene = new Scene(parent, 600, 340);
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
+
+
 	}
 
     public void loginUser(String username, String password){
@@ -150,5 +171,11 @@ public class LudoController {
 		}
 
 		//TODO: close login dialog
+	}
+
+	public void updateWaitDialog(String update){
+		if(waitDialogController!=null){
+			waitDialogController.updateTextArea(update);
+		}
 	}
 }

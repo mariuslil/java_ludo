@@ -13,6 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Thread.sleep;
+
 /**
  * This is the main class for the server.
  * **Note, change this to extend other classes if desired.**
@@ -34,6 +36,8 @@ public class Server {
     private final ConcurrentHashMap<String, List<String>> games = new ConcurrentHashMap<>();
     private final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
 
+    List<Player> waitingPlayers = new ArrayList<>();
+
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
 
@@ -54,6 +58,7 @@ public class Server {
 
         //GAME THREADS
         executor.execute(() -> assignGameThread()); // This thread will add players to new games a
+        executor.execute(() -> pingWaitingPlayers());
     }
 
     public void killServer() {
@@ -120,20 +125,60 @@ public class Server {
     }
 
     private void assignGameThread(){
-       /* List<String> newGame = new ArrayList<>();
+        List<String> newGame = new ArrayList<>();
 
+        int ticktock = 0;
         while (!shutdown){
-            int ticktock = 0;
 
             while(newGame.size() < 4){
                 try{
-                    wannaGame.take();
+                    Player player = wannaGame.take();
+                    waitingPlayers.add(player);
+                    newGame.add(player.getName());
+                    player.write("RANDOMGAMEREQUESTUPDATE: "+player.getName().toUpperCase()+" added to queue");
                 }catch (InterruptedException e){
                     //meep
                 }
             }
 
-        }*/
+            if(newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)){
+                String uniqID = "pels"; //TODO: make it uniqueid
+                games.put(uniqID, newGame);
+
+                //TODO: do this more efficiently
+                for (Player player:waitingPlayers) {
+                    for (String playerName:newGame) {
+                        if(playerName.equals(player.getName())){
+                            player.write("STARTGAME:"+uniqID);
+                        }
+                    }
+                }
+                for (String name:newGame) {
+                    newGame.remove(0); //reset newGame
+                }
+                ticktock = 0;
+            }
+
+            try{
+                sleep(1000); //wait one second
+            }catch (InterruptedException e){
+
+            }
+            ticktock++;
+        }
+    }
+
+    private void pingWaitingPlayers(){
+        while(!shutdown){
+            for (Player player:waitingPlayers) {
+                player.write("RANDOMGAMEREQUESTUPDATE: SERVER: Waiting for players..");
+            }
+            try{
+                sleep(1000); //wait one second
+            }catch (InterruptedException e){
+
+            }
+        }
     }
 
     private void playerListenerThread() {
