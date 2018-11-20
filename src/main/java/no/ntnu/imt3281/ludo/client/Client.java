@@ -1,5 +1,6 @@
 package no.ntnu.imt3281.ludo.client;
 
+import no.ntnu.imt3281.ludo.gui.LudoController;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
 
 import java.io.*;
@@ -23,6 +24,7 @@ public class Client {
 	private boolean connected = false;
 	private boolean loggedIn = false;
 	private int PORT = 1234;
+	LudoController ludoController = null;
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
@@ -33,6 +35,10 @@ public class Client {
 
 	public Client(){
 
+	}
+
+	public Client(LudoController ludoController){
+		this.ludoController = ludoController;
 	}
 
 	public void connect(String type, String username, String password) {
@@ -71,11 +77,26 @@ public class Client {
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 							this.cookie = tmp.replace("COOKIE:",""); //set cookie
 							this.loggedIn = true; //Client is logged in :)
-						}else if(tmp.startsWith("MSG:")){
-							//todo: handle message
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("MSG:",""));
+						}else if(tmp.startsWith("GLOBALMSG:")){
+							// TODO : Handle message
+							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
 							messages.add(tmp);
-						}else if(tmp.startsWith("EVENT:")){
+
+							// This is so the sendMessageToClient test won't fail
+							if(ludoController != null){
+								// Show message in GUI
+								String message = tmp.replace("GLOBALMSG:", "");
+								String[] messageInfo = message.split("§");
+								if(messageInfo.length == 2){
+									ludoController.setMessageInGlobalTextBox(messageInfo[0], messageInfo[1]);
+								}
+							}
+						} else if(tmp.startsWith("GAMEMSG:")){
+							// TODO : Handle local message
+							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
+							messages.add(tmp);
+
+						} else if(tmp.startsWith("EVENT:")){
 							//todo: handle event
 							String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
 							if(event.startsWith("DICE:")){ //dice event
@@ -120,11 +141,21 @@ public class Client {
 		}
 	}
 
-	protected void sendText(String message){
+	public void sendGLOBALText(String message){
 		if (connected  && loggedIn){
 			try{
-				connection.send("MSG:"+message);
+				connection.send("GLOBALMSG:"+message);
 			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	public void senLOCALText(String message, String ludoID){
+		if(connected && loggedIn){
+			try{
+				connection.send("GAMEMSG:"+message);
+			} catch (IOException e){
 				connection.close();
 			}
 		}

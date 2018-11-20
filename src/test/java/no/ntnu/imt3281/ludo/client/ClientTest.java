@@ -55,7 +55,7 @@ public class ClientTest {
 
         String message = "Testing123";
 
-        client1.sendText(message);
+        client1.sendGLOBALText(message);
 
         try{
             sleep(100); //wait 100ms to let the message go through the system.
@@ -63,7 +63,7 @@ public class ClientTest {
 
         }
 
-        assertEquals("MSG:"+message+"§Johan", client2.messages.get(0));
+        assertEquals("GLOBALMSG:Johan§" + message, client2.messages.get(0));
         System.out.println("TEST: sendMessageToClient complete");
     }
 

@@ -3,6 +3,7 @@ package no.ntnu.imt3281.ludo.gui;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +21,7 @@ import java.net.URL;
 
 public class LudoController {
 
-	private Client client = new Client();
+	private Client client = new Client(this);
 
 	@FXML
 	private void initialize(){
@@ -139,6 +140,24 @@ public class LudoController {
 		System.out.println("CONTROLLER: User "+username+" is registering in");
 		if(username!=null && password!=null) {
 			client.connect("REGISTER:", username, password);
+		}
+	}
+
+	public void setMessageInGlobalTextBox(String sender, String message){
+		String completeMessage = String.format("%s sent: %s", sender, message);
+		Platform.runLater(() ->{
+			// TODO : Set text in textbox
+			// .setText(completeMessage);
+			System.out.println(completeMessage);
+		});
+	}
+
+	public void sendMessageFromGlobal(){
+		// TODO : change this so I can get the actual message
+		String message = "Message that is sent"; // .getText.toString();
+
+		if(message != null && !message.isEmpty()){
+			client.sendGLOBALText(message);
 		}
 	}
 }
