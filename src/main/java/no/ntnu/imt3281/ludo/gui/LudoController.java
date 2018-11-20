@@ -6,13 +6,22 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
 import java.net.URL;
 
 public class LudoController {
+
+	LudoController() {
+	    tabbedPane = new TabPane();
+	    Tab tab = new Tab();
+	    tab.setText("Master");
+	    tab.setContent(new VBox(new TextArea(), new HBox(new TextField(), new Button("%ludogameboard.saybutton"))));
+	    tabbedPane.getTabs().add(tab);
+    }
 
 	@FXML
 	private ResourceBundle resources;
