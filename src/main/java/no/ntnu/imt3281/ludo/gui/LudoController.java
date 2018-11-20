@@ -7,16 +7,18 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.client.Client;
-
 import java.net.URL;
 
 public class LudoController {
@@ -25,7 +27,17 @@ public class LudoController {
 
 	@FXML
 	private void initialize(){
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
+		try {
+			AnchorPane chat = loader.load();
+			Tab tab = new Tab("Chat: Global");
+			tab.setContent(chat);
+			tabbedPane.getTabs().add(tab);
+		} catch (IOException el) {
+			el.printStackTrace();
+		}
 	}
 
 	@FXML

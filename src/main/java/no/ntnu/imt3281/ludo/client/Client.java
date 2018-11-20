@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
  *
  * @author
  */
+
 public class Client {
 
 	protected String name = "";

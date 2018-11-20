@@ -6,5 +6,6 @@ target
 /target/
 .idea
 *.iml
+out/*
 derby*
 LudoDB/*
