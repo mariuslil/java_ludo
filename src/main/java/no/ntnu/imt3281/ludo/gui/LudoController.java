@@ -144,7 +144,7 @@ public class LudoController {
 
 		Parent parent = loader.load();
 
-		Scene scene = new Scene(parent, 600, 340);
+		Scene scene = new Scene(parent, 600, 400);
 		Stage stage = new Stage();
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setScene(scene);
