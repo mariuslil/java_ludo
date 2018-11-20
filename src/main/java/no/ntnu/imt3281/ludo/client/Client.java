@@ -97,6 +97,12 @@ public class Client {
 							}
 						}else if(tmp.startsWith("DISCONNECTED:")){
 							//todo: handle disconnect
+							//remove disconnected user from thing
+						}else if(tmp.startsWith("LOGINERROR:")){
+							System.out.println("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
+							this.connected = false;
+							connection.close();
+							this.loggedIn = false;
 
 						}
 					//});

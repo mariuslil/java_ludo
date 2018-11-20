@@ -14,12 +14,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * 
- * This is the main class for the server. 
+ * This is the main class for the server.
  * **Note, change this to extend other classes if desired.**
- * 
- * @author 
  *
+ * @author
  */
 public class Server {
 
@@ -37,6 +35,7 @@ public class Server {
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
+
     /**
      * Starts the server, creates the serversocket and the threads
      * listening for incomming connections, messages from clients
@@ -46,21 +45,21 @@ public class Server {
         this.database = new Database();
         //ExecutorService executor = Executors.newCachedThreadPool();
         //executor.execute(()->connectionListenerThread());
-        executor.execute(()->connectionListenerThread());	// This thread listens for connections from clients
-        executor.execute(()->playerListenerThread());		// This thread waits for messages to send to clients, then sends the message(s) to all clients.
-        executor.execute(()->messageSenderThread());		// This thread listens for messages from clients
+        executor.execute(() -> connectionListenerThread());    // This thread listens for connections from clients
+        executor.execute(() -> playerListenerThread());        // This thread waits for messages to send to clients, then sends the message(s) to all clients.
+        executor.execute(() -> messageSenderThread());        // This thread listens for messages from clients
         //EVENTSENDERS
-        executor.execute(()->eventSenderThread());      // This thread sends events to the users
+        executor.execute(() -> eventSenderThread());      // This thread sends events to the users
     }
 
-    public void killServer(){
+    public void killServer() {
         this.shutdown = true;
         executor.shutdown();
 
         database.closeDatabase();
         try {
             serverSocket.close();
-        }catch (IOException e){
+        } catch (IOException e) {
             //
         }
     }
@@ -88,14 +87,14 @@ public class Server {
     private void connectionListenerThread() {
         try {
             this.serverSocket = new ServerSocket(PORT);
-            System.out.println("SERVER: Serversocket created on Port: "+PORT);
-            while (!shutdown) {		// Run until server stopping
-                Socket s= null;
+            System.out.println("SERVER: Serversocket created on Port: " + PORT);
+            while (!shutdown) {        // Run until server stopping
+                Socket s = null;
                 try {
-                    s = serverSocket.accept();
+                    s = serverSocket.accept(); //accept incoming connection
                     System.out.println("SERVER: Accepted connection");
                     try {
-                        addPlayer(s);	// Method that gets username and adds client to hashmap
+                        addPlayer(s);    // Method that gets username and adds client to hashmap
                     } catch (IOException e) {
                         logger.log(Level.FINER, "Unable to establish connection with client", e);
                     }
@@ -109,7 +108,8 @@ public class Server {
             }
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Unable to listen to port: "+PORT, e);
+            System.out.println("SERVER: Unable to listen to port: " + PORT);
+            logger.log(Level.SEVERE, "Unable to listen to port: " + PORT, e);
             System.exit(0);
         }
     }
@@ -117,17 +117,18 @@ public class Server {
     private void messageSenderThread() {
         while (!shutdown) {
             try {
-                final String message = messages.take();		// Blocks until a message is available
-                players.forEachValue(100, player->player.write(message));	// Do in parallel if more than 100 clients
+                final String message = messages.take();        // Blocks until a message is available
+                players.forEachValue(100, player -> player.write(message));    // Do in parallel if more than 100 clients
 
             } catch (InterruptedException e) {
                 logger.log(Level.INFO, "Error fetching message from queue", e);
                 Thread.currentThread().interrupt();
             }
             // Clients that have IO error was marked inactive
-            players.forEachValue(100, player-> {	// Remove clients that could not receive message
-                if (!player.active&&players.remove(player.getName())!=null) {	// Client is inactive and still existed in the hashmap
+            players.forEachValue(100, player -> {    // Remove clients that could not receive message
+                if (!player.active && players.remove(player.getName()) != null) {    // Client is inactive and still existed in the hashmap
                     //clientRemoved(player);
+                    //TODO: this
                 }
             });
         }
@@ -135,31 +136,32 @@ public class Server {
 
     private void playerListenerThread() {
         while (!shutdown) {
-            players.forEachValue(100, player-> {
-                String msg = player.read();		// Read message from client
-                if (msg!=null&&msg.equals("§§BYEBYE§§")) {	// Client says goodbye
-                    //msgFromClient(client, msg);		// Handled separately, adds message to textarea
-                    if (players.remove(player.getName())!=null) {
+            players.forEachValue(100, player -> {
+                String msg = player.read();        // Read message from client
+                if (msg != null && msg.equals("§§BYEBYE§§")) {    // Client says goodbye
+
+                    if (players.remove(player.getName()) != null) {
                         //todo: clientRemoved(client);		// Let other clients know this client has left, adds message to textarea
                     }
-                } else if (msg!=null &&msg.startsWith("EVENT:")) {
-                    events.add(player.getName()+msg);   // Add event to event queue
-                } else if (msg!=null && msg.startsWith("MSG:")) {
-                    messages.add(msg+"§"+player.getName());	// Add message to message queue
-                }
+
+                } else if (msg != null && msg.startsWith("EVENT:")) {
+                    events.add(player.getName() + msg);   // Add event to event queue
+                } else if (msg != null && msg.startsWith("MSG:")) {
+                    messages.add(msg + "§" + player.getName());    // Add message to message queue
+                }//TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
-                Thread.sleep(10);	// Prevent excessive processor usage
+                Thread.sleep(10);    // Prevent excessive processor usage
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
     }
 
-    private void eventSenderThread(){
+    private void eventSenderThread() {
         while (!shutdown) {
             try {
-                final String event = events.take();		// Blocks until an event is available
+                final String event = events.take();        // Blocks until an event is available
                 String[] eventParts = event.split("§");
                 String[] playerName = eventParts[0].split("EVENT:"); //player who triggered this event
                 /*
@@ -176,10 +178,10 @@ public class Server {
                 test[3] = "";
                 games.put(eventParts[1], test);
                 //////////////////
-                for (String player: games.get(eventParts[1])) { //get players from the game
+                for (String player : games.get(eventParts[1])) { //get players from the game
                     String payload = event.replace(playerName[0], ""); //remove name from string
-                    if(!player.equals("") && !player.equals(playerName[0])) {
-                        System.out.println("SERVER: Sending player "+player+" new event.");
+                    if (!player.equals("") && !player.equals(playerName[0])) {
+                        System.out.println("SERVER: Sending player " + player + " new event.");
                         players.get(player).write(payload);           //send these players the event
                     }
                 }
@@ -196,26 +198,27 @@ public class Server {
         final Player player = new Player(s);
         //players.forEachKey(100, name-> player.write("JOIN:"+name)); // Let the new client know the name of the existing clients
 
-        if(player.connectionString.startsWith("REGISTER:")) {
+        if (player.connectionString.startsWith("REGISTER:")) {
             registerPlayer(player);
-        }else {
+        } else {
             loginPlayer(player);
         }
     }
 
-    private void registerPlayer(Player player){
-        if(player.connectionString.startsWith("REGISTER:")){
-            String trim = player.connectionString.replace("REGISTER:", "");
-            String[] namePass = trim.split("§");
-            if(namePass.length == 2){
-                if(database.userExists(namePass[0])){
-                    player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:");
-                   loginPlayer(player);
-                }else {
+    private void registerPlayer(Player player) {
+        if (player.connectionString.startsWith("REGISTER:")) { //payload should be REGISTER:USERNAME§PASSWORD
+            String trim = player.connectionString.replace("REGISTER:", ""); //remove REGISTER:
+            String[] namePass = trim.split("§");    //split the remaining string into USERNAME and PASSWORD
+            if (namePass.length == 2) {   //make sure both username and password is present
+                if (database.userExists(namePass[0])) { //if the username already exists
+                    System.out.println("SERVER: Username '" + namePass[0] + "' already exists, trying to login instead.");
+                    player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:"); //change REGISTER to LOGIN
+                    loginPlayer(player); //then try to login the person instead.
+                } else { //username does not exits, try to register user
                     boolean registered = database.registerUser(namePass[0], namePass[1]);
-                    if (registered) {
-                        player.setName(namePass[0]);
-                        player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:");
+                    if (registered) { //registered successfull
+                        System.out.println("SERVER: User " + namePass[0].toUpperCase() + " registered succesfully.");
+                        player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:"); //change REGISTER to LOGIN
                         loginPlayer(player); //login player after registering
                     }
                 }
@@ -223,35 +226,42 @@ public class Server {
         }
     }
 
-    private void loginPlayer(Player player){
-        if(player.connectionString.startsWith("LOGIN:")){
+    private void loginPlayer(Player player) {
+        if (player.connectionString.startsWith("LOGIN:")) {//Payload should be LOGIN:USERNAME§PASSWORD
 
-            String trim = player.connectionString.replace("LOGIN:", "");
-            String[] namePass = trim.split("§");
-            System.out.println("AAAAAAAAAAAAAAAAAAAAA"+trim);
-            System.out.println("SERVER: Logging in user: "+namePass[0]);
-            if(namePass.length == 2){
-                String cookie = database.loginUser(namePass[0],namePass[1]);
-                 if(cookie != null){
+            String trim = player.connectionString.replace("LOGIN:", ""); //remove LOGIN: from string
+            String[] namePass = trim.split("§"); //split string into USERNAME and PASSWORD
+            System.out.println("SERVER: Logging in user: " + namePass[0]);
+
+            if (namePass.length == 2) { //make sure both username and password is present
+                String cookie = database.loginUser(namePass[0], namePass[1]); //login user/fetch cookie from db
+                if (cookie != null) { //no cookie, not a valid user
+                    System.out.println("SERVER: User " + namePass[0].toUpperCase() + " logged in succesfully.");
                     player.setName(namePass[0]);
-                    player.write("COOKIE:"+cookie); //send cookie to client for it to keep
-                    players.forEachValue(100, player1 -> player.write("JOIN:"+player1.getName()));
+                    player.write("COOKIE:" + cookie); //send cookie to client for it to keep
 
+                    //send new player name of all logged in players
+                    players.forEachValue(100, player1 -> player.write("JOIN:" + player1.getName()));
+                    //add player to logged in players list
                     players.put(player.getName(), player);
-                    messages.add("JOIN:" +player.getName());
+                    //send all players that this player has logged in.
+                    messages.add("JOIN:" + player.getName());
+                } else { //failed to log in
+                    System.out.println("SERVER: Failed to login user " + namePass[0].toUpperCase());
+                    player.write("LOGINERROR: Failed to login user");
                 }
             }
-        }else if(player.connectionString.startsWith("SESSION:")) {
+        } else if (player.connectionString.startsWith("SESSION:")) { //login user through a session key instead
             System.out.println("SERVER: client trying to connect through session key.");
             String trim = player.connectionString.replace("SESSION:", "");
             //TODO: THIS -> login client with only the cookie
-        }else{
+        } else {
             System.out.println("SERVER: Something wrong validating user.");
         }
     }
 
-    public boolean playerExistInServer(String username){
-	    return (players.get(username) != null);
+    public boolean playerExistInServer(String username) {
+        return (players.get(username) != null);
     }
 
     class Player {
@@ -269,7 +279,7 @@ public class Server {
          * @param s the socket from the serversocket
          * @throws IOException if unable to create reader/writer objects or read username.
          */
-        public Player (Socket s) throws IOException {
+        public Player(Socket s) throws IOException {
             this.s = s;
             input = new BufferedReader(new InputStreamReader(s.getInputStream()));
             output = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
@@ -290,7 +300,7 @@ public class Server {
                     return null;
                 }
             } catch (IOException e) {
-                active = false;	// If unable to read (IO error) mark as inactive, this will remove the client from the server
+                active = false;    // If unable to read (IO error) mark as inactive, this will remove the client from the server
                 return null;
             }
         }
@@ -298,8 +308,8 @@ public class Server {
         public void write(String msg) {
             try {
                 output.write(msg);
-                output.newLine();	// Must send newline for client to be able to read
-                output.flush();		// Nothing is sent without flushing
+                output.newLine();    // Must send newline for client to be able to read
+                output.flush();        // Nothing is sent without flushing
             } catch (IOException e) {
                 active = false; // If unable to write (IO error) mark as inactive, this will remove the client from the server
             }
@@ -335,9 +345,9 @@ public class Server {
             }
         }
 
-        public boolean isInThisGame(String game){
-            for (String activeGame:activeGames) {
-                if(activeGame.equals(game)){
+        public boolean isInThisGame(String game) {
+            for (String activeGame : activeGames) {
+                if (activeGame.equals(game)) {
                     return true;
                 }
             }
