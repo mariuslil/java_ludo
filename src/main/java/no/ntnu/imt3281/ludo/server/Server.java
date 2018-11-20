@@ -31,7 +31,8 @@ public class Server {
     private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
     private final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
     private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String[]> games = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, List<String>> games = new ConcurrentHashMap<>();
+    private final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
@@ -50,6 +51,9 @@ public class Server {
         executor.execute(() -> messageSenderThread());        // This thread listens for messages from clients
         //EVENTSENDERS
         executor.execute(() -> eventSenderThread());      // This thread sends events to the users
+
+        //GAME THREADS
+        executor.execute(() -> assignGameThread()); // This thread will add players to new games a
     }
 
     public void killServer() {
@@ -63,25 +67,6 @@ public class Server {
             //
         }
     }
-
-    /*@Override
-    public void start(Stage primaryStage) throws Exception {
-
-        this.database = new Database();
-
-        try {
-            AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("./Server.fxml"));
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-            //connect/create db
-            dbCon = database.connectDB();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-    }*/
 
 
     private void connectionListenerThread() {
@@ -134,6 +119,23 @@ public class Server {
         }
     }
 
+    private void assignGameThread(){
+       /* List<String> newGame = new ArrayList<>();
+
+        while (!shutdown){
+            int ticktock = 0;
+
+            while(newGame.size() < 4){
+                try{
+                    wannaGame.take();
+                }catch (InterruptedException e){
+                    //meep
+                }
+            }
+
+        }*/
+    }
+
     private void playerListenerThread() {
         while (!shutdown) {
             players.forEachValue(100, player -> {
@@ -148,6 +150,8 @@ public class Server {
                     events.add(player.getName() + msg);   // Add event to event queue
                 } else if (msg != null && msg.startsWith("MSG:")) {
                     messages.add(msg + "§" + player.getName());    // Add message to message queue
+                } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
+                    wannaGame.add(player);
                 }//TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
@@ -171,11 +175,9 @@ public class Server {
                  */
                 //////////////////MOCK GAME UNTIL I IMPLEMNT IT
                 //TODO: THIS^
-                String[] test = new String[4];
-                test[0] = "Johan";
-                test[1] = "Brede";
-                test[2] = "";
-                test[3] = "";
+                List<String> test = new ArrayList<>();
+                test.add("Johan");
+                test.add("Brede");
                 games.put(eventParts[1], test);
                 //////////////////
                 for (String player : games.get(eventParts[1])) { //get players from the game

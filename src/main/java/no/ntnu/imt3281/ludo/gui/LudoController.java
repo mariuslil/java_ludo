@@ -20,7 +20,7 @@ import java.net.URL;
 
 public class LudoController {
 
-	private Client client = new Client();
+	private Client client = new Client(this);
 
 	@FXML
 	private void initialize(){
@@ -96,6 +96,7 @@ public class LudoController {
 		stage.setScene(scene);
 		stage.showAndWait();
 
+
 		//TODO: close stage when logged In or registered.
 
 	}
@@ -106,39 +107,48 @@ public class LudoController {
 	}
 
     @FXML
-    public void joinRandomGame(ActionEvent e) {  	
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-    	loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+    public void joinRandomGame(ActionEvent e) {
+		client.request("JOINRANDOMGAME");
+    }
+
+    @FXML
+    public void startNewGame(String gameHash){
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
 		GameBoardController controller = loader.getController();
 		// Use controller to set up communication for this game.
 		// Note, a new game tab would be created due to some communication from the server
 		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
-		
-    	try {
-    		AnchorPane gameBoard = loader.load();
-        	Tab tab = new Tab("Game");
-    		tab.setContent(gameBoard);
-        	tabbedPane.getTabs().add(tab);
-    	} catch (IOException e1) {
+
+		try {
+			AnchorPane gameBoard = loader.load();
+			Tab tab = new Tab("Game");
+			tab.setContent(gameBoard);
+			tabbedPane.getTabs().add(tab);
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-    }
+	}
 
     public void loginUser(String username, String password){
-		System.out.println("CONTROLLER: loginUser triggered");
-		//client.connect(username);
-		//disregard password for now
+		System.out.println("CONTROLLER: User: "+username+" is logging in");
+
 		if(username!=null && password!=null){
 			client.connect("LOGIN:", username, password);
 		}
+
+		//TODO: close login dialog
 	}
 
 	public void registerUser(String username, String password){
-		System.out.println("CONTROLLER: User "+username+" is registering in");
+		System.out.println("CONTROLLER: User "+username+" is registering");
+
 		if(username!=null && password!=null) {
 			client.connect("REGISTER:", username, password);
 		}
+
+		//TODO: close login dialog
 	}
 }
