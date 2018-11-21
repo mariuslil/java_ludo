@@ -113,10 +113,10 @@ public class LudoController {
 
 
         Scene scene = new Scene(parent, 600, 340);
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.showAndWait();
+        this.openDialog = new Stage();
+        this.openDialog.initModality(Modality.APPLICATION_MODAL);
+        this.openDialog.setScene(scene);
+        this.openDialog.showAndWait();
 
 
         //TODO: close stage when logged In or registered.
@@ -226,6 +226,7 @@ public class LudoController {
 
     @FXML
     public void removeOpenDialog() {
+        System.out.println("Removed");
         if (openDialog != null) {
             Platform.runLater(() -> openDialog.close());
         }
