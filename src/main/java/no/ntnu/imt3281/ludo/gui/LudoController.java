@@ -17,7 +17,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.client.Client;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.DiceListener;
 import no.ntnu.imt3281.ludo.logic.PieceEvent;
 import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 

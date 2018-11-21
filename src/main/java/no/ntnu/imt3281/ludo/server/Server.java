@@ -123,79 +123,80 @@ public class Server {
         }
     }
 
-    private void assignGameThread(){
+    private void assignGameThread() {
         LinkedBlockingQueue<String> newGame = new LinkedBlockingQueue<>();
 
         int ticktock = 0;
-        while (!shutdown){
+        while (!shutdown) {
 
-            System.out.println("SERVER: TICKTOCK: "+String.valueOf(ticktock));
+            System.out.println("SERVER: TICKTOCK: " + String.valueOf(ticktock));
 
-            try{
-                if(wannaGame.size()>0) {
+            try {
+                if (wannaGame.size() > 0) {
                     Player player = wannaGame.take(); //this fucker
 
-                    System.out.println("SERVER: Player "+player.getName()+" added to game waiting list.");
+                    System.out.println("SERVER: Player " + player.getName() + " added to game waiting list.");
 
                     waitingPlayers.put(player.getName(), player);
                     newGame.add(player.getName());
 
                     waitingPlayers.forEachValue(100, waitingPlayer -> {
-                        waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: "+player.getName().toUpperCase()+" added to queue");
+                        waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: " + player.getName().toUpperCase() + " added to queue");
                     });
                     ticktock = 0;
                 }
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 //meep
             }
 
-            if(newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)){
+            if (newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)) {
                 String uniqID = UUID.randomUUID().toString();
                 games.put(uniqID, newGame);
 
-                System.out.println("SERVER: Starting game: "+uniqID);
+                System.out.println("SERVER: Starting game: " + uniqID);
 
                 //TODO: do this more efficiently
                 waitingPlayers.forEachValue(100, waitingPlayer -> {
-                    for (String playerName:newGame) {
+                    for (String playerName : newGame) {
                         if (waitingPlayer.getName().equals(playerName)) {
-                            waitingPlayer.write("STARTGAME:"+uniqID);
+                            waitingPlayer.write("STARTGAME:" + uniqID);
                             waitingPlayer.activeGames.add(uniqID);
                             waitingPlayers.remove(waitingPlayer.name);
-                            System.out.println("SERVER: WAITING PLAYERS: "+waitingPlayers.size());
+                            System.out.println("SERVER: WAITING PLAYERS: " + waitingPlayers.size());
                         }
                     }
                 });
 
 
-
                 //waitingPlayers.get(newGame.r)
 
-                for (String name:newGame) {
+                for (String name : newGame) {
                     newGame.remove(name); //reset newGame
                 }
 
                 ticktock = 0;
             }
 
-            try{
+            try {
                 sleep(1000); //wait one second
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
 
             }
-            if(ticktock>50){ticktock=0;}
+            if (ticktock > 50) {
+                ticktock = 0;
+            }
             ticktock++;
         }
     }
 
-    private void pingWaitingPlayers(){
-        while(!shutdown){
+    private void pingWaitingPlayers() {
+        while (!shutdown) {
             waitingPlayers.forEachValue(100, waitingPlayer -> {
                 waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: SERVER: Waiting for players..");
             });
-            try{
+            try {
                 sleep(1000); //wait one second
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
 
             }
         }
@@ -232,7 +233,11 @@ public class Server {
             try {
                 final String event = events.take();        // Blocks until an event is available
                 String[] eventParts = event.split("§");
-                String[] playerName = eventParts[0].split("EVENT:"); //player who triggered this event
+
+
+                String[] playerEventType = eventParts[0].split("EVENT:"); //player who triggered this event
+                String playerName = playerEventType[0];
+                String eventType = playerEventType[1];
                 /*
                  * eventParts[0] = EVENT:DICE: or EVENT:PIECE: or EVENT:PLAYER:
                  * eventParts[1] = GAMEHASH/ID
@@ -245,11 +250,26 @@ public class Server {
                 test.add("Brede");
                 games.put(eventParts[1], test);
                 //////////////////
-                for (String player : games.get(eventParts[1])) { //get players from the game
-                    String payload = event.replace(playerName[0], ""); //remove name from string
-                    if (!player.equals("") && !player.equals(playerName[0])) {
-                        System.out.println("SERVER: Sending player " + player + " new event.");
-                        players.get(player).write(payload);           //send these players the event
+
+                for(String player : games.get(eventParts[1])){
+                    String payload = event.replace(playerName,""); //remove name from start of event
+                    if(!player.equals(playerName)){
+                        if (eventType.equals("DICE:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " DICE event.");
+                                players.get(player).write(payload);
+                            }
+                        } else if (eventType.equals("PLAYER:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " PLAYER event.");
+                                players.get(player).write(payload);
+                            }
+                        } else if (eventType.equals("PIECE:")) {
+                            if (eventParts.length == 6) {
+                                System.out.println("SERVER: Sending player " + player + " PIECE event.");
+                                players.get(player).write(payload);
+                            }
+                        }
                     }
                 }
 
