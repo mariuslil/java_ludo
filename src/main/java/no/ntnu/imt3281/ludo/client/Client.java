@@ -2,6 +2,8 @@ package no.ntnu.imt3281.ludo.client;
 
 import no.ntnu.imt3281.ludo.gui.LudoController;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -118,19 +120,30 @@ public class Client {
 								//DICE//
 							if(event.startsWith("DICE:")){ //dice event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
-								//TODO: handle DICE event
+
 								this.test = true;
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 4){
+									ludoController.receiveDiceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]));
+								}
 
 								//PIECE//
 							}else if(event.startsWith("PIECE:")){ //piece event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
-								//TODO: handle PIECE event
+
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 4){
+									ludoController.receivePlayerEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]));
+								}
 
 								//PLAYER//
 							}else if(event.startsWith("PLAYER:")){ //player event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
-								//TODO: handle PLAYER event
 
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 6){
+									ludoController.receivePieceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]), Integer.parseInt(payload[4]), Integer.parseInt(payload[5]));
+								}
 							}
 
 							//DISCONNECTED//
@@ -174,15 +187,16 @@ public class Client {
 		}
 	}
 
-	protected void sendDiceEvent(DiceEvent diceEvent){
+	public void sendDiceEvent(String gameHash){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:DICE:§"+diceEvent.getLudoHash()+"§"+diceEvent.getColor()+"§"+diceEvent.getDiceNr());
+				connection.send("EVENT:DICE:"+gameHash);
 			}catch (IOException e){
 				connection.close();
 			}
 		}
 	}
+
 
 	public void sendGLOBALText(String message){
 		if (connected  && loggedIn){

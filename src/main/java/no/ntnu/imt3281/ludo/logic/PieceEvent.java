@@ -39,4 +39,21 @@ public class PieceEvent {
         /* ... */
         return 69;
     }
+
+    public int getColor() {
+        return color;
+    }
+
+    public int getPieceNr() {
+        return pieceNr;
+    }
+
+    public int getFromPos() {
+        return fromPos;
+    }
+
+    public int getToPos() {
+        return toPos;
+    }
+
 }
