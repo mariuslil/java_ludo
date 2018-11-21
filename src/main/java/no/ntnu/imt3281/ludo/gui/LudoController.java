@@ -16,17 +16,23 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.client.Client;
+import no.ntnu.imt3281.ludo.logic.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 
 import java.net.URL;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LudoController {
 
     private Client client = new Client(this);
     private ChatController chatController = new ChatController(this);
-    private GameBoardController gameBoardController = new GameBoardController(this);
+    private GameBoardController gameBoardController;
 
-    @FXML
-    private WaitDialogController waitDialogController;
+	private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
+
+	@FXML
+	private WaitDialogController waitDialogController;
 
     @FXML
     private Stage openDialog;
@@ -131,55 +137,32 @@ public class LudoController {
 
     @FXML
     public void joinRandomGame(ActionEvent e) {
-
         client.requestNewGame();
-
-        /*
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-        loader.setController(gameBoardController);
-        loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
-
-        GameBoardController controller = loader.getController();
-        // Use controller to set up communication for this game.
-        // Note, a new game tab would be created due to some communication from the server
-        // This is here purely to illustrate how a layout is loaded and added to a tab pane.
-
-        try {
-            AnchorPane gameBoard = loader.load();
-            Tab tab = new Tab("Game");
-            tab.setContent(gameBoard);
-            tabbedPane.getTabs().add(tab);
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        */
-
     }
 
     @FXML
     public void startNewGame(String gameHash) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-        loader.setController(gameBoardController);
         loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
-        GameBoardController controller = loader.getController(); //TODO: store this and feed it events
-        // Use controller to set up communication for this game.
-        // Note, a new game tab would be created due to some communication from the server
-        // This is here purely to illustrate how a layout is loaded and added to a tab pane.
-        Platform.runLater(() -> {
-            try {
-                AnchorPane gameBoard = loader.load();
-                Tab tab = new Tab(gameHash);
-                tab.setContent(gameBoard);
-                this.tabbedPane.getTabs().add(tab);
+        gameBoardController = new GameBoardController(gameHash, this);
+		loader.setController(gameBoardController);
+
+		gameControllers.put(gameHash, gameBoardController);
+
+		Platform.runLater(()-> {
+			try {
+				AnchorPane gameBoard = loader.load();
+				Tab tab = new Tab(gameHash);
+				tab.setContent(gameBoard);
+				this.tabbedPane.getTabs().add(tab);
 
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
         });
     }
+
 
     @FXML
     public void startWaitForGame() throws IOException {
@@ -207,8 +190,6 @@ public class LudoController {
         if (username != null && password != null) {
             client.connect("LOGIN:", username, password);
         }
-
-        //TODO: close login dialog
     }
 
     public void registerUser(String username, String password) {
@@ -218,7 +199,6 @@ public class LudoController {
             client.connect("REGISTER:", username, password);
         }
 
-        //TODO: close login dialog
     }
 
     @FXML
@@ -229,23 +209,44 @@ public class LudoController {
     }
 
     @FXML
-    public void removeOpenDialog() {
-        if (openDialog != null) {
-            Platform.runLater(() -> openDialog.close());
+    public void removeOpenDialog(){
+        if(openDialog!=null){
+            Platform.runLater(()-> openDialog.close());
         }
     }
 
+    @FXML
     public void setMessageInGlobalTextBox(String sender, String message){
         Platform.runLater(() ->{
             chatController.setTextInChat(sender, message);
         });
     }
 
+
     public void setMessageInLocalTextBox(String sender, String message){
         Platform.runLater(() ->{
             gameBoardController.setTextInChat(sender, message);
         });
     }
+
+	@FXML
+	public void receiveDiceEvent(String gameHash, int color, int diceNr){
+		gameControllers.get(gameHash).runDiceEvent(color, diceNr);
+	}
+
+	@FXML
+	public void receivePlayerEvent(String gameHash, int color, int status){
+		gameControllers.get(gameHash).runPlayerEvent(color, status);
+	}
+
+	@FXML
+	public void receivePieceEvent(String gameHash, int color, int pieceNr, int fromPos, int toPos){
+		gameControllers.get(gameHash).runPieceEvent(color, pieceNr, fromPos, toPos);
+	}
+
+	public void sendDiceThrowRequest(String gameHash){
+		client.sendDiceEvent(gameHash);
+	}
 
     public void sendMessageFromGlobal(String message){
         if(message != null && !message.isEmpty() && !message.contains("§")){

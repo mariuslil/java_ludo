@@ -49,7 +49,4 @@ public class DiceEvent {
         return diceNr;
     }
 
-    public int getLudoHash() {
-        return ludo.hashCode();
-    }
 }

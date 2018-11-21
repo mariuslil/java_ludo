@@ -70,11 +70,11 @@ public class ClientTest {
         System.out.println("TEST: sendGlobalMessageToClient complete");
     }
 
-    @Test
+    /*@Test
     public void sendDiceEvent(){
-        DiceEvent diceEvent = new DiceEvent(new Ludo(), 1, 6); //mock diceEvent
 
-        client1.sendDiceEvent(diceEvent);
+        client1.sendDiceEvent(server.);
+
         try{
             sleep(500); //wait 500ms to let the message go through the system.
         }catch (InterruptedException e){
@@ -85,7 +85,7 @@ public class ClientTest {
 
         System.out.println("TEST: sendDiceEvent complete");
         //TODO: assert event came through correctly, in the mean time check log :)
-    }
+    }*/
 
     @Test
     public void checkIfGameStarts(){
@@ -106,7 +106,7 @@ public class ClientTest {
 
 
         try{
-            sleep(6000); //wait 100ms to let the message go through the system.
+            sleep(3000); //wait 100ms to let the message go through the system.
         }catch (InterruptedException e){
 
         }
