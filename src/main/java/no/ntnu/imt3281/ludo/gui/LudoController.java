@@ -130,10 +130,9 @@ public class LudoController {
 
     @FXML
     public void joinRandomGame(ActionEvent e) {
-        // TODO : Two different outcomes from pressing button This is Johan's version
+
         client.requestNewGame();
 
-        // TODO : And this is Marius
         /*
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
         loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
