@@ -18,7 +18,7 @@ public class GameBoardController {
     private Ludo ludo;
 
     public GameBoardController(String gameHash){
-        ludo = new Ludo();
+        ludo = new Ludo(gameHash);
     }
 
     @FXML

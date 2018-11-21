@@ -41,4 +41,8 @@ public class PlayerEvent {
         /* ... */
         return 69;
     }
+
+    public String getLudoHash() {
+        return ludo.getGameHash();
+    }
 }
