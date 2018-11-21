@@ -226,7 +226,6 @@ public class LudoController {
 
     @FXML
     public void removeOpenDialog() {
-        System.out.println("Removed");
         if (openDialog != null) {
             Platform.runLater(() -> openDialog.close());
         }
