@@ -96,4 +96,29 @@ public class GameBoardController {
         String completeMessage = String.format("%s: %s%n", user, message);
         chatArea.setText(chatArea.getText() + completeMessage);
     }
+
+    /*
+    public void setNames(String user1, String user2, String user3, String user4){
+        if(user1 != null && !user1.isEmpty()){
+            player1Name.setText(user1);
+        } else {
+            player1Name.setText("No Player");
+        }
+        if(user2 != null && !user2.isEmpty()){
+            player2Name.setText(user2);
+        }else {
+            player2Name.setText("No Player");
+        }
+        if(user3 != null && !user3.isEmpty()){
+            player3Name.setText(user3);
+        }else {
+            player3Name.setText("No Player");
+        }
+        if(user4 != null && !user4.isEmpty()){
+            player4Name.setText(user4);
+        }else {
+            player4Name.setText("No Player");
+        }
+    }
+    */
 }

@@ -222,9 +222,9 @@ public class LudoController {
     }
 
 
+
     public void setMessageInLocalTextBox(String gameID, String sender, String message){
         Platform.runLater(() ->{
-            System.out.println(gameID + " " + sender + " " + message);
             gameControllers.get(gameID).setTextInChat(sender, message);
         });
     }

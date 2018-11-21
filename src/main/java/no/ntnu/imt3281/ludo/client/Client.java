@@ -163,6 +163,7 @@ public class Client {
 							//DISCONNECTED//
 						}else if(tmp != null && tmp.startsWith("DISCONNECTED:")){
 							//todo: handle disconnect
+							// ludoController.setMessageInGlobalTextBox(tmp.replace("DISCONNECTED:", "").toUpperCase(), "LEFT");
 							//remove disconnected user from thing
 
 							//LOGINERROR//
@@ -230,17 +231,6 @@ public class Client {
 				}
 
 			} catch (IOException e){
-				connection.close();
-			}
-		}
-	}
-
-	// TODO : I think I should remove this
-	protected void sendText(String message){
-		if (connected  && loggedIn){
-			try{
-				connection.send("MSG:"+message);
-			}catch (IOException e){
 				connection.close();
 			}
 		}

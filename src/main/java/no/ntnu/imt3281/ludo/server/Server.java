@@ -185,6 +185,7 @@ public class Server {
                 //waitingPlayers.get(newGame.r)
 
                 for (String name : newGame) {
+
                     newGame.remove(name); //reset newGame
                 }
 
@@ -235,10 +236,7 @@ public class Server {
                             ludoServer.movePiece(payload[1], player.getName(), Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
                         }
                     }
-                } else if (msg != null && msg.startsWith("MSG:")) {
-                    messages.add(msg + "§" + player.getName());    // Add message to message queue
-
-                }  else if (msg != null && msg.startsWith("GLOBALMSG:")) {
+                } else if (msg != null && msg.startsWith("GLOBALMSG:")) {
                     // GLOBALMSG: <user>§<message>
                     messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
 
