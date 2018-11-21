@@ -171,7 +171,7 @@ public class Client {
 		}
 	}
 
-	protected void sendDiceEvent(DiceEvent diceEvent){
+	public void sendDiceEvent(DiceEvent diceEvent){
 		if (connected && loggedIn){
 			try{
 				connection.send("EVENT:DICE:§"+diceEvent.getLudoHash()+"§"+diceEvent.getColor()+"§"+diceEvent.getDiceNr());
@@ -181,7 +181,7 @@ public class Client {
 		}
 	}
 
-	protected void sendPlayerEvent(PlayerEvent playerEvent){
+	public void sendPlayerEvent(PlayerEvent playerEvent){
 		if (connected && loggedIn){
 			try{
 				connection.send("EVENT:PLAYER:§"+playerEvent.getLudoHash()+"§"+playerEvent.getColor()+"§"+playerEvent.getStatus());
@@ -191,7 +191,7 @@ public class Client {
 		}
 	}
 
-	protected void sendPieceEvent(PieceEvent pieceEvent){
+	public void sendPieceEvent(PieceEvent pieceEvent){
 		if (connected && loggedIn){
 			try{
 				connection.send("EVENT:PIECE:§"+pieceEvent.getLudoHash()+"§"+pieceEvent.getColor()+"§"+pieceEvent.getPieceNr()+"§"+pieceEvent.getFromPos()+"§"+pieceEvent.getToPos());

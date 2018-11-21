@@ -16,6 +16,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.client.Client;
+import no.ntnu.imt3281.ludo.logic.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.DiceListener;
+import no.ntnu.imt3281.ludo.logic.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
@@ -208,5 +212,17 @@ public class LudoController {
 	@FXML
 	public void receivePieceEvent(String gameHash, int color, int pieceNr, int fromPos, int toPos){
 		gameControllers.get(gameHash).runPieceEvent(color, pieceNr, fromPos, toPos);
+	}
+
+	public void sendDiceEvent(DiceEvent diceEvent){
+		client.sendDiceEvent(diceEvent);
+	}
+
+	public void sendPlayerEvent(PlayerEvent playerEvent){
+		client.sendPlayerEvent(playerEvent);
+	}
+
+	public void sendPieceEvent(PieceEvent pieceEvent){
+		client.sendPieceEvent(pieceEvent);
 	}
 }
