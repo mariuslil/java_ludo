@@ -6,8 +6,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Ludo {
 
-    public String gameHash;
-
     protected static final int RED = 0;
     protected static final int BLUE = 1;
     protected static final int YELLOW = 2;
@@ -34,11 +32,6 @@ public class Ludo {
         this.status = "Created";
     }
 
-    public Ludo(String gameHash){
-        this.gameHash = gameHash;
-        this.status = "Created";
-    }
-
     public Ludo(String player1, String player2, String player3, String player4) throws NotEnoughPlayersException {
 
         players.add(RED, new Player(player1, RED));
@@ -52,10 +45,6 @@ public class Ludo {
             this.status = "Initiated";
         }
 
-    }
-
-    public String getGameHash() {
-        return gameHash;
     }
 
     public int nrOfPlayers() {

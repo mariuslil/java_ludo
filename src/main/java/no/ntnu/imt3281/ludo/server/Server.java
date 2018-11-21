@@ -25,6 +25,7 @@ import static java.lang.Thread.sleep;
 public class Server {
 
     private Database database = null;
+    private LudoServer ludoServer;
     private int PORT = 1234;
 
     private final Logger logger = Logger.getLogger("Chat server");
@@ -50,6 +51,7 @@ public class Server {
      */
     public Server() {
         this.database = new Database();
+        this.ludoServer = new LudoServer(this);
         //ExecutorService executor = Executors.newCachedThreadPool();
         //executor.execute(()->connectionListenerThread());
         executor.execute(() -> connectionListenerThread());    // This thread listens for connections from clients
@@ -161,15 +163,16 @@ public class Server {
             if (newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)) {
                 String uniqID = UUID.randomUUID().toString();
                 games.put(uniqID, newGame);
+                ludoServer.newGame(uniqID);
 
                 System.out.println("SERVER: Starting game: " + uniqID);
 
-                //TODO: do this more efficiently
                 waitingPlayers.forEachValue(100, waitingPlayer -> {
                     for (String playerName : newGame) {
                         if (waitingPlayer.getName().equals(playerName)) {
                             waitingPlayer.write("STARTGAME:" + uniqID);
                             waitingPlayer.activeGames.add(uniqID);
+                            ludoServer.addPlayerToGame(uniqID, playerName);
                             waitingPlayers.remove(waitingPlayer.name);
                             System.out.println("SERVER: WAITING PLAYERS: " + waitingPlayers.size());
                         }
@@ -222,7 +225,14 @@ public class Server {
                     }
 
                 } else if (msg != null && msg.startsWith("EVENT:")) {
-                    events.add(player.getName() + msg);   // Add event to event queue
+                    if(msg.startsWith("EVENT:DICE:")){
+                        ludoServer.throwDice(msg.replace("EVENT:DICE:",""), player.getName());
+                    }else if(msg.startsWith("EVENT:MOVE:")){
+                        String[] payload = msg.split("§");
+                        if(payload.length == 3){
+                            ludoServer.movePiece(payload[1], player.getName(), Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
+                        }
+                    }
                 } else if (msg != null && msg.startsWith("MSG:")) {
                     messages.add(msg + "§" + player.getName());    // Add message to message queue
                 } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {

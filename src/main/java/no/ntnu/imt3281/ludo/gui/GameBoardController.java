@@ -18,9 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GameBoardController {
 
+    private String gameHash;
     private LudoController ludoController;
 
     public GameBoardController(String gameHash, LudoController ludoController){
+        this.gameHash = gameHash;
         this.ludoController = ludoController;
     }
 
@@ -70,9 +72,7 @@ public class GameBoardController {
 
     @FXML
     void throwDice(ActionEvent event) {
-        //throw dice with random function
-        //set dice picture to the number
-        //send server message that the dicenr was thrown
+        ludoController.sendDiceThrowRequest(this.gameHash);
     }
 
     protected void runDiceEvent(int color, int diceNr){

@@ -50,7 +50,4 @@ public class PlayerEvent {
         return status;
     }
 
-    public String getLudoHash() {
-        return ludo.getGameHash();
-    }
 }

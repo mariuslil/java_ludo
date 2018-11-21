@@ -49,7 +49,4 @@ public class DiceEvent {
         return diceNr;
     }
 
-    public String getLudoHash() {
-        return ludo.getGameHash();
-    }
 }

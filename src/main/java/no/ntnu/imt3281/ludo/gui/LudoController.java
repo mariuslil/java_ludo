@@ -213,15 +213,8 @@ public class LudoController {
 		gameControllers.get(gameHash).runPieceEvent(color, pieceNr, fromPos, toPos);
 	}
 
-	public void sendDiceEvent(DiceEvent diceEvent){
-		client.sendDiceEvent(diceEvent);
+	public void sendDiceThrowRequest(String gameHash){
+		client.sendDiceEvent(gameHash);
 	}
 
-	public void sendPlayerEvent(PlayerEvent playerEvent){
-		client.sendPlayerEvent(playerEvent);
-	}
-
-	public void sendPieceEvent(PieceEvent pieceEvent){
-		client.sendPieceEvent(pieceEvent);
-	}
 }

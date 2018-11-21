@@ -171,35 +171,16 @@ public class Client {
 		}
 	}
 
-	public void sendDiceEvent(DiceEvent diceEvent){
+	public void sendDiceEvent(String gameHash){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:DICE:§"+diceEvent.getLudoHash()+"§"+diceEvent.getColor()+"§"+diceEvent.getDiceNr());
+				connection.send("EVENT:DICE:"+gameHash);
 			}catch (IOException e){
 				connection.close();
 			}
 		}
 	}
 
-	public void sendPlayerEvent(PlayerEvent playerEvent){
-		if (connected && loggedIn){
-			try{
-				connection.send("EVENT:PLAYER:§"+playerEvent.getLudoHash()+"§"+playerEvent.getColor()+"§"+playerEvent.getStatus());
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
-
-	public void sendPieceEvent(PieceEvent pieceEvent){
-		if (connected && loggedIn){
-			try{
-				connection.send("EVENT:PIECE:§"+pieceEvent.getLudoHash()+"§"+pieceEvent.getColor()+"§"+pieceEvent.getPieceNr()+"§"+pieceEvent.getFromPos()+"§"+pieceEvent.getToPos());
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
 
 	protected void sendText(String message){
 		if (connected  && loggedIn){

@@ -56,7 +56,4 @@ public class PieceEvent {
         return toPos;
     }
 
-    public String getLudoHash() {
-        return ludo.getGameHash();
-    }
 }
