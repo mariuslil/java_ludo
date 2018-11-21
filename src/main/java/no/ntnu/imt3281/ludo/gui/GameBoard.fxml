@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -21,7 +22,16 @@
    <children>
       <HBox>
          <children>
-            <Canvas fx:id="board" height="722.0" width="722.0" />
+            <StackPane fx:id="gameArea" prefHeight="722.0" prefWidth="722.0">
+               <children>
+                  <ImageView fitHeight="722.0" fitWidth="722.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../../images/ludo-board.png" />
+                     </image>
+                  </ImageView>
+                  <Canvas fx:id="board" height="722.0" width="722.0" />
+               </children>
+            </StackPane>
             <VBox>
                <children>
                   <Pane>

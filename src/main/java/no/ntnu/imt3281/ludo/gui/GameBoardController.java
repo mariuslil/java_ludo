@@ -7,11 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
-
-import java.io.IOException;
-import java.util.ResourceBundle;
+import javafx.scene.layout.StackPane;
 
 
 public class GameBoardController {
@@ -19,8 +15,10 @@ public class GameBoardController {
     @FXML
     private void initialize(){
 
-
     }
+
+    @FXML
+    private StackPane gameArea;
 
     @FXML
     private Canvas board;
