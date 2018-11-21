@@ -64,7 +64,7 @@ public class GameBoardController {
     void sendChatMessage(ActionEvent event) {
         String message = textToSay.getText();
         textToSay.clear();
-        ludoController.sendMessageFromLocal(message);
+        ludoController.sendMessageFromLocal(message, gameHash);
     }
 
     @FXML

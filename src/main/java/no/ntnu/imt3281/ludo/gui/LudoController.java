@@ -27,7 +27,6 @@ public class LudoController {
 
     private Client client = new Client(this);
     private ChatController chatController = new ChatController(this);
-    private GameBoardController gameBoardController;
 
 	private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
 
@@ -145,7 +144,7 @@ public class LudoController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
         loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
-        gameBoardController = new GameBoardController(gameHash, this);
+        GameBoardController gameBoardController = new GameBoardController(gameHash, this);
 		loader.setController(gameBoardController);
 
 		gameControllers.put(gameHash, gameBoardController);
@@ -223,9 +222,10 @@ public class LudoController {
     }
 
 
-    public void setMessageInLocalTextBox(String sender, String message){
+    public void setMessageInLocalTextBox(String gameID, String sender, String message){
         Platform.runLater(() ->{
-            gameBoardController.setTextInChat(sender, message);
+            System.out.println(gameID + " " + sender + " " + message);
+            gameControllers.get(gameID).setTextInChat(sender, message);
         });
     }
 
@@ -254,9 +254,9 @@ public class LudoController {
         }
     }
 
-    public void sendMessageFromLocal(String message){
+    public void sendMessageFromLocal(String message, String gameHash){
         if(message != null && !message.isEmpty() && !message.contains("§")){
-            client.sendLOCALText(message);
+            client.sendLOCALText(message, gameHash);
         }
     }
 }

@@ -153,7 +153,7 @@ public class ClientTest {
 
         String message = "Testing123";
 
-        client1.sendLOCALText(message);
+        client1.sendLOCALText(message, gameHash);
 
         try{
             sleep(100); //wait 100ms to let the message go through the system.

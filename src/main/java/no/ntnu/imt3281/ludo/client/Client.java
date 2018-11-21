@@ -120,8 +120,7 @@ public class Client {
 								if(ludoController != null){
 									// 0: gameID, 1: userName, 2: message
 									if(messageInfo.length == 3) {
-										System.out.println("GameID: " + messageInfo[0] + " User: " + messageInfo[1] + " Message: " + messageInfo[2]);
-										ludoController.setMessageInLocalTextBox(messageInfo[1], messageInfo[2]);
+										ludoController.setMessageInLocalTextBox(messageInfo[0], messageInfo[1], messageInfo[2]);
 									}
 								}
 							}
@@ -223,11 +222,11 @@ public class Client {
 		}
 	}
 
-	public void sendLOCALText(String message){
+	public void sendLOCALText(String message, String gameHash){
 		if(connected && loggedIn){
 			try{
-				if(activeGames.size() == 1){
-					connection.send("GAMEMSG:"+activeGames.get(0)+ "§" + message);
+				if(activeGames.size() > 0){
+					connection.send("GAMEMSG:"+gameHash+ "§" + message);
 				}
 
 			} catch (IOException e){
