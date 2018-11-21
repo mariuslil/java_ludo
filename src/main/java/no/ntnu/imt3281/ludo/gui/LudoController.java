@@ -120,6 +120,9 @@ public class LudoController {
 
     @FXML
 	public void startNewGame(String gameHash) {
+
+		removeWaitDialog();
+
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
@@ -153,10 +156,10 @@ public class LudoController {
 		Parent parent = loader.load();
 
 		Scene scene = new Scene(parent, 600, 400);
-		Stage stage = new Stage();
-		stage.initModality(Modality.APPLICATION_MODAL);
-		stage.setScene(scene);
-		stage.showAndWait();
+		this.waitDialogStage = new Stage();
+		this.waitDialogStage.initModality(Modality.APPLICATION_MODAL);
+		this.waitDialogStage.setScene(scene);
+		this.waitDialogStage.showAndWait();
 
 
 	}
