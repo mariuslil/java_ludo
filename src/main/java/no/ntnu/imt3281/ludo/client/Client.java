@@ -87,14 +87,30 @@ public class Client {
 								ludoController.removeOpenDialog();
 							}
 
-							//MSG//
-						}else if(tmp != null && tmp.startsWith("MSG:")){
-							//todo: handle message
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("MSG:",""));
+							//GLOBAL MESSAGE//
+						}else if(tmp != null && tmp.startsWith("GLOBALMSG:")){
+							// TODO : Handle message
+							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
 							messages.add(tmp);
 
-							//EVEN//
-						}else if(tmp != null && tmp.startsWith("EVENT:")){
+							// This is so the sendMessageToClient test won't fail
+							if(ludoController != null){
+								// Show message in GUI
+								String message = tmp.replace("GLOBALMSG:", "");
+								String[] messageInfo = message.split("§");
+								if(messageInfo.length == 2){
+									ludoController.setMessageInGlobalTextBox(messageInfo[0], messageInfo[1]);
+								}
+							}
+
+							//GAME MESSAGE//
+						}else if(tmp != null && tmp.startsWith("GAMEMSG:")){
+							// TODO : Handle local message
+							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
+							messages.add(tmp);
+
+							//EVENT//
+						} else if(tmp != null && tmp.startsWith("EVENT:")){
 							//todo: handle event
 							String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
 
@@ -168,6 +184,16 @@ public class Client {
 	}
 
 	public void sendGLOBALText(String message){
+		if (connected  && loggedIn){
+			try{
+				connection.send("GLOBALMSG:"+message);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	protected void sendText(String message){
 		if (connected  && loggedIn){
 			try{
 				System.out.println("Client");

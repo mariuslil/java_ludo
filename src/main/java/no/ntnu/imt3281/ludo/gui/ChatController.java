@@ -6,7 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import no.ntnu.imt3281.ludo.client.Client;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class ChatController {
     private LudoController ludoController;
     private Client client;
 
-    public ChatController(LudoController ludoController, Client client){
+    public ChatController(LudoController ludoController, Client client) {
         this.ludoController = ludoController;
         this.client = client;
     }
@@ -43,12 +42,9 @@ public class ChatController {
         }
     }
 
-    public void setTextInChat(String user, String message){
-        // TODO : add all messages and not one by one :/
-        String completeMessage = String.format("%s said: %s%n", user, message);
-        messages.add(completeMessage);
-        textToSay.clear();
-        chatArea.setText(completeMessage);
+    public void setTextInChat(String user, String message) {
+        String completeMessage = String.format("%s: %s%n", user, message);
+        chatArea.setText(chatArea.getText() + completeMessage);
     }
 
 }

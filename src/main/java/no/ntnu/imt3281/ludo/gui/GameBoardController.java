@@ -1,11 +1,9 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -18,10 +16,6 @@ public class GameBoardController {
     private Ludo ludo;
     protected final int home = 216;
     protected final int offset = 48;
-
-    public GameBoardController(String gameHash){
-        ludo = new Ludo();
-    }
 
     @FXML
     private void initialize(){
