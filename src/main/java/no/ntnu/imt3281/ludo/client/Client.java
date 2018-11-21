@@ -27,7 +27,6 @@ public class Client {
 	private boolean loggedIn = false;
 	private boolean lookingForGame = false;
 	private int PORT = 1234;
-	LudoController ludoController = null;
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
@@ -35,7 +34,7 @@ public class Client {
 
 	private String cookie = "";
 
-	//private LudoController ludoController = null;
+	private LudoController ludoController = null;
 
 	public Client(){
 
