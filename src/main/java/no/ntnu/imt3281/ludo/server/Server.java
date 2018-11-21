@@ -23,6 +23,7 @@ import static java.lang.Thread.sleep;
  */
 public class Server {
 
+    private Connection dbCon = null;
     private Database database = null;
     private int PORT = 1234;
 
@@ -99,6 +100,7 @@ public class Server {
         } catch (IOException e) {
             System.out.println("SERVER: Unable to listen to port: " + PORT);
             logger.log(Level.SEVERE, "Unable to listen to port: " + PORT, e);
+            //System.exit(0);
         }
     }
 
@@ -212,11 +214,14 @@ public class Server {
 
                 } else if (msg != null && msg.startsWith("EVENT:")) {
                     events.add(player.getName() + msg);   // Add event to event queue
-                } else if (msg != null && msg.startsWith("MSG:")) {
-                    messages.add(msg + "§" + player.getName());    // Add message to message queue
+                }  else if (msg != null && msg.startsWith("GLOBALMSG:")) {
+                    messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
                 } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
                     wannaGame.add(player);
-                }//TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
+                }/*else if (msg != null && msg.startsWith("GAMEMSG:")){
+                    // TODO : Get ludo-game id
+                     messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
+                }*/ // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
                 Thread.sleep(10);    // Prevent excessive processor usage
