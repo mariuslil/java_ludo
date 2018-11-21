@@ -6,22 +6,12 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<<<<<<< HEAD
-=======
 <?import javafx.scene.text.Font?>
->>>>>>> 812063c34d6d096def964c3cfa3084a2fcb9a515
 
 <AnchorPane prefHeight="722.0" prefWidth="383.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-<<<<<<< HEAD
-            <TextArea fx:id="chatArea" editable="false" prefHeight="694.0" prefWidth="295.0" />
-            <HBox alignment="TOP_RIGHT">
-               <children>
-                  <TextField fx:id="textToSay" prefHeight="27.0" prefWidth="316.0" />
-                  <Button fx:id="sendTextButton" mnemonicParsing="false" onAction="#onSendGlobalMessage" prefHeight="27.0" prefWidth="67.0" text="%ludogameboard.saybutton" />
-=======
             <TextArea fx:id="chatArea" editable="false" prefHeight="695.0" prefWidth="295.0">
                <font>
                   <Font size="14.0" />
@@ -30,7 +20,6 @@
                <children>
                   <TextField fx:id="textToSay" prefHeight="26.0" prefWidth="316.0" />
                   <Button fx:id="sendTextButton" mnemonicParsing="false" onAction="#onSendGlobalMessage" prefWidth="67.0" text="%ludogameboard.saybutton" />
->>>>>>> 812063c34d6d096def964c3cfa3084a2fcb9a515
                </children>
             </HBox>
          </children>

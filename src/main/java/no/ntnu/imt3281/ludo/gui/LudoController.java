@@ -13,7 +13,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.*;
 import no.ntnu.imt3281.ludo.client.Client;
+import no.ntnu.imt3281.ludo.logic.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 import java.net.URL;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class LudoController {
@@ -21,8 +25,11 @@ public class LudoController {
 	private Client client = new Client(this);
 	private ChatController chatController = new ChatController(this, this.client);
 
-    @FXML
-    private WaitDialogController waitDialogController;
+
+	private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
+
+	@FXML
+	private WaitDialogController waitDialogController;
 
     @FXML
     private Stage openDialog;
@@ -147,16 +154,17 @@ public class LudoController {
     }
 
     @FXML
-	public void startNewGame(String gameHash) {
-		if (client.isLoggedIn()){
+    public void startNewGame(String gameHash) {
+		if(client.isLoggedIn()) {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 			loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
-			GameBoardController controller = loader.getController(); //TODO: store this and feed it events
-			// Use controller to set up communication for this game.
-			// Note, a new game tab would be created due to some communication from the server
-			// This is here purely to illustrate how a layout is loaded and added to a tab pane.
-			Platform.runLater(() -> {
+			GameBoardController controller = new GameBoardController(gameHash, this);
+			loader.setController(controller);
+
+			gameControllers.put(gameHash, controller);
+
+			Platform.runLater(()-> {
 				try {
 					AnchorPane gameBoard = loader.load();
 					Tab tab = new Tab(gameHash);
@@ -164,7 +172,6 @@ public class LudoController {
 					this.tabbedPane.getTabs().add(tab);
 
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			});
@@ -172,7 +179,8 @@ public class LudoController {
 		else {
 			warningPopUp("Need to log in to play game");
 		}
-}
+    }
+
 
     @FXML
     public void startWaitForGame() throws IOException {
@@ -200,8 +208,6 @@ public class LudoController {
         if (username != null && password != null) {
             client.connect("LOGIN:", username, password);
         }
-
-        //TODO: close login dialog
     }
 
     public void registerUser(String username, String password) {
@@ -211,7 +217,6 @@ public class LudoController {
             client.connect("REGISTER:", username, password);
         }
 
-        //TODO: close login dialog
     }
 
     @FXML
@@ -222,17 +227,37 @@ public class LudoController {
     }
 
     @FXML
-    public void removeOpenDialog() {
-        if (openDialog != null) {
-            Platform.runLater(() -> openDialog.close());
+    public void removeOpenDialog(){
+        if(openDialog!=null){
+            Platform.runLater(()-> openDialog.close());
         }
     }
 
+    @FXML
     public void setMessageInGlobalTextBox(String sender, String message){
         Platform.runLater(() ->{
             chatController.setTextInChat(sender, message);
         });
     }
+
+	@FXML
+	public void receiveDiceEvent(String gameHash, int color, int diceNr){
+		gameControllers.get(gameHash).runDiceEvent(color, diceNr);
+	}
+
+	@FXML
+	public void receivePlayerEvent(String gameHash, int color, int status){
+		gameControllers.get(gameHash).runPlayerEvent(color, status);
+	}
+
+	@FXML
+	public void receivePieceEvent(String gameHash, int color, int pieceNr, int fromPos, int toPos){
+		gameControllers.get(gameHash).runPieceEvent(color, pieceNr, fromPos, toPos);
+	}
+
+	public void sendDiceThrowRequest(String gameHash){
+		client.sendDiceEvent(gameHash);
+	}
 
     public void sendMessageFromGlobal(String message){
         // TODO : change this so I can get the actual message

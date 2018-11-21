@@ -41,4 +41,13 @@ public class PlayerEvent {
         /* ... */
         return 69;
     }
+
+    public int getColor() {
+        return color;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
 }
