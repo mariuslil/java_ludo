@@ -2,6 +2,8 @@ package no.ntnu.imt3281.ludo.gui;
 
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -28,16 +30,64 @@ public class GameBoardController {
 
     @FXML
     private void initialize(){
-
+        //TODO: make the loops run acording to number of players
         Color[]colors=new Color[4];
         colors[0]=Color.RED;colors[1]=Color.BLUE;colors[2]=Color.YELLOW;colors[3]=Color.GREEN;
-        Circle[][]pieces=new Circle[ludo.nrOfPlayers()][4];
-        for(int i=1;i<=ludo.nrOfPlayers();i++){
-            for(int j=1;j<=4;j++){
-                pieces[i][j]=new Circle(23,colors[i]);
+        Circle[][]pieces=new Circle[2][4];
+        for(int i=0;i<1;i++){
+            for(int j=0;j<4;j++){
+                pieces[i][j]=new Circle(20, colors[i]);
+                pieces[i][j].setStroke(Color.BLACK);
+                pieces[i][j].setStrokeWidth(1);
                 board.getChildren().add(i*10+j,pieces[i][j]);
-                board.getChildren().get(1*10+j).setTranslateX(-home);
-                board.getChildren().get(1*10+j).setTranslateY(home);
+                board.setAlignment(pieces[i][j],Pos.CENTER);
+                switch (i){
+                    case 0:
+                        switch (j){
+                            case 0:
+                                board.getChildren().get(0).setTranslateX(home);
+                                board.getChildren().get(0).setTranslateY(-home-offset);
+                            case 1:
+                                //board.getChildren().get(1).setTranslateX(home+offset);
+                                //board.getChildren().get(1).setTranslateY(-home);
+                            case 2:
+                                //board.getChildren().get(2).setTranslateX(home);
+                                //board.getChildren().get(2).setTranslateY(-home+offset);
+                            case 3:
+                                //board.getChildren().get(3).setTranslateX(home-offset);
+                                //board.getChildren().get(3).setTranslateY(-home);
+                        }
+                    case 1:
+                        switch (j){
+                            case 0:
+
+                            case 1:
+
+                            case 2:
+
+                            case 3:
+                        }
+                    case 2:
+                        switch (j){
+                            case 0:
+
+                            case 1:
+
+                            case 2:
+
+                            case 3:
+                        }
+                    case 3:
+                        switch (j){
+                            case 0:
+
+                            case 1:
+
+                            case 2:
+
+                            case 3:
+                        }
+                }
             }
         }
     }
@@ -46,7 +96,7 @@ public class GameBoardController {
     private StackPane gameArea;
 
     @FXML
-    private Pane board;
+    private StackPane board;
 
     @FXML
     private ImageView player1Active;

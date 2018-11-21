@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox>
          <children>
@@ -28,7 +28,7 @@
                         <Image url="@../../../../../images/ludo-board.png" />
                      </image>
                   </ImageView>
-                  <Pane fx:id="board" prefHeight="722.0" prefWidth="722.0" />
+                  <StackPane fx:id="board" prefHeight="722.0" prefWidth="722.0" StackPane.alignment="CENTER" />
                </children>
             </StackPane>
             <VBox>
@@ -105,7 +105,7 @@
                                  <GridPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </GridPane.margin>
-                                  <children>
+                                 <children>
                                     <VBox />
                                     <ImageView fx:id="player4Active" fitHeight="30.0" fitWidth="30.0" layoutX="105.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
