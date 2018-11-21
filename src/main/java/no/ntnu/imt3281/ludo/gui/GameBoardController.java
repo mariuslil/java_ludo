@@ -13,6 +13,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import no.ntnu.imt3281.ludo.logic.Ludo;
 
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class GameBoardController {
 
     private Ludo ludo;
@@ -69,6 +72,31 @@ public class GameBoardController {
 
     @FXML
     void throwDice(ActionEvent event) {
+        ludo.throwDice();
+    }
 
+    protected void runDiceEvent(int color, int diceNr){
+        if(ludo.activePlayer() == color){
+            ludo.throwDice(diceNr);
+        }
+    }
+
+    protected void runPlayerEvent(int color, int status){
+        if(status == 400){ //left
+            ludo.removePlayer(ludo.getPlayerName(color));
+        }else if(status == 300){ //won
+            //TODO: suspend shit because player won
+            //TODO: update db of winner
+        }else if(status == 200){ //playing
+            //todo: this
+        }else if(status == 100){ //waiting
+            //todo: this
+        }
+    }
+
+    protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
+        if(ludo.activePlayer() == color){
+            ludo.movePiece(color, fromPos, toPos);
+        }
     }
 }

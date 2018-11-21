@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -149,7 +150,7 @@ public class Server {
             }
 
             if(newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)){
-                String uniqID = "pels"; //TODO: make it uniqueid
+                String uniqID = UUID.randomUUID().toString();
                 games.put(uniqID, newGame);
 
                 System.out.println("SERVER: Starting game: "+uniqID);

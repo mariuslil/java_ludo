@@ -163,7 +163,6 @@ public class LudoController {
 		this.openDialog.setScene(scene);
 		this.openDialog.showAndWait();
 
-
 	}
 
     public void loginUser(String username, String password){
@@ -194,5 +193,23 @@ public class LudoController {
 		if(openDialog!=null){
 			Platform.runLater(()-> openDialog.close());
 		}
+	}
+
+	@FXML
+	public void receiveDiceEvent(String gameHash, int color, int diceNr){
+		GameBoardController controller = gameControllers.get(gameHash);
+		controller.runDiceEvent(color, diceNr);
+	}
+
+	@FXML
+	public void receivePlayerEvent(String gameHash, int color, int status){
+		GameBoardController controller = gameControllers.get(gameHash);
+		controller.runPlayerEvent(color, status);
+	}
+
+	@FXML
+	public void receiveDiceEvent(String gameHash, int color, int pieceNr, int fromPos, int toPos){
+		GameBoardController controller = gameControllers.get(gameHash);
+		controller.runPieceEvent(color, pieceNr, fromPos, toPos);
 	}
 }
