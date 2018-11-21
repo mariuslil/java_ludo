@@ -33,7 +33,8 @@ public class Client {
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
-	protected boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
+	public boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
+	public String test2 = "";
 
 	private String cookie = "";
 
@@ -163,6 +164,7 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
 							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
 							String game = tmp.replace("STARTGAME:","");
+							this.test2 = game;
 							if(this.lookingForGame){
 								activeGames.add(game);
 								if(ludoController!=null) {
@@ -255,6 +257,10 @@ public class Client {
 
 	public boolean isLoggedIn() {
 		return loggedIn;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	class Connection {

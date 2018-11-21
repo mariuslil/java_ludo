@@ -24,16 +24,15 @@ import static java.lang.Thread.sleep;
  */
 public class Server {
 
-    private Connection dbCon = null;
     private Database database = null;
-    private LudoServer ludoServer;
+    protected LudoServer ludoServer;
     private int PORT = 1234;
 
     private final Logger logger = Logger.getLogger("Chat server");
     protected boolean shutdown = false;
 
     private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
-    private final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
+    protected final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
     private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
     protected final ConcurrentHashMap<String, LinkedBlockingQueue<String>> games = new ConcurrentHashMap<>();
     private final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
@@ -164,15 +163,18 @@ public class Server {
 
             if (newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)) {
                 String uniqID = UUID.randomUUID().toString();
-                games.put(uniqID, newGame);
-                ludoServer.newGame(uniqID);
 
+                ludoServer.newGame(uniqID);
+                LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
                 System.out.println("SERVER: Starting game: " + uniqID);
 
                 waitingPlayers.forEachValue(100, waitingPlayer -> {
                     for (String playerName : newGame) {
                         if (waitingPlayer.getName().equals(playerName)) {
                             waitingPlayer.write("STARTGAME:" + uniqID);
+
+                            lbq.add(playerName);
+
                             waitingPlayer.activeGames.add(uniqID);
                             ludoServer.addPlayerToGame(uniqID, playerName);
                             waitingPlayers.remove(waitingPlayer.name);
@@ -181,7 +183,7 @@ public class Server {
                     }
                 });
 
-
+                games.put(uniqID, lbq);
                 //waitingPlayers.get(newGame.r)
 
                 for (String name : newGame) {
@@ -263,42 +265,30 @@ public class Server {
                 String[] eventParts = event.split("§");
 
 
-                String[] playerEventType = eventParts[0].split("EVENT:"); //player who triggered this event
-                String playerName = playerEventType[0];
-                String eventType = playerEventType[1];
                 /*
                  * eventParts[0] = EVENT:DICE: or EVENT:PIECE: or EVENT:PLAYER:
                  * eventParts[1] = GAMEHASH/ID
                  * eventParts[2] = Event information
                  */
-                //////////////////MOCK GAME UNTIL I IMPLEMNT IT
-                //TODO: THIS^
-                LinkedBlockingQueue<String> test = new LinkedBlockingQueue<>();
-                test.add("Johan");
-                test.add("Brede");
-                games.put(eventParts[1], test);
-                //////////////////
+
 
                 for(String player : games.get(eventParts[1])){
-                    String payload = event.replace(playerName,""); //remove name from start of event
-                    if(!player.equals(playerName)){
-                        if (eventType.equals("DICE:")) {
-                            if (eventParts.length == 4) {
-                                System.out.println("SERVER: Sending player " + player + " DICE event.");
-                                players.get(player).write(payload);
-                            }
-                        } else if (eventType.equals("PLAYER:")) {
-                            if (eventParts.length == 4) {
-                                System.out.println("SERVER: Sending player " + player + " PLAYER event.");
-                                players.get(player).write(payload);
-                            }
-                        } else if (eventType.equals("PIECE:")) {
-                            if (eventParts.length == 6) {
-                                System.out.println("SERVER: Sending player " + player + " PIECE event.");
-                                players.get(player).write(payload);
-                            }
+                    if (event.startsWith("EVENT:DICE:")) {
+                            System.out.println("SERVER: Sending player " + player + " DICE event.");
+                            players.get(player).write(event);
+
+                    } else if (event.startsWith("EVENT:PLAYER:")) {
+                        if (eventParts.length == 4) {
+                            System.out.println("SERVER: Sending player " + player + " PLAYER event.");
+                            players.get(player).write(event);
+                        }
+                    } else if (event.startsWith("EVENT:PIECE:")) {
+                        if (eventParts.length == 6) {
+                            System.out.println("SERVER: Sending player " + player + " PIECE event.");
+                            players.get(player).write(event);
                         }
                     }
+
                 }
 
             } catch (InterruptedException e) {
