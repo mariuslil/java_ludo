@@ -182,6 +182,7 @@ public class Server {
             }catch (InterruptedException e){
 
             }
+            if(ticktock>50){ticktock=0;}
             ticktock++;
         }
     }

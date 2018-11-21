@@ -27,7 +27,7 @@ public class LudoController {
 	private WaitDialogController waitDialogController;
 
 	@FXML
-	private Stage waitDialogStage;
+	private Stage openDialog;
 
 	@FXML
 	private void initialize(){
@@ -98,10 +98,10 @@ public class LudoController {
 
 
 		Scene scene = new Scene(parent, 600, 340);
-		this.waitDialogStage = new Stage();
-		this.waitDialogStage.initModality(Modality.APPLICATION_MODAL);
-		this.waitDialogStage.setScene(scene);
-		this.waitDialogStage.showAndWait();
+		this.openDialog = new Stage();
+		this.openDialog.initModality(Modality.APPLICATION_MODAL);
+		this.openDialog.setScene(scene);
+		this.openDialog.showAndWait();
 
 
 		//TODO: close stage when logged In or registered.
@@ -120,9 +120,6 @@ public class LudoController {
 
     @FXML
 	public void startNewGame(String gameHash) {
-
-		removeWaitDialog();
-
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
@@ -156,10 +153,10 @@ public class LudoController {
 		Parent parent = loader.load();
 
 		Scene scene = new Scene(parent, 600, 400);
-		this.waitDialogStage = new Stage();
-		this.waitDialogStage.initModality(Modality.APPLICATION_MODAL);
-		this.waitDialogStage.setScene(scene);
-		this.waitDialogStage.showAndWait();
+		this.openDialog = new Stage();
+		this.openDialog.initModality(Modality.APPLICATION_MODAL);
+		this.openDialog.setScene(scene);
+		this.openDialog.showAndWait();
 
 
 	}
@@ -192,9 +189,9 @@ public class LudoController {
 	}
 
 	@FXML
-	public void removeWaitDialog(){
-		if(waitDialogController!=null){
-			Platform.runLater(()-> waitDialogStage.close());
+	public void removeOpenDialog(){
+		if(openDialog!=null){
+			Platform.runLater(()-> openDialog.close());
 		}
 	}
 }

@@ -84,6 +84,7 @@ public class Client {
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 							this.cookie = tmp.replace("COOKIE:",""); //set cookie
 							this.loggedIn = true; //Client is logged in :)
+							ludoController.removeOpenDialog();
 
 							//MSG//
 						}else if(tmp != null && tmp.startsWith("MSG:")){
@@ -135,7 +136,7 @@ public class Client {
 								activeGames.add(game);
 								if(ludoController!=null) {
 									ludoController.startNewGame(game);
-									ludoController.removeWaitDialog();
+									ludoController.removeOpenDialog();
 								}
 							}
 						}else if(tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
