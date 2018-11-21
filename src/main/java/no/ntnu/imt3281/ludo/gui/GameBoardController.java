@@ -11,8 +11,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import no.ntnu.imt3281.ludo.logic.Ludo;
 
 public class GameBoardController {
+
+    private Ludo ludo;
+
+    public GameBoardController(String gameHash){
+        ludo = new Ludo();
+    }
 
     @FXML
     private Label player1Name;
