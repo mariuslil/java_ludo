@@ -197,19 +197,16 @@ public class LudoController {
 
 	@FXML
 	public void receiveDiceEvent(String gameHash, int color, int diceNr){
-		GameBoardController controller = gameControllers.get(gameHash);
-		controller.runDiceEvent(color, diceNr);
+		gameControllers.get(gameHash).runDiceEvent(color, diceNr);
 	}
 
 	@FXML
 	public void receivePlayerEvent(String gameHash, int color, int status){
-		GameBoardController controller = gameControllers.get(gameHash);
-		controller.runPlayerEvent(color, status);
+		gameControllers.get(gameHash).runPlayerEvent(color, status);
 	}
 
 	@FXML
-	public void receiveDiceEvent(String gameHash, int color, int pieceNr, int fromPos, int toPos){
-		GameBoardController controller = gameControllers.get(gameHash);
-		controller.runPieceEvent(color, pieceNr, fromPos, toPos);
+	public void receivePieceEvent(String gameHash, int color, int pieceNr, int fromPos, int toPos){
+		gameControllers.get(gameHash).runPieceEvent(color, pieceNr, fromPos, toPos);
 	}
 }

@@ -104,19 +104,30 @@ public class Client {
 								//DICE//
 							if(event.startsWith("DICE:")){ //dice event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
-								//TODO: handle DICE event
+
 								this.test = true;
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 4){
+									ludoController.receiveDiceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]));
+								}
 
 								//PIECE//
 							}else if(event.startsWith("PIECE:")){ //piece event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
-								//TODO: handle PIECE event
+
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 4){
+									ludoController.receivePlayerEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]));
+								}
 
 								//PLAYER//
 							}else if(event.startsWith("PLAYER:")){ //player event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
-								//TODO: handle PLAYER event
 
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 6){
+									ludoController.receivePieceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]), Integer.parseInt(payload[4]), Integer.parseInt(payload[5]));
+								}
 							}
 
 							//DISCONNECTED//
@@ -173,7 +184,7 @@ public class Client {
 	protected void sendPlayerEvent(PlayerEvent playerEvent){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:PLAYER:§"+name+"§"+playerEvent.getLudoHash()+"§"+playerEvent.getColor()+"§"+playerEvent.getStatus());
+				connection.send("EVENT:PLAYER:§"+playerEvent.getLudoHash()+"§"+playerEvent.getColor()+"§"+playerEvent.getStatus());
 			}catch (IOException e){
 				connection.close();
 			}
@@ -183,7 +194,7 @@ public class Client {
 	protected void sendPieceEvent(PieceEvent pieceEvent){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:PIECE:§"+name+"§"+pieceEvent.getLudoHash()+"§"+pieceEvent.getColor()+"§"+pieceEvent.getPieceNr()+"§"+pieceEvent.getFromPos()+"§"+pieceEvent.getToPos());
+				connection.send("EVENT:PIECE:§"+pieceEvent.getLudoHash()+"§"+pieceEvent.getColor()+"§"+pieceEvent.getPieceNr()+"§"+pieceEvent.getFromPos()+"§"+pieceEvent.getToPos());
 			}catch (IOException e){
 				connection.close();
 			}
