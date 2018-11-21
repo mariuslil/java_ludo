@@ -1,25 +1,29 @@
 package no.ntnu.imt3281.ludo.gui;
 
-/**
- * Sample Skeleton for 'GameBoard.fxml' Controller Class
- */
-
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import no.ntnu.imt3281.ludo.logic.Ludo;
+import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
+
+import java.io.IOException;
+import java.util.ResourceBundle;
+
 
 public class GameBoardController {
 
-    private Ludo ludo;
+    @FXML
+    private void initialize(){
 
-    public GameBoardController(String gameHash){
-        ludo = new Ludo();
+
     }
+
+    @FXML
+    private Canvas board;
 
     @FXML
     private Label player1Name;
@@ -35,7 +39,7 @@ public class GameBoardController {
 
     @FXML
     private Label player3Name;
-    
+
     @FXML
     private ImageView player3Active;
 
@@ -44,10 +48,10 @@ public class GameBoardController {
 
     @FXML
     private ImageView player4Active;
-    
+
     @FXML
     private ImageView diceThrown;
-    
+
     @FXML
     private Button throwTheDice;
 
