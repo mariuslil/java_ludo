@@ -12,11 +12,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 
- * This is the main class for the client. 
+ *
+ * This is the main class for the client.
  * **Note, change this to extend other classes if desired.**
- * 
- * @author 
+ *
+ * @author
  *
  */
 public class Client {
@@ -99,6 +99,8 @@ public class Client {
 								// Show message in GUI
 								String message = tmp.replace("GLOBALMSG:", "");
 								String[] messageInfo = message.split("§");
+
+								// 0: userName, 1: message
 								if(messageInfo.length == 2){
 									ludoController.setMessageInGlobalTextBox(messageInfo[0], messageInfo[1]);
 								}
@@ -106,9 +108,19 @@ public class Client {
 
 							//GAME MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GAMEMSG:")){
-							// TODO : Handle local message
+							// TODO : fix this to have id with
 							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
 							messages.add(tmp);
+
+							if(ludoController != null){
+								String message = tmp.replace("GAMEMSG:", "");
+								String[] messageInfo = message.split("§");
+
+								// 0: gameID, 1: userName, 2: message
+								if(messageInfo.length == 3){
+									ludoController.setMessageInLocalTextBox(messageInfo[1], messageInfo[2]);
+								}
+							}
 
 							//EVENT//
 						} else if(tmp != null && tmp.startsWith("EVENT:")){
@@ -197,13 +209,17 @@ public class Client {
 	public void sendLOCALText(String message, String ludoID){
 		if(connected && loggedIn){
 			try{
-				connection.send("GAMEMSG:"+message);
+				//if(activeGames.size() > 0){
+					connection.send("GAMEMSG:"+message);
+				//}
+
 			} catch (IOException e){
 				connection.close();
 			}
 		}
 	}
 
+	// TODO : I think I should remove this
 	protected void sendText(String message){
 		if (connected  && loggedIn){
 			try{

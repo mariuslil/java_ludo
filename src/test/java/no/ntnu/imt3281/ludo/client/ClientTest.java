@@ -54,7 +54,7 @@ public class ClientTest {
     }
 
     @Test
-    public void sendMessageToClient(){
+    public void sendGlobalMessageToClient(){
 
         String message = "Testing123";
 
@@ -67,7 +67,7 @@ public class ClientTest {
         }
 
         assertEquals("GLOBALMSG:Johan§" + message, client2.messages.get(0));
-        System.out.println("TEST: sendMessageToClient complete");
+        System.out.println("TEST: sendGlobalMessageToClient complete");
     }
 
     @Test

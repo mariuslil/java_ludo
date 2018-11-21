@@ -23,6 +23,7 @@ public class LudoController {
 
     private Client client = new Client(this);
     private ChatController chatController = new ChatController(this);
+    private GameBoardController gameBoardController = new GameBoardController(this);
 
     @FXML
     private WaitDialogController waitDialogController;
@@ -135,6 +136,7 @@ public class LudoController {
 
         /*
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+        loader.setController(gameBoardController);
         loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
         GameBoardController controller = loader.getController();
@@ -152,11 +154,13 @@ public class LudoController {
             e1.printStackTrace();
         }
         */
+
     }
 
     @FXML
     public void startNewGame(String gameHash) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+        loader.setController(gameBoardController);
         loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
         GameBoardController controller = loader.getController(); //TODO: store this and feed it events
@@ -237,10 +241,23 @@ public class LudoController {
         });
     }
 
+    public void setMessageInLocalTextBox(String sender, String message){
+        Platform.runLater(() ->{
+            gameBoardController.setTextInChat(sender, message);
+        });
+    }
+
     public void sendMessageFromGlobal(String message){
-        // TODO : change this so I can get the actual message
         if(message != null && !message.isEmpty()){
             client.sendGLOBALText(message);
+        }
+    }
+
+    public void sendMessageFromLocal(String message){
+        System.out.println("ludoController");
+        if(message != null && !message.isEmpty()){
+            // TODO change to actual id
+            client.sendLOCALText(message, "ludoID");
         }
     }
 }

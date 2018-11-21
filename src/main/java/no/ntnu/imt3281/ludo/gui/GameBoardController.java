@@ -1,23 +1,21 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
-
-import java.io.IOException;
-import java.util.ResourceBundle;
 
 
 public class GameBoardController {
+    private LudoController ludoController;
+
+    public GameBoardController(LudoController ludoController){
+        this.ludoController = ludoController;
+    }
 
     @FXML
-    private void initialize(){
+    private void initialize() {
 
 
     }
@@ -65,12 +63,20 @@ public class GameBoardController {
     private Button sendTextButton;
 
     @FXML
-    void speak(ActionEvent event) {
-
+    void sendChatMessage(ActionEvent event) {
+        System.out.println("sendAction");
+        String message = textToSay.getText();
+        textToSay.clear();
+        ludoController.sendMessageFromLocal(message);
     }
 
     @FXML
     void throwDice(ActionEvent event) {
 
+    }
+
+    public void setTextInChat(String user, String message) {
+        String completeMessage = String.format("%s: %s%n", user, message);
+        chatArea.setText(chatArea.getText() + completeMessage);
     }
 }

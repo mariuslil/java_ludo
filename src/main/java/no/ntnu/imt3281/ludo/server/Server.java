@@ -216,12 +216,12 @@ public class Server {
                     events.add(player.getName() + msg);   // Add event to event queue
                 }  else if (msg != null && msg.startsWith("GLOBALMSG:")) {
                     messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
-                } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
-                    wannaGame.add(player);
-                }/*else if (msg != null && msg.startsWith("GAMEMSG:")){
+                } else if (msg != null && msg.startsWith("GAMEMSG:")){
                     // TODO : Get ludo-game id
-                     messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
-                }*/ // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
+                    messages.add("GAMEMSG:" + "luduID" + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
+                }else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
+                    wannaGame.add(player);
+                } // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
                 Thread.sleep(10);    // Prevent excessive processor usage

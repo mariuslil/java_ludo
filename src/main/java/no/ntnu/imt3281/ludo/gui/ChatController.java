@@ -25,10 +25,8 @@ public class ChatController {
     @FXML
     void onSendGlobalMessage(ActionEvent event) {
         String message = textToSay.getText();
-        if (message != null && !message.isEmpty()) {
-            textToSay.clear();
-            ludoController.sendMessageFromGlobal(message);
-        }
+        textToSay.clear();
+        ludoController.sendMessageFromGlobal(message);
     }
 
     public void setTextInChat(String user, String message) {
