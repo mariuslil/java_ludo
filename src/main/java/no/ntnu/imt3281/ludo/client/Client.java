@@ -84,7 +84,9 @@ public class Client {
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 							this.cookie = tmp.replace("COOKIE:",""); //set cookie
 							this.loggedIn = true; //Client is logged in :)
-							ludoController.removeOpenDialog();
+							if(ludoController!=null) {
+								ludoController.removeOpenDialog();
+							}
 
 							//MSG//
 						}else if(tmp != null && tmp.startsWith("MSG:")){
