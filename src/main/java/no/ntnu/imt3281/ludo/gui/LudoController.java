@@ -32,7 +32,7 @@ public class LudoController {
 
 		try {
 			AnchorPane chat = loader.load();
-			Tab tab = new Tab("Chat: Global");
+			Tab tab = new Tab("Global");
 			tab.setContent(chat);
 			chatTab.getTabs().add(tab);
 		} catch (IOException el) {

@@ -135,7 +135,7 @@
                      </children></Pane>
                   <VBox prefHeight="492.0" prefWidth="295.0">
                      <children>
-                        <TextArea fx:id="chatArea" prefHeight="465.0" prefWidth="295.0" />
+                        <TextArea fx:id="chatArea" editable="false" prefHeight="465.0" prefWidth="295.0" />
                         <HBox>
                            <children>
                               <TextField fx:id="textToSay" prefHeight="27.0" prefWidth="228.0" />
