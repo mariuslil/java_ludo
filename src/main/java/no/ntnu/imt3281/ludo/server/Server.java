@@ -164,32 +164,25 @@ public class Server {
             if (newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)) {
                 String uniqID = UUID.randomUUID().toString();
 
-                ludoServer.newGame(uniqID);
+                ludoServer.newGame(uniqID, newGame.size());
                 LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
                 System.out.println("SERVER: Starting game: " + uniqID);
 
-                waitingPlayers.forEachValue(100, waitingPlayer -> {
-                    for (String playerName : newGame) {
-                        if (waitingPlayer.getName().equals(playerName)) {
-                            waitingPlayer.write("STARTGAME:" + uniqID);
 
-                            lbq.add(playerName);
-
-                            waitingPlayer.activeGames.add(uniqID);
-                            ludoServer.addPlayerToGame(uniqID, playerName);
-                            waitingPlayers.remove(waitingPlayer.name);
-                            System.out.println("SERVER: WAITING PLAYERS: " + waitingPlayers.size());
-                        }
+                for (String playerName:newGame) {
+                    try {
+                        lbq.put(playerName);
+                        players.get(playerName).write("STARTGAME:" + uniqID);
+                        players.get(playerName).activeGames.add(uniqID);
+                        waitingPlayers.remove(playerName);
+                        ludoServer.addPlayerToGame(uniqID, playerName);
+                        newGame.remove(playerName);
+                    }catch (InterruptedException e){
+                        System.out.println(e.getMessage());
                     }
-                });
-
-                games.put(uniqID, lbq);
-                //waitingPlayers.get(newGame.r)
-
-                for (String name : newGame) {
-                    newGame.remove(name); //reset newGame
                 }
 
+                games.put(uniqID, lbq);
                 ticktock = 0;
             }
 
@@ -274,9 +267,10 @@ public class Server {
 
                 for(String player : games.get(eventParts[1])){
                     if (event.startsWith("EVENT:DICE:")) {
+                        if (eventParts.length == 4) {
                             System.out.println("SERVER: Sending player " + player + " DICE event.");
                             players.get(player).write(event);
-
+                        }
                     } else if (event.startsWith("EVENT:PLAYER:")) {
                         if (eventParts.length == 4) {
                             System.out.println("SERVER: Sending player " + player + " PLAYER event.");
@@ -285,6 +279,11 @@ public class Server {
                     } else if (event.startsWith("EVENT:PIECE:")) {
                         if (eventParts.length == 6) {
                             System.out.println("SERVER: Sending player " + player + " PIECE event.");
+                            players.get(player).write(event);
+                        }
+                    } else if (event.startsWith("EVENT:JOIN:")) {
+                        if (eventParts.length == 4) {
+                            System.out.println("SERVER: Sending player " + player + " JOIN event.");
                             players.get(player).write(event);
                         }
                     }

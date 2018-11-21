@@ -2,20 +2,27 @@ package no.ntnu.imt3281.ludo.server;
 
 import no.ntnu.imt3281.ludo.logic.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class LudoServer {
 
     protected Server server;
     protected final ConcurrentHashMap<String, Ludo> games = new ConcurrentHashMap<>(); //games by gamehash
+    protected final ConcurrentHashMap<String, List<String>> players = new ConcurrentHashMap<>();
+    protected final ConcurrentHashMap<String, Integer> gameSize = new ConcurrentHashMap<>();
 
 
     protected LudoServer(Server server){
         this.server = server;
     }
 
-    protected void newGame(String gameHash){
+    protected void newGame(String gameHash, int size){
         games.put(gameHash, new Ludo());
+        players.put(gameHash, new ArrayList<>());
+        gameSize.put(gameHash, size);
         System.out.println("LUDOSERVER: New game created with hash: "+gameHash);
 
         games.get(gameHash).addDiceListener(new DiceListener(gameHash){
@@ -56,13 +63,33 @@ public class LudoServer {
     }
 
     protected void addPlayerToGame(String gameHash, String player){
-        games.get(gameHash).addPlayer(player);
+
         System.out.println("LUDOSERVER: Player "+player+" joined game: "+gameHash);
+
+
+        players.get(gameHash).add(player);
+        games.get(gameHash).addPlayer(player);
+
+        if (players.get(gameHash).size() == gameSize.get(gameHash)) {
+            int i = 0;
+            for (String client:players.get(gameHash)) {
+                try {
+                    server.events.put("EVENT:JOIN:§" + gameHash + "§" + client + "§" + players.get(gameHash).indexOf(client));
+                }catch (InterruptedException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+
+
+        }
+
     }
 
     protected void throwDice(String gameHash, String player){
         //if(games.get(gameHash).getPlayerName(games.get(gameHash).activePlayer()).equals(player)){ //only active player can issue this command
             games.get(gameHash).throwDice(); //throw dice
+        //}else{
+         //   System.out.println("LUDOSERVER: A not active player tried to issue DICE event");
         //}
     }
 

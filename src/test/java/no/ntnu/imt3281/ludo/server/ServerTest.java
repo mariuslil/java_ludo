@@ -50,15 +50,15 @@ public class ServerTest {
         //server.ludoServer.addPlayerToGame("TEST", client1.getName());
         //server.ludoServer.addPlayerToGame("TEST", client2.getName());
         try{
-            sleep(500); //wait 400ms to let the message run through
+            sleep(1000); //wait 1s to let the request run through server
         }catch (InterruptedException e){
 
         }
 
-        client1.sendDiceEvent(client1.test2);
+        client1.sendDiceEvent(client1.test2); //send event
 
         try{
-            sleep(2000); //wait 400ms to let the message run through
+            sleep(2000); //wait 2s to let the message run through
         }catch (InterruptedException e){
 
         }
