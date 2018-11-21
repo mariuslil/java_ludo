@@ -45,18 +45,6 @@ public class LudoController {
 	}
 
 	@FXML
-	private void warningPopUp(String message) {
-
-		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle("Warning");
-		alert.setHeaderText(null);
-		alert.setContentText(message);
-
-		alert.showAndWait();
-
-	}
-
-	@FXML
 	private ResourceBundle resources;
 
 	@FXML
@@ -135,6 +123,18 @@ public class LudoController {
 	@FXML
 	void joinChat(ActionEvent event) {
 		//TODO: this
+	}
+
+	@FXML
+	public void warningPopUp(String message) {
+
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Warning");
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+
+		alert.showAndWait();
+
 	}
 
     @FXML
