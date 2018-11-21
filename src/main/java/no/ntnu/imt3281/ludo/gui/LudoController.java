@@ -19,7 +19,7 @@ import java.net.URL;
 public class LudoController {
 
 	private Client client = new Client(this);
-	private ChatController chatController = new ChatController(this);
+	private ChatController chatController = new ChatController(this, this.client);
 
 	@FXML
 	private WaitDialogController waitDialogController;

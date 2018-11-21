@@ -13,10 +13,11 @@ import java.util.List;
 public class ChatController {
     private List<String> messages = new ArrayList<>();
     private LudoController ludoController;
-    private Client client = new Client(ludoController);
+    private Client client;
 
-    public ChatController(LudoController ludoController){
+    public ChatController(LudoController ludoController, Client client){
         this.ludoController = ludoController;
+        this.client = client;
     }
 
     @FXML
