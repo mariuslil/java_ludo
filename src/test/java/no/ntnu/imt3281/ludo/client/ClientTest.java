@@ -7,6 +7,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.*;
 
@@ -82,5 +85,37 @@ public class ClientTest {
 
         System.out.println("TEST: sendDiceEvent complete");
         //TODO: assert event came through correctly, in the mean time check log :)
+    }
+
+    @Test
+    public void checkIfGameStarts(){
+        Client client3 = new Client();
+        Client client4 = new Client();
+        client3.connect("REGISTER:", "Marius", "hei");
+        client4.connect("REGISTER:", "Okolloen", "hei");
+        try{
+            sleep(500); //wait 500ms to let the system connect
+        }catch (InterruptedException e){
+
+        }
+
+        client1.requestNewGame();
+        client2.requestNewGame();
+        client3.requestNewGame();
+        client4.requestNewGame();
+
+
+        try{
+            sleep(6000); //wait 100ms to let the message go through the system.
+        }catch (InterruptedException e){
+
+        }
+
+        String gameHash = client1.activeGames.get(0); //get gameHash from client1
+
+        assertTrue(server.playerInGame(client1.name, gameHash));
+        assertTrue(server.playerInGame(client2.name, gameHash));
+        assertTrue(server.playerInGame(client3.name, gameHash));
+        assertTrue(server.playerInGame(client4.name, gameHash));
     }
 }

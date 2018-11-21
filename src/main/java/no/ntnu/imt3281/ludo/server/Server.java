@@ -13,6 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Thread.sleep;
+
 /**
  * This is the main class for the server.
  * **Note, change this to extend other classes if desired.**
@@ -21,7 +23,6 @@ import java.util.logging.Logger;
  */
 public class Server {
 
-    private Connection dbCon = null;
     private Database database = null;
     private int PORT = 1234;
 
@@ -31,7 +32,10 @@ public class Server {
     private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
     private final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
     private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String[]> games = new ConcurrentHashMap<>();
+    protected final ConcurrentHashMap<String, LinkedBlockingQueue<String>> games = new ConcurrentHashMap<>();
+    private final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
+
+    ConcurrentHashMap<String, Player> waitingPlayers = new ConcurrentHashMap<>();
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
@@ -50,6 +54,10 @@ public class Server {
         executor.execute(() -> messageSenderThread());        // This thread listens for messages from clients
         //EVENTSENDERS
         executor.execute(() -> eventSenderThread());      // This thread sends events to the users
+
+        //GAME THREADS
+        executor.execute(() -> assignGameThread()); // This thread will add players to new games a
+        executor.execute(() -> pingWaitingPlayers());
     }
 
     public void killServer() {
@@ -63,25 +71,6 @@ public class Server {
             //
         }
     }
-
-    /*@Override
-    public void start(Stage primaryStage) throws Exception {
-
-        this.database = new Database();
-
-        try {
-            AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("./Server.fxml"));
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-            //connect/create db
-            dbCon = database.connectDB();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-    }*/
 
 
     private void connectionListenerThread() {
@@ -110,7 +99,6 @@ public class Server {
         } catch (IOException e) {
             System.out.println("SERVER: Unable to listen to port: " + PORT);
             logger.log(Level.SEVERE, "Unable to listen to port: " + PORT, e);
-            System.exit(0);
         }
     }
 
@@ -134,6 +122,84 @@ public class Server {
         }
     }
 
+    private void assignGameThread(){
+        LinkedBlockingQueue<String> newGame = new LinkedBlockingQueue<>();
+
+        int ticktock = 0;
+        while (!shutdown){
+
+            System.out.println("SERVER: TICKTOCK: "+String.valueOf(ticktock));
+
+            try{
+                if(wannaGame.size()>0) {
+                    Player player = wannaGame.take(); //this fucker
+
+                    System.out.println("SERVER: Player "+player.getName()+" added to game waiting list.");
+
+                    waitingPlayers.put(player.getName(), player);
+                    newGame.add(player.getName());
+
+                    waitingPlayers.forEachValue(100, waitingPlayer -> {
+                        waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: "+player.getName().toUpperCase()+" added to queue");
+                    });
+                    ticktock = 0;
+                }
+            }catch (InterruptedException e){
+                //meep
+            }
+
+            if(newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)){
+                String uniqID = "pels"; //TODO: make it uniqueid
+                games.put(uniqID, newGame);
+
+                System.out.println("SERVER: Starting game: "+uniqID);
+
+                //TODO: do this more efficiently
+                waitingPlayers.forEachValue(100, waitingPlayer -> {
+                    for (String playerName:newGame) {
+                        if (waitingPlayer.getName().equals(playerName)) {
+                            waitingPlayer.write("STARTGAME:"+uniqID);
+                            waitingPlayer.activeGames.add(uniqID);
+                            waitingPlayers.remove(waitingPlayer.name);
+                            System.out.println("SERVER: WAITING PLAYERS: "+waitingPlayers.size());
+                        }
+                    }
+                });
+
+
+
+                //waitingPlayers.get(newGame.r)
+
+                for (String name:newGame) {
+                    newGame.remove(name); //reset newGame
+                }
+
+                ticktock = 0;
+            }
+
+            try{
+                sleep(1000); //wait one second
+            }catch (InterruptedException e){
+
+            }
+            if(ticktock>50){ticktock=0;}
+            ticktock++;
+        }
+    }
+
+    private void pingWaitingPlayers(){
+        while(!shutdown){
+            waitingPlayers.forEachValue(100, waitingPlayer -> {
+                waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: SERVER: Waiting for players..");
+            });
+            try{
+                sleep(1000); //wait one second
+            }catch (InterruptedException e){
+
+            }
+        }
+    }
+
     private void playerListenerThread() {
         while (!shutdown) {
             players.forEachValue(100, player -> {
@@ -146,13 +212,11 @@ public class Server {
 
                 } else if (msg != null && msg.startsWith("EVENT:")) {
                     events.add(player.getName() + msg);   // Add event to event queue
-                } else if (msg != null && msg.startsWith("GLOBALMSG:")) {
-                    messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
-                } /*else if (msg != null && msg.startsWith("GAMEMSG:")){
-                    // TODO : Get ludo-game id
-                     messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
-                }*/
-                //TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
+                } else if (msg != null && msg.startsWith("MSG:")) {
+                    messages.add(msg + "§" + player.getName());    // Add message to message queue
+                } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
+                    wannaGame.add(player);
+                }//TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
                 Thread.sleep(10);    // Prevent excessive processor usage
@@ -175,11 +239,9 @@ public class Server {
                  */
                 //////////////////MOCK GAME UNTIL I IMPLEMNT IT
                 //TODO: THIS^
-                String[] test = new String[4];
-                test[0] = "Johan";
-                test[1] = "Brede";
-                test[2] = "";
-                test[3] = "";
+                LinkedBlockingQueue<String> test = new LinkedBlockingQueue<>();
+                test.add("Johan");
+                test.add("Brede");
                 games.put(eventParts[1], test);
                 //////////////////
                 for (String player : games.get(eventParts[1])) { //get players from the game
@@ -257,7 +319,7 @@ public class Server {
             }
         } else if (player.connectionString.startsWith("SESSION:")) { //login user through a session key instead
             System.out.println("SERVER: client trying to connect through session key.");
-            String trim = player.connectionString.replace("SESSION:", "");
+            //String trim = player.connectionString.replace("SESSION:", "");
             //TODO: THIS -> login client with only the cookie
         } else {
             System.out.println("SERVER: Something wrong validating user.");
@@ -268,9 +330,13 @@ public class Server {
         return (players.get(username) != null);
     }
 
+    public boolean playerInGame(String username, String game) {
+        return players.get(username).activeGames.contains(game);
+    }
+
     class Player {
         private String name = "";
-        public String connectionString;
+        private String connectionString;
         private Socket s;
         private BufferedReader input;
         private BufferedWriter output;
@@ -296,7 +362,7 @@ public class Server {
          *
          * @return the data read from the client or null if no data was available.
          */
-        public String read() {
+        private String read() {
             try {
                 if (input.ready()) {
                     return input.readLine();
@@ -309,7 +375,7 @@ public class Server {
             }
         }
 
-        public void write(String msg) {
+        private void write(String msg) {
             try {
                 output.write(msg);
                 output.newLine();    // Must send newline for client to be able to read
@@ -329,6 +395,10 @@ public class Server {
 
         public String getName() {
             return name;
+        }
+
+        public String getConnectionString() {
+            return connectionString;
         }
 
         public Socket getSocket() {

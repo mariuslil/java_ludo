@@ -41,6 +41,7 @@ public class Database {
                     "    Wins INTEGER)";
             Statement stmnt = connect.createStatement();
             stmnt.execute(sql);
+            stmnt.close();
             System.out.println("DATABASE: USERS Table created");
 
             //insert mock data
@@ -70,14 +71,14 @@ public class Database {
             if(hashPass!=""&&cookie!=""){
 
                 //insert mock data
-                String sql1 = "INSERT INTO USERS (Name, Password, Cookie, Wins) VALUES (?,?,?,?)";
-                PreparedStatement stmnt1 = connect.prepareStatement(sql1);
-                stmnt1.setString(1, username);
-                stmnt1.setString(2, hashPass);
-                stmnt1.setString(3, cookie);
-                stmnt1.setInt(4, 0);
-                int rows = stmnt1.executeUpdate();
-
+                String sql = "INSERT INTO USERS (Name, Password, Cookie, Wins) VALUES (?,?,?,?)";
+                PreparedStatement stmnt = connect.prepareStatement(sql);
+                stmnt.setString(1, username);
+                stmnt.setString(2, hashPass);
+                stmnt.setString(3, cookie);
+                stmnt.setInt(4, 0);
+                int rows = stmnt.executeUpdate();
+                stmnt.close();
                 System.out.println("DATABASE: Rows inserted: " + rows);
 
             }
@@ -93,48 +94,51 @@ public class Database {
     protected String loginUser(String username, String pass){
 
         String hashPass;
+        String cookie = null;
 
         try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
 
             hashPass = hashFunc(pass);
 
-            String sql2 = "SELECT NAME, COOKIE FROM USERS WHERE Name LIKE (?) AND Password LIKE (?)";
-            PreparedStatement stmnt2 = connect.prepareStatement(sql2);
-            stmnt2.setString(1, username);
-            stmnt2.setString(2, hashPass);
-            ResultSet res = stmnt2.executeQuery();
+            String sql = "SELECT NAME, COOKIE FROM USERS WHERE Name LIKE (?) AND Password LIKE (?)";
+            PreparedStatement stmnt = connect.prepareStatement(sql);
+            stmnt.setString(1, username);
+            stmnt.setString(2, hashPass);
+            ResultSet res = stmnt.executeQuery();
+
 
             if (res.next()){
-                return res.getString("Cookie");
-            }
+                cookie = res.getString("Cookie");
 
+            }
+            stmnt.close();
         }catch (SQLException e) {
             //rip
             System.out.println(e.getMessage());
         }
 
-        return null;
+        return cookie;
     }
 
     protected boolean userExists(String username){
+        boolean exists = false;
         try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
-            String sql2 = "SELECT NAME FROM USERS WHERE Name LIKE (?)";
-            PreparedStatement stmnt2 = connect.prepareStatement(sql2);
-            stmnt2.setString(1, username);
-            ResultSet res = stmnt2.executeQuery();
+            String sql = "SELECT NAME FROM USERS WHERE Name LIKE (?)";
+            PreparedStatement stmnt = connect.prepareStatement(sql);
+            stmnt.setString(1, username);
+            ResultSet res = stmnt.executeQuery();
 
 
             if (res.next()){
-                return (res.getString("Name").equals(username));
+                exists = (res.getString("Name").equals(username));
             }
-
-
+            stmnt.close();
         }catch (SQLException e){
             //rip
             System.out.println(e.getMessage());
         }
 
-        return false;
+        return exists;
     }
 
     private String hashFunc(String hashPls){

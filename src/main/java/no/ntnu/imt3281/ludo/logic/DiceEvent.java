@@ -35,6 +35,12 @@ public class DiceEvent {
         return (event.ludo == ludo) && (event.color == color) && (event.diceNr == diceNr);
     }
 
+    @Override
+    public int hashCode() {
+        /* ... */
+        return 69;
+    }
+
     public int getColor() {
         return color;
     }

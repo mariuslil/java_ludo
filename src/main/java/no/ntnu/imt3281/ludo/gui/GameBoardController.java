@@ -8,9 +8,15 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-
+import no.ntnu.imt3281.ludo.logic.Ludo;
 
 public class GameBoardController {
+
+    private Ludo ludo;
+
+    public GameBoardController(String gameHash){
+        ludo = new Ludo();
+    }
 
     @FXML
     private void initialize(){
