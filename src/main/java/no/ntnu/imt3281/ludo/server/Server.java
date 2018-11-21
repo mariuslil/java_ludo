@@ -38,6 +38,8 @@ public class Server {
 
     ConcurrentHashMap<String, Player> waitingPlayers = new ConcurrentHashMap<>();
 
+    LinkedBlockingQueue<String> newGame = new LinkedBlockingQueue<>();
+
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
 
@@ -59,6 +61,7 @@ public class Server {
         //GAME THREADS
         executor.execute(() -> assignGameThread()); // This thread will add players to new games a
         executor.execute(() -> pingWaitingPlayers());
+        executor.execute(() -> fillNewGameThread());
     }
 
     public void killServer() {
@@ -123,16 +126,10 @@ public class Server {
         }
     }
 
-    private void assignGameThread() {
-        LinkedBlockingQueue<String> newGame = new LinkedBlockingQueue<>();
-
-        int ticktock = 0;
-        while (!shutdown) {
-
-            System.out.println("SERVER: TICKTOCK: " + String.valueOf(ticktock));
-
+    private void fillNewGameThread(){
+        while(!shutdown) {
             try {
-                if (wannaGame.size() > 0) {
+                if (wannaGame.size() > 0 && newGame.size() < 4) {
                     Player player = wannaGame.take(); //this fucker
 
                     System.out.println("SERVER: Player " + player.getName() + " added to game waiting list.");
@@ -143,10 +140,22 @@ public class Server {
                     waitingPlayers.forEachValue(100, waitingPlayer -> {
                         waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: " + player.getName().toUpperCase() + " added to queue");
                     });
-                    ticktock = 0;
                 }
             } catch (InterruptedException e) {
                 //meep
+                logger.severe(e.getMessage());
+            }
+        }
+    }
+
+    private void assignGameThread() {
+
+        int ticktock = 0;
+        int newGamePlayers = 0;
+        while (!shutdown) {
+            if(newGamePlayers != newGame.size()){
+                ticktock = 0;
+                newGamePlayers = newGame.size();
             }
 
             if (newGame.size() == 4 || (ticktock > 29 && newGame.size() > 1)) {

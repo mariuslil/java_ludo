@@ -106,7 +106,7 @@ public class ClientTest {
 
 
         try{
-            sleep(6000); //wait 100ms to let the message go through the system.
+            sleep(3000); //wait 100ms to let the message go through the system.
         }catch (InterruptedException e){
 
         }
