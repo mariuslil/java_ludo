@@ -64,7 +64,6 @@ public class GameBoardController {
 
     @FXML
     void sendChatMessage(ActionEvent event) {
-        System.out.println("sendAction");
         String message = textToSay.getText();
         textToSay.clear();
         ludoController.sendMessageFromLocal(message);

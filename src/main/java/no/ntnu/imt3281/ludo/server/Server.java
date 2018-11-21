@@ -215,10 +215,14 @@ public class Server {
                 } else if (msg != null && msg.startsWith("EVENT:")) {
                     events.add(player.getName() + msg);   // Add event to event queue
                 }  else if (msg != null && msg.startsWith("GLOBALMSG:")) {
+                    // GLOBALMSG: <user>§<message>
                     messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
+
                 } else if (msg != null && msg.startsWith("GAMEMSG:")){
-                    // TODO : Get ludo-game id
-                    messages.add("GAMEMSG:" + "luduID" + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
+                    String[] messageInfo = msg.replace("GAMEMSG:", "").split("§");
+                    // GAMEMSG: <gameid>§<user>§<message>
+                    messages.add("GAMEMSG:" + messageInfo[0] + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", "").replace(messageInfo[0], "").replace("§", ""));
+
                 }else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
                     wannaGame.add(player);
                 } // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT

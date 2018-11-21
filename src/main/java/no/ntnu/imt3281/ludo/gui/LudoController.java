@@ -248,16 +248,14 @@ public class LudoController {
     }
 
     public void sendMessageFromGlobal(String message){
-        if(message != null && !message.isEmpty()){
+        if(message != null && !message.isEmpty() && !message.contains("§")){
             client.sendGLOBALText(message);
         }
     }
 
     public void sendMessageFromLocal(String message){
-        System.out.println("ludoController");
-        if(message != null && !message.isEmpty()){
-            // TODO change to actual id
-            client.sendLOCALText(message, "ludoID");
+        if(message != null && !message.isEmpty() && !message.contains("§")){
+            client.sendLOCALText(message);
         }
     }
 }

@@ -91,7 +91,7 @@ public class Client {
 							//GLOBAL MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GLOBALMSG:")){
 							// TODO : Handle message
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
+							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
 							messages.add(tmp);
 
 							// This is so the sendMessageToClient test won't fail
@@ -109,18 +109,21 @@ public class Client {
 							//GAME MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GAMEMSG:")){
 							// TODO : fix this to have id with
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
-							messages.add(tmp);
+							String message = tmp.replace("GAMEMSG:", "");
+							String[] messageInfo = message.split("§");
+							if(activeGames.size() > 0 && activeGames.contains(messageInfo[0])){
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_CHAT_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
+								messages.add(tmp);
 
-							if(ludoController != null){
-								String message = tmp.replace("GAMEMSG:", "");
-								String[] messageInfo = message.split("§");
-
-								// 0: gameID, 1: userName, 2: message
-								if(messageInfo.length == 3){
-									ludoController.setMessageInLocalTextBox(messageInfo[1], messageInfo[2]);
+								if(ludoController != null){
+									// 0: gameID, 1: userName, 2: message
+									if(messageInfo.length == 3) {
+										System.out.println("GameID: " + messageInfo[0] + " User: " + messageInfo[1] + " Message: " + messageInfo[2]);
+										ludoController.setMessageInLocalTextBox(messageInfo[1], messageInfo[2]);
+									}
 								}
 							}
+
 
 							//EVENT//
 						} else if(tmp != null && tmp.startsWith("EVENT:")){
@@ -206,12 +209,12 @@ public class Client {
 		}
 	}
 
-	public void sendLOCALText(String message, String ludoID){
+	public void sendLOCALText(String message){
 		if(connected && loggedIn){
 			try{
-				//if(activeGames.size() > 0){
-					connection.send("GAMEMSG:"+message);
-				//}
+				if(activeGames.size() == 1){
+					connection.send("GAMEMSG:"+activeGames.get(0)+ "§" + message);
+				}
 
 			} catch (IOException e){
 				connection.close();
