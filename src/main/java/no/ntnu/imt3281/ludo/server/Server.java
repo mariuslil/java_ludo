@@ -257,13 +257,11 @@ public class Server {
                 final String event = events.take();        // Blocks until an event is available
                 String[] eventParts = event.split("§");
 
-
                 /*
                  * eventParts[0] = EVENT:DICE: or EVENT:PIECE: or EVENT:PLAYER:
                  * eventParts[1] = GAMEHASH/ID
                  * eventParts[2] = Event information
                  */
-
 
                 for(String player : games.get(eventParts[1])){
                     if (event.startsWith("EVENT:DICE:")) {

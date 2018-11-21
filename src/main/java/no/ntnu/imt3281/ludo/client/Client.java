@@ -145,6 +145,15 @@ public class Client {
 								if(ludoController!=null && payload.length == 6){
 									ludoController.receivePieceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]), Integer.parseInt(payload[4]), Integer.parseInt(payload[5]));
 								}
+
+								//JOIN//
+							}else if(event.startsWith("JOIN:")){ //join game event
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
+
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 4){
+									ludoController.receiveJoinEvent(payload[1], payload[2],  Integer.parseInt(payload[3]));
+								}
 							}
 
 							//DISCONNECTED//

@@ -237,6 +237,11 @@ public class LudoController {
 		gameControllers.get(gameHash).runPieceEvent(color, pieceNr, fromPos, toPos);
 	}
 
+    @FXML
+    public void receiveJoinEvent(String gameHash, String username, int color){
+        gameControllers.get(gameHash).runJoinEvent(username, color);
+    }
+
 	public void sendDiceThrowRequest(String gameHash){
 		client.sendDiceEvent(gameHash);
 	}

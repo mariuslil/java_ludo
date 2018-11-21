@@ -98,4 +98,8 @@ public class GameBoardController {
     protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
         //TODO: move player color's pieceNr from Pos to Pos
     }
+
+    protected void runJoinEvent(String username, int color){
+        //TODO: USERNAME joins as player COLOR
+    }
 }
