@@ -1,12 +1,6 @@
 package no.ntnu.imt3281.ludo.client;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
+import no.ntnu.imt3281.ludo.gui.LudoController;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
 
 import java.io.*;
@@ -29,8 +23,10 @@ public class Client {
 
 	protected String name = "";
 	protected List<String> messages = new ArrayList<>();
+	protected List<String> activeGames = new ArrayList<>();
 	private boolean connected = false;
 	private boolean loggedIn = false;
+	private boolean lookingForGame = false;
 	private int PORT = 1234;
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
@@ -39,9 +35,14 @@ public class Client {
 
 	private String cookie = "";
 
+	private LudoController ludoController = null;
 
 	public Client(){
 
+	}
+
+	public Client(LudoController ludoController){
+		this.ludoController = ludoController;
 	}
 
 	public void connect(String type, String username, String password) {
@@ -72,41 +73,77 @@ public class Client {
 				if (connection.input.ready()) {		// A line can be read
 					String tmp = connection.input.readLine();
 					//Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
-						if(tmp.startsWith("JOIN:")){
+							//JOIN//
+						if(tmp != null && tmp.startsWith("JOIN:")){
 							//todo: handle join
 							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp.replace("JOIN:", ""));
-						}else if(tmp.startsWith("COOKIE:")){
+
+							//COOKIE//
+						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 							this.cookie = tmp.replace("COOKIE:",""); //set cookie
 							this.loggedIn = true; //Client is logged in :)
-						}else if(tmp.startsWith("MSG:")){
+							ludoController.removeOpenDialog();
+
+							//MSG//
+						}else if(tmp != null && tmp.startsWith("MSG:")){
 							//todo: handle message
 							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("MSG:",""));
 							messages.add(tmp);
-						}else if(tmp.startsWith("EVENT:")){
+
+							//EVEN//
+						}else if(tmp != null && tmp.startsWith("EVENT:")){
 							//todo: handle event
 							String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
+
+								//DICE//
 							if(event.startsWith("DICE:")){ //dice event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
 								//TODO: handle DICE event
 								this.test = true;
+
+								//PIECE//
 							}else if(event.startsWith("PIECE:")){ //piece event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
 								//TODO: handle PIECE event
+
+								//PLAYER//
 							}else if(event.startsWith("PLAYER:")){ //player event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
 								//TODO: handle PLAYER event
+
 							}
-						}else if(tmp.startsWith("DISCONNECTED:")){
+
+							//DISCONNECTED//
+						}else if(tmp != null && tmp.startsWith("DISCONNECTED:")){
 							//todo: handle disconnect
 							//remove disconnected user from thing
-						}else if(tmp.startsWith("LOGINERROR:")){
+
+							//LOGINERROR//
+						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){
 							System.out.println("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
 							this.connected = false;
 							connection.close();
 							this.loggedIn = false;
 							System.out.println("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
+
+							//NEWGAME//
+						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
+							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
+							String game = tmp.replace("STARTGAME:","");
+							if(this.lookingForGame){
+								activeGames.add(game);
+								if(ludoController!=null) {
+									ludoController.startNewGame(game);
+									ludoController.removeOpenDialog();
+								}
+							}
+						}else if(tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
+							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
+							if(ludoController!=null){
+								ludoController.updateWaitDialog(update);
+							}
 						}
 					//});
 				}
@@ -133,6 +170,31 @@ public class Client {
 		if (connected  && loggedIn){
 			try{
 				connection.send("MSG:"+message);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	public void requestNewGame(){
+		if (connected  && loggedIn){
+			try{
+				connection.send("JOINRANDOMGAME");
+				this.lookingForGame = true;
+				if(ludoController!=null){
+					ludoController.startWaitForGame();
+				}
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+
+	}
+
+	public void request(String request){
+		if (connected  && loggedIn){
+			try{
+				connection.send(request);
 			}catch (IOException e){
 				connection.close();
 			}

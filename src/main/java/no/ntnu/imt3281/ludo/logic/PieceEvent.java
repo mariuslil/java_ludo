@@ -33,4 +33,10 @@ public class PieceEvent {
         return (event.ludo == ludo) && (event.color == color) && (event.pieceNr == pieceNr) &&
                 (event.fromPos == fromPos) && (event.toPos == toPos);
     }
+
+    @Override
+    public int hashCode() {
+        /* ... */
+        return 69;
+    }
 }
