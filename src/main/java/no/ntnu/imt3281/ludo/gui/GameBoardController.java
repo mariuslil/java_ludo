@@ -18,11 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GameBoardController {
 
-    private Ludo ludo;
     private LudoController ludoController;
 
     public GameBoardController(String gameHash, LudoController ludoController){
-        ludo = new Ludo(gameHash);
         this.ludoController = ludoController;
     }
 
@@ -72,31 +70,28 @@ public class GameBoardController {
 
     @FXML
     void throwDice(ActionEvent event) {
-        ludo.throwDice();
+        //throw dice with random function
+        //set dice picture to the number
+        //send server message that the dicenr was thrown
     }
 
     protected void runDiceEvent(int color, int diceNr){
-        if(ludo.activePlayer() == color){
-            ludo.throwDice(diceNr);
-        }
+        //player color threw a diceNr, update GUI
     }
 
     protected void runPlayerEvent(int color, int status){
         if(status == 400){ //left
-            ludo.removePlayer(ludo.getPlayerName(color));
+            //TODO: remove players name and pieces from the game
         }else if(status == 300){ //won
-            //TODO: suspend shit because player won
-            //TODO: update db of winner
+            //TODO: Show flashy playername WON! message
         }else if(status == 200){ //playing
-            //todo: this
+            //todo: Activate player color
         }else if(status == 100){ //waiting
-            //todo: this
+            //todo: Deactivate player color
         }
     }
 
     protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
-        if(ludo.activePlayer() == color){
-            ludo.movePiece(color, fromPos, toPos);
-        }
+        //TODO: move player color's pieceNr from Pos to Pos
     }
 }
