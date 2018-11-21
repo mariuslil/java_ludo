@@ -2,6 +2,8 @@ package no.ntnu.imt3281.ludo.client;
 
 import no.ntnu.imt3281.ludo.gui.LudoController;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -162,6 +164,26 @@ public class Client {
 		if (connected && loggedIn){
 			try{
 				connection.send("EVENT:DICE:§"+diceEvent.getLudoHash()+"§"+diceEvent.getColor()+"§"+diceEvent.getDiceNr());
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	protected void sendPlayerEvent(PlayerEvent playerEvent){
+		if (connected && loggedIn){
+			try{
+				connection.send("EVENT:PLAYER:§"+name+"§"+playerEvent.getLudoHash()+"§"+playerEvent.getColor()+"§"+playerEvent.getStatus());
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	protected void sendPieceEvent(PieceEvent pieceEvent){
+		if (connected && loggedIn){
+			try{
+				connection.send("EVENT:PIECE:§"+name+"§"+pieceEvent.getLudoHash()+"§"+pieceEvent.getColor()+"§"+pieceEvent.getPieceNr()+"§"+pieceEvent.getFromPos()+"§"+pieceEvent.getToPos());
 			}catch (IOException e){
 				connection.close();
 			}

@@ -18,10 +18,14 @@ import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.client.Client;
 
 import java.net.URL;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LudoController {
 
 	private Client client = new Client(this);
+
+
+	private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
 
 	@FXML
 	private WaitDialogController waitDialogController;
@@ -123,10 +127,11 @@ public class LudoController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
-		GameBoardController controller = loader.getController(); //TODO: store this and feed it events
-		// Use controller to set up communication for this game.
-		// Note, a new game tab would be created due to some communication from the server
-		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
+		GameBoardController controller = new GameBoardController(gameHash, this);
+		loader.setController(controller);
+
+		gameControllers.put(gameHash, controller);
+
 		Platform.runLater(()-> {
 			try {
 				AnchorPane gameBoard = loader.load();
@@ -167,8 +172,6 @@ public class LudoController {
 		if(username!=null && password!=null){
 			client.connect("LOGIN:", username, password);
 		}
-
-		//TODO: close login dialog
 	}
 
 	public void registerUser(String username, String password){
@@ -177,8 +180,6 @@ public class LudoController {
 		if(username!=null && password!=null) {
 			client.connect("REGISTER:", username, password);
 		}
-
-		//TODO: close login dialog
 	}
 
 	@FXML

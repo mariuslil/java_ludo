@@ -16,9 +16,11 @@ import no.ntnu.imt3281.ludo.logic.Ludo;
 public class GameBoardController {
 
     private Ludo ludo;
+    private LudoController ludoController;
 
-    public GameBoardController(String gameHash){
+    public GameBoardController(String gameHash, LudoController ludoController){
         ludo = new Ludo(gameHash);
+        this.ludoController = ludoController;
     }
 
     @FXML
