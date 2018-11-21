@@ -29,6 +29,7 @@ public class LudoServer {
             @Override
             public void diceThrown(DiceEvent event){
                 try {
+                    System.out.println("LUDOSERVER: Color: " +event.getColor()+" threw a "+event.getDiceNr());
                     server.events.put("EVENT:DICE:§"+this.getGameHash()+"§"+event.getColor()+"§"+event.getDiceNr());
                 }catch (InterruptedException e){
                     System.out.println("DICEEVENT:ERROR: "+e.getMessage());
@@ -86,17 +87,17 @@ public class LudoServer {
     }
 
     protected void throwDice(String gameHash, String player){
-        //if(games.get(gameHash).getPlayerName(games.get(gameHash).activePlayer()).equals(player)){ //only active player can issue this command
+        if(games.get(gameHash).getPlayerName(games.get(gameHash).activePlayer()).equals(player)){ //only active player can issue this command
             games.get(gameHash).throwDice(); //throw dice
-        //}else{
-         //   System.out.println("LUDOSERVER: A not active player tried to issue DICE event");
-        //}
+        }else{
+            System.out.println("LUDOSERVER: A not active player tried to issue DICE event");
+        }
     }
 
     protected void movePiece(String gameHash, String player, int from, int to){
-        //if(games.get(gameHash).getPlayerName(games.get(gameHash).activePlayer()).equals(player)){ //only active player can issue this command
+        if(games.get(gameHash).getPlayerName(games.get(gameHash).activePlayer()).equals(player)){ //only active player can issue this command
             games.get(gameHash).movePiece(games.get(gameHash).activePlayer(), from, to);
-        //}
+        }
     }
 
 }
