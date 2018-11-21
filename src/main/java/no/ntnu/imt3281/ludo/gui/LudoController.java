@@ -7,16 +7,15 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.*;
 import no.ntnu.imt3281.ludo.client.Client;
 import java.net.URL;
+
 
 public class LudoController {
 
@@ -38,6 +37,18 @@ public class LudoController {
 		} catch (IOException el) {
 			el.printStackTrace();
 		}
+	}
+
+	@FXML
+	private void warningPopUp(String message) {
+
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Warning");
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+
+		alert.showAndWait();
+
 	}
 
 	@FXML
@@ -121,23 +132,29 @@ public class LudoController {
 	}
 
     @FXML
-    public void joinRandomGame(ActionEvent e) {  	
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-    	loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+    public void joinRandomGame(ActionEvent e) {
+		if (client.isLoggedIn()) {
 
-		GameBoardController controller = loader.getController();
-		// Use controller to set up communication for this game.
-		// Note, a new game tab would be created due to some communication from the server
-		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
-		
-    	try {
-    		AnchorPane gameBoard = loader.load();
-        	Tab tab = new Tab("Game");
-    		tab.setContent(gameBoard);
-        	tabbedPane.getTabs().add(tab);
-    	} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+			loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+			GameBoardController controller = loader.getController();
+			// Use controller to set up communication for this game.
+			// Note, a new game tab would be created due to some communication from the server
+			// This is here purely to illustrate how a layout is loaded and added to a tab pane.
+
+			try {
+				AnchorPane gameBoard = loader.load();
+				Tab tab = new Tab("Game");
+				tab.setContent(gameBoard);
+				tabbedPane.getTabs().add(tab);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		else {
+			warningPopUp("Need to log in to play game");
 		}
     }
 
