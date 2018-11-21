@@ -50,9 +50,9 @@ public class ServerTest {
         //server.ludoServer.addPlayerToGame("TEST", client1.getName());
         //server.ludoServer.addPlayerToGame("TEST", client2.getName());
         try{
-            sleep(1500); //wait 1s to let the request run through server
+            sleep(3000); //wait 1s to let the request run through server
         }catch (InterruptedException e){
-
+            System.out.println(e.getMessage());
         }
 
         //everyone chucks a dice event, so it has to go through
