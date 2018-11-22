@@ -86,6 +86,11 @@ public class LudoServer {
 
     }
 
+    protected void removeUserFromGame(String gameHash, String player){
+        players.get(gameHash).remove(player);
+        games.get(gameHash).removePlayer(player);
+    }
+
     protected void throwDice(String gameHash, String player){
         if(games.get(gameHash).getPlayerName(games.get(gameHash).activePlayer()).equals(player)){ //only active player can issue this command
             games.get(gameHash).throwDice(); //throw dice

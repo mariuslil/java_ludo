@@ -186,6 +186,8 @@ public class Client {
 							if(ludoController!=null){
 								ludoController.updateWaitDialog(update);
 							}
+						}else if(tmp != null && tmp.equals("PING")){
+							sendPing();
 						}
 					//});
 				}
@@ -194,6 +196,16 @@ public class Client {
 				// Ignored, should have disconnected
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
+	private void sendPing(){
+		if (connected && loggedIn){
+			try{
+				connection.send("PING");
+			}catch (IOException e){
+				connection.close();
 			}
 		}
 	}
