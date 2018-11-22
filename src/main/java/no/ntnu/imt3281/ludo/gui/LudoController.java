@@ -103,7 +103,8 @@ public class LudoController {
 
     @FXML
     void profile(ActionEvent event) {
-        client.requestProfileInformation();
+        if(client.isLoggedIn())
+            openProfileInfoDialog(client.getName(), 404, 404);
     }
 
     @FXML
@@ -198,7 +199,7 @@ public class LudoController {
     }
 
     @FXML
-    public void openProfileInfoDialog(String username, int activeGames, int activeChats) throws IOException {
+    public void openProfileInfoDialog(String username, int activeGames, int activeChats) {
         //TODO: Profile information
         ResourceBundle bundle = ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n");
 
@@ -208,15 +209,19 @@ public class LudoController {
         loader.setController(profileController);
         loader.setResources(bundle);
 
-        Parent parent = loader.load();
-        String title = bundle.getString("ludoprofile.profileheader");
+        try{
+            Parent parent = loader.load();
+            String title = bundle.getString("ludoprofile.profileheader");
 
-        Scene scene = new Scene(parent, 600, 400);
-        Stage stage = new Stage();
-        stage.setTitle(title);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.showAndWait();
+            Scene scene = new Scene(parent, 600, 400);
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.showAndWait();
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void loginUser(String username, String password) {

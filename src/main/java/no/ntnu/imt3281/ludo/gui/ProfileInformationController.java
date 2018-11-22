@@ -6,10 +6,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import no.ntnu.imt3281.ludo.client.Client;
 
 public class ProfileInformationController {
 
     private LudoController ludoController;
+    private Client client = null;
     private String userName;
 
     public ProfileInformationController(LudoController ludoController){
@@ -28,16 +30,20 @@ public class ProfileInformationController {
     @FXML
     private TextField userNameChange;
 
+    // OBS: this function was not prioritized!
     @FXML
     void onChangeUsernameClick(ActionEvent event) {
-
+/*
         if(!userNameChange.getText().isEmpty()){ // If the textfield is not empty
 
             if(!userNameChange.getText().equals(this.userName)){ // Only change userName if the name is changed
-                // TODO : Actually change userName
-                // db
-                // client
-                // server
+
+                // TODO : Check if username exists
+                // TODO : Change userName in db
+                // TODO : Change username every mentioned in db
+                // TODO : change name on client
+                // TODO : change name on server
+                // TODO : confirm back to this controller that name is changed
 
                 // Save username for here
                 this.userName = userNameChange.getText();
@@ -59,10 +65,11 @@ public class ProfileInformationController {
             // Name is empty or null
             userNameChange.setStyle("-fx-control-inner-background: #ff6666");
         }
+        */
     }
 
     public void setProfileData(String userName, int nrOfGames, int nrOfChats){
-
+        this.client = client;
         Platform.runLater(() ->{
             userNameChange.setStyle("-fx-control-inner-background: #FFFFFF");
             // Initialize
@@ -78,6 +85,9 @@ public class ProfileInformationController {
 
             numberOfGames.setText(nrOfGames+"");
             numberOfChats.setText(nrOfChats+"");
+
+            userNameChange.setEditable(false);
+            changeButton.setDisable(true);
         });
 
     }
