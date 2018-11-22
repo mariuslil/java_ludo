@@ -141,7 +141,6 @@ public class Server {
                     wannaGame.add(player);
                 } else if (msg != null && msg.equals("PING")) { //handle PING from user
                     player.setPingsNotReturned(0); //we heard from user, reset pings
-                    System.out.println("PONG");
                 }/*else if (msg != null && msg.startsWith("GAMEMSG:")){
                     // TODO : Get ludo-game id
                      messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
@@ -262,8 +261,6 @@ public class Server {
             players.forEachValue(100, player -> {
                 player.write("PING");
                 player.setPingsNotReturned(player.getPingsNotReturned()+1);
-
-                System.out.println("PING");
 
                 if(player.getPingsNotReturned() > 6){//if player hasn't returned a ping for 1 minute
                     player.close(); //disconnect user
