@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,6 +42,10 @@ public class LudoController {
 
     @FXML
     private void initialize() {
+
+        tabbedPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+        chatTab.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
         loader.setController(chatController);
         loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
@@ -47,6 +54,11 @@ public class LudoController {
         try {
             AnchorPane chat = loader.load();
             Tab tab = new Tab("Chat: Global");
+            tab.setOnCloseRequest(close -> {
+                if(close.getEventType().equals(Tab.TAB_CLOSE_REQUEST_EVENT)){
+                    System.out.println("KASPDOSKADOASK");
+                }
+            });
             tab.setContent(chat);
             chatTab.getTabs().add(tab);
         } catch (IOException el) {
@@ -154,6 +166,12 @@ public class LudoController {
 			try {
 				AnchorPane gameBoard = loader.load();
 				Tab tab = new Tab(gameHash);
+				tab.setClosable(true);
+				tab.setOnCloseRequest(close -> {
+				    if(close.getEventType().equals(Tab.CLOSED_EVENT)){
+                        System.out.println("KASPDOSKADOASK");
+                    }
+                });
 				tab.setContent(gameBoard);
 				this.tabbedPane.getTabs().add(tab);
 
