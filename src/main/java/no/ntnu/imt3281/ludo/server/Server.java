@@ -31,11 +31,11 @@ public class Server {
     private final Logger logger = Logger.getLogger("Chat server");
     protected boolean shutdown = false;
 
-    private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
+    protected final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
     protected final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
-    private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
+    protected final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
     protected final ConcurrentHashMap<String, LinkedBlockingQueue<String>> games = new ConcurrentHashMap<>();
-    private final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
+    protected final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
 
     ConcurrentHashMap<String, Player> waitingPlayers = new ConcurrentHashMap<>();
 
@@ -60,9 +60,12 @@ public class Server {
         //EVENTSENDERS
         executor.execute(() -> eventSenderThread());      // This thread sends events to the users
 
+        //PING THREAD
+        executor.execute(() -> pingOnlinePlayers());
+
         //GAME THREADS
         executor.execute(() -> assignGameThread()); // This thread will add players to new games a
-        executor.execute(() -> pingWaitingPlayers());
+        executor.execute(() -> updateWaitingPlayers());
         executor.execute(() -> fillNewGameThread());
     }
 
@@ -106,6 +109,52 @@ public class Server {
             System.out.println("SERVER: Unable to listen to port: " + PORT);
             logger.log(Level.SEVERE, "Unable to listen to port: " + PORT, e);
             //System.exit(0);
+        }
+    }
+
+    private void playerListenerThread() {
+        while (!shutdown) {
+            players.forEachValue(100, player -> {
+                String msg = player.read();        // Read message from client
+                if (msg != null && msg.equals("§§BYEBYE§§")) {    // Client says goodbye
+                    removePlayerFromServer(player);
+
+                } else if (msg != null && msg.startsWith("EVENT:")) {
+                    if(msg.startsWith("EVENT:DICE:")){
+                        ludoServer.throwDice(msg.replace("EVENT:DICE:§",""), player.getName());
+                    }else if(msg.startsWith("EVENT:MOVE:")){
+                        String[] payload = msg.split("§");
+                        if(payload.length == 4){
+                            ludoServer.movePiece(payload[1], player.getName(), Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
+                        }
+                    }
+                } else if (msg != null && msg.startsWith("MSG:")) {
+                    messages.add(msg + "§" + player.getName());    // Add message to message queue
+
+                }  else if (msg != null && msg.startsWith("GLOBALMSG:")) {
+                    messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
+
+                } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
+                    wannaGame.add(player);
+                } else if (msg != null && msg.equals("PING")) { //handle PING from user
+                    player.setPingsNotReturned(0); //we heard from user, reset pings
+                } else if (msg != null && msg.startsWith("LEAVEGAME:")) { //user wants to leave game
+                    String gameHash = msg.replace("LEAVEGAME:","");
+                    if(player.activeGames.remove(gameHash)){
+                        games.get(gameHash).remove(player.getName());
+                        ludoServer.removeUserFromGame(gameHash, player.getName());
+                    }
+                    
+                }/*else if (msg != null && msg.startsWith("GAMEMSG:")){
+                    // TODO : Get ludo-game id
+                     messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
+                }*/ // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
+            });
+            try {
+                Thread.sleep(10);    // Prevent excessive processor usage
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -198,7 +247,7 @@ public class Server {
         }
     }
 
-    private void pingWaitingPlayers() {
+    private void updateWaitingPlayers() {
         while (!shutdown) {
             waitingPlayers.forEachValue(100, waitingPlayer -> {
                 waitingPlayer.write("RANDOMGAMEREQUESTUPDATE: SERVER: Waiting for players..");
@@ -211,42 +260,22 @@ public class Server {
         }
     }
 
-    private void playerListenerThread() {
-        while (!shutdown) {
+    private void pingOnlinePlayers(){
+        while(!shutdown){
             players.forEachValue(100, player -> {
-                String msg = player.read();        // Read message from client
-                if (msg != null && msg.equals("§§BYEBYE§§")) {    // Client says goodbye
+                player.write("PING");
+                player.setPingsNotReturned(player.getPingsNotReturned()+1);
 
-                    if (players.remove(player.getName()) != null) {
-                        //todo: clientRemoved(client);		// Let other clients know this client has left, adds message to textarea
-                    }
-
-                } else if (msg != null && msg.startsWith("EVENT:")) {
-                    if(msg.startsWith("EVENT:DICE:")){
-                        ludoServer.throwDice(msg.replace("EVENT:DICE:§",""), player.getName());
-                    }else if(msg.startsWith("EVENT:MOVE:")){
-                        String[] payload = msg.split("§");
-                        if(payload.length == 4){
-                            ludoServer.movePiece(payload[1], player.getName(), Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
-                        }
-                    }
-                } else if (msg != null && msg.startsWith("MSG:")) {
-                    messages.add(msg + "§" + player.getName());    // Add message to message queue
-
-                }  else if (msg != null && msg.startsWith("GLOBALMSG:")) {
-                    messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
-
-                } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
-                    wannaGame.add(player);
-                }/*else if (msg != null && msg.startsWith("GAMEMSG:")){
-                    // TODO : Get ludo-game id
-                     messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
-                }*/ // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
+                if(player.getPingsNotReturned() > 6){//if player hasn't returned a ping for 1 minute
+                    removePlayerFromServer(player); //remove player from server
+                }
             });
+
+
             try {
-                Thread.sleep(10);    // Prevent excessive processor usage
+                sleep(10000); //wait 10 seconds before issuing a new ping
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+
             }
         }
     }
@@ -370,6 +399,22 @@ public class Server {
         return players.get(username).activeGames.contains(game);
     }
 
+    protected void removePlayerFromServer(Player player){
+        if (players.remove(player.getName()) != null) { //fjern fra players stacken
+            player.close(); //disconnect user
+
+            for (String gameHash : player.activeGames) { //remove player from all games and notify other players in the games
+                games.get(gameHash).remove(player.getName());
+                ludoServer.removeUserFromGame(gameHash, player.getName());
+            }
+
+            players.forEachValue(100, player1 -> { //tell everyone this player disconnected
+                //TODO: Brede fjern fra chats
+                //player.write("DISCONNECTED:"+player.getName();
+            });
+        }
+    }
+
     class Player {
         private String name = "";
         private String connectionString;
@@ -378,6 +423,7 @@ public class Server {
         private BufferedWriter output;
         private boolean active = true;
         private List<String> activeGames = new ArrayList<>();
+        private int pingsNotReturned = 0;
 
         /**
          * Gets a socket and creates reader/writer objects and reads the name of the client/user
@@ -439,6 +485,14 @@ public class Server {
 
         public Socket getSocket() {
             return s;
+        }
+
+        public int getPingsNotReturned() {
+            return pingsNotReturned;
+        }
+
+        public void setPingsNotReturned(int pingsNotReturned) {
+            this.pingsNotReturned = pingsNotReturned;
         }
 
         /**

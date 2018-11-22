@@ -70,5 +70,22 @@ public class ServerTest {
         assertTrue(client1.test);
     }
 
+    @Test
+    public void disconnectFromServer(){
+        assertTrue(server.playerExistInServer("Johan"));
+        assertTrue(server.playerExistInServer("Brede"));
+        assertTrue(server.playerExistInServer("Marius"));
+        assertTrue(server.playerExistInServer("Okolloen"));
+
+        server.removePlayerFromServer(server.players.get(client1.getName()));
+
+        //logget av:
+        assertFalse(server.playerExistInServer("Johan"));
+        //fremdeles logget på:
+        assertTrue(server.playerExistInServer("Brede"));
+        assertTrue(server.playerExistInServer("Marius"));
+        assertTrue(server.playerExistInServer("Okolloen"));
+    }
+
 
 }
