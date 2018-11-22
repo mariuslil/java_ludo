@@ -11,11 +11,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class ChatController {
+    private String chatName;
     private LudoController ludoController;
     private ObservableList<String> playerList = FXCollections.observableArrayList();
 
-    public ChatController(LudoController ludoController) {
+    public ChatController(LudoController ludoController, String chatName) {
         this.ludoController = ludoController;
+        this.chatName = chatName;
     }
 
     @FXML
@@ -36,10 +38,10 @@ public class ChatController {
     private Button sendTextButton;
 
     @FXML
-    void onSendGlobalMessage(ActionEvent event) {
+    void sendMessageToServer(ActionEvent event){
         String message = textToSay.getText();
         textToSay.clear();
-        ludoController.sendMessageFromGlobal(message);
+        ludoController.sendMessageToServer(this.chatName, message);
     }
 
     public void setTextInChat(String user, String message) {

@@ -38,7 +38,7 @@ public class LudoController {
     private void initialize() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
 
-        ChatController chatController = new ChatController(this);
+        ChatController chatController = new ChatController(this, "Global");
         chatControllers.put("Global", chatController);
 
         loader.setController(chatController);
@@ -140,7 +140,7 @@ public class LudoController {
     public void createChat(String chatName){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
 
-        ChatController chatController = new ChatController(this);
+        ChatController chatController = new ChatController(this, chatName);
         chatControllers.put(chatName, chatController);
 
         loader.setController(chatController);
@@ -149,6 +149,7 @@ public class LudoController {
         try {
             AnchorPane chat = loader.load();
             Tab tab = new Tab(chatName);
+            tab.setClosable(true);
             tab.setContent(chat);
             chatTab.getTabs().add(tab);
         } catch (IOException el) {
@@ -164,6 +165,11 @@ public class LudoController {
     @FXML
     public void sendMessageToChat(String chatName, String userName, String message){
         this.chatControllers.get(chatName).setTextInChat(userName, message);
+    }
+
+    @FXML
+    public void sendMessageToServer(String chatName, String message){
+        this.client.requestSendChatMessage(chatName, message);
     }
 
     @FXML
@@ -256,8 +262,6 @@ public class LudoController {
         chatControllers.get("Global").setTextInChat(sender, message);
     }
 
-
-
     public void setMessageInLocalTextBox(String gameID, String sender, String message){
         gameControllers.get(gameID).setTextInChat(sender, message);
     }
@@ -288,12 +292,6 @@ public class LudoController {
 
     public void sendMovePieceRequest(String gameHash, int from, int to){
         client.sendMoveEvent(gameHash, from, to);
-    }
-
-    public void sendMessageFromGlobal(String message){
-        if(message != null && !message.isEmpty() && !message.contains("§")){
-            client.sendGLOBALText(message);
-        }
     }
 
     public void sendMessageFromLocal(String message, String gameHash){
