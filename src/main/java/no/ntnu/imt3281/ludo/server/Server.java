@@ -266,6 +266,7 @@ public class Server {
                     player.close(); //disconnect user
 
                     for (String gameHash:player.activeGames) { //remove player from all games and notify other players
+                        games.get(gameHash).remove(player.getName());
                         ludoServer.removeUserFromGame(gameHash, player.getName());
                     }
 
@@ -273,6 +274,7 @@ public class Server {
                         //TODO: Brede fjern fra chats
                         //player.write("DISCONNECTED:"+player.getName();
                     });
+
 
 
                     players.remove(player.getName()); //remove user from active players stack
