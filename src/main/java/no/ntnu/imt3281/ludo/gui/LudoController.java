@@ -102,7 +102,7 @@ public class LudoController {
     }
 
     @FXML
-    void about(ActionEvent event) {
+    void profile(ActionEvent event) {
         client.requestProfileInformation();
     }
 
@@ -199,23 +199,24 @@ public class LudoController {
 
     @FXML
     public void openProfileInfoDialog(String username, int activeGames, int activeChats) throws IOException {
-        System.out.println("Username: " + username + " activeGames: " + activeGames + " activeChats: " + activeChats);
         //TODO: Profile information
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileInformation.fxml"));
+        ResourceBundle bundle = ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n");
 
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileInformation.fxml"));
         ProfileInformationController profileController = new ProfileInformationController(this);
         profileController.setProfileData(username, activeGames, activeChats);
         loader.setController(profileController);
-        loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+        loader.setResources(bundle);
 
         Parent parent = loader.load();
-
+        String title = bundle.getString("ludoprofile.profileheader");
 
         Scene scene = new Scene(parent, 600, 400);
-        this.openDialog = new Stage();
-        this.openDialog.initModality(Modality.APPLICATION_MODAL);
-        this.openDialog.setScene(scene);
-        this.openDialog.showAndWait();
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
     }
 
     public void loginUser(String username, String password) {

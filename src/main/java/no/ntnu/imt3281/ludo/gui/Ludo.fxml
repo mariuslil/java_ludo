@@ -31,9 +31,9 @@
                                 <MenuItem fx:id="listRooms" mnemonicParsing="false" onAction="#ListRooms" text="%ludo.listrooms" />
                             </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="%ludo.help">
+                        <Menu mnemonicParsing="false" text="%ludo.information">
                             <items>
-                                <MenuItem fx:id="about" mnemonicParsing="false" onAction="#about" text="%ludo.about" />
+                                <MenuItem fx:id="profile" mnemonicParsing="false" onAction="#profile" text="%ludo.profile" />
                             </items>
                         </Menu>
                     </menus>

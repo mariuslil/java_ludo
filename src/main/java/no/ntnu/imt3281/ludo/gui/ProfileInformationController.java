@@ -7,8 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-import java.util.List;
-
 public class ProfileInformationController {
 
     private LudoController ludoController;
@@ -44,15 +42,29 @@ public class ProfileInformationController {
                 // Save username for here
                 this.userName = userNameChange.getText();
 
-                // TODO : Give confirmation that userName is changed
-
+                // TODO : make actual check
+                boolean nameIsChangedSuccesfully = true;
+                if(nameIsChangedSuccesfully){
+                    // Confirm name is changed
+                    userNameChange.setStyle("-fx-control-inner-background: #66b266");
+                } else {
+                    // Couldn't change name or it already exists
+                    userNameChange.setStyle("-fx-control-inner-background: #ff6666");
+                }
+            } else {
+                // Name is the same as before
+                userNameChange.setStyle("-fx-control-inner-background: #ff6666");
             }
+        } else {
+            // Name is empty or null
+            userNameChange.setStyle("-fx-control-inner-background: #ff6666");
         }
     }
 
     public void setProfileData(String userName, int nrOfGames, int nrOfChats){
 
         Platform.runLater(() ->{
+            userNameChange.setStyle("-fx-control-inner-background: #FFFFFF");
             // Initialize
             userNameChange.setText("");
             numberOfGames.setText("");
