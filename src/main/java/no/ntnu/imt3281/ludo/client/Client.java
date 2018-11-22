@@ -51,6 +51,22 @@ public class Client {
 
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
+		readCookie();
+
+		if(this.cookie != null){
+			try {
+				System.out.println("CLIENT: "+this.cookie+" Connecting to server.");
+				connection = new Connection();			// Connect to the server
+				connected = true; //connected but not logged in
+				connection.send("COOKIE:"+this.cookie); 	// Send username&password
+				
+				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
+			} catch (UnknownHostException e) {
+				// Ignored, means no connection (should have informed the user.)
+			} catch (IOException e) {
+				// Ignored, means no connection (should have informed the user.)
+			}
+		}
 	}
 
 	public void connect(String type, String username, String password) {
@@ -312,6 +328,20 @@ public class Client {
 			System.out.println(e.getMessage());
 			connection.close();
 		}
+	}
+
+	private String readCookie() {
+
+		try {
+			byte[] encoded = Files.readAllBytes(Paths.get("cookie.txt"));
+			String cookie = new String(encoded, Charset.forName("UTF-8"));
+			System.out.println("COOKIE: "+cookie);
+			return cookie;
+		}catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+
+		return null;
 	}
 
 	public boolean isLoggedIn() {
