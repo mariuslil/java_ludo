@@ -27,6 +27,7 @@ public class Client {
 	protected String name = "";
 	protected List<String> messages = new ArrayList<>();
 	protected List<String> activeGames = new ArrayList<>();
+	protected List<String> activeChats = new ArrayList<>();
 	private boolean connected = false;
 	private boolean loggedIn = false;
 	private boolean lookingForGame = false;
@@ -206,13 +207,39 @@ public class Client {
 									ludoController.removeOpenDialog();
 								}
 							}
+							//RANDOMGAMEREQUESTUPDATE//
 						}else if(tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
 							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
 							if(ludoController!=null){
 								ludoController.updateWaitDialog(update);
 							}
+							//PING//
 						}else if(tmp != null && tmp.equals("PING")){
 							sendPing();
+
+							//CHATJOIN//
+						}else if(tmp != null && tmp.startsWith("CHATJOIN:")){
+							String[] payload = tmp.split("§");
+							if(payload.length == 3 && ludoController!=null){
+
+								ludoController.addPlayerToChat(payload[1], payload[2]);
+								ludoController.sendMessageToChat(payload[2]+" joined the chatroom.");
+							}
+							//CHATLEFT//
+						}else if(tmp != null && tmp.startsWith("CHATLEFT:")){
+							String[] payload = tmp.split("§");
+							if(payload.length == 3 && ludoController!=null){
+
+								ludoController.removePlayerFromChat(payload[1], payload[2]);
+								ludoController.sendMessageToChat(payload[2]+" left the chatroom.");
+							}
+							//CHATMESSAGE//
+						}else if(tmp != null && tmp.startsWith("CHATMESSAGE:")){
+							String[] payload = tmp.split("§");
+							if(payload.length == 4 && ludoController!=null){
+
+								ludoController.sendMessageToChat(payload[2]+": "+payload[3]);
+							}
 						}
 					//});
 				}
