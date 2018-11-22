@@ -269,6 +269,12 @@ public class Server {
                         ludoServer.removeUserFromGame(gameHash, player.getName());
                     }
 
+                    players.forEachValue(100, player1 -> {
+                        //TODO: Brede fjern fra chats
+                        //player.write("DISCONNECTED:"+player.getName();
+                    });
+
+
                     players.remove(player.getName()); //remove user from active players stack
                 }
             });
