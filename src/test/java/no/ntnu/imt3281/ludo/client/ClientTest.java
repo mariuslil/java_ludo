@@ -106,7 +106,7 @@ public class ClientTest {
 
 
         try{
-            sleep(3000); //wait 100ms to let the message go through the system.
+            sleep(4000); //wait 4s to let the request run through the system and create a game.
         }catch (InterruptedException e){
 
         }

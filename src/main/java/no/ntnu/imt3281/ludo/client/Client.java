@@ -33,7 +33,8 @@ public class Client {
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
-	protected boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
+	public boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
+	public String test2 = "";
 
 	private String cookie = "";
 
@@ -144,6 +145,15 @@ public class Client {
 								if(ludoController!=null && payload.length == 6){
 									ludoController.receivePieceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]), Integer.parseInt(payload[4]), Integer.parseInt(payload[5]));
 								}
+
+								//JOIN//
+							}else if(event.startsWith("JOIN:")){ //join game event
+								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
+
+								String[] payload = tmp.split("§");
+								if(ludoController!=null && payload.length == 4){
+									ludoController.receiveJoinEvent(payload[1], payload[2],  Integer.parseInt(payload[3]));
+								}
 							}
 
 							//DISCONNECTED//
@@ -163,6 +173,7 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
 							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
 							String game = tmp.replace("STARTGAME:","");
+							this.test2 = game;
 							if(this.lookingForGame){
 								activeGames.add(game);
 								if(ludoController!=null) {
@@ -190,13 +201,22 @@ public class Client {
 	public void sendDiceEvent(String gameHash){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:DICE:"+gameHash);
+				connection.send("EVENT:DICE:§"+gameHash);
 			}catch (IOException e){
 				connection.close();
 			}
 		}
 	}
 
+	public void sendMoveEvent(String gameHash, int from, int to){
+		if (connected && loggedIn){
+			try{
+				connection.send("EVENT:MOVE:§"+gameHash);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
 
 	public void sendGLOBALText(String message){
 		if (connected  && loggedIn){
@@ -255,6 +275,10 @@ public class Client {
 
 	public boolean isLoggedIn() {
 		return loggedIn;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	class Connection {

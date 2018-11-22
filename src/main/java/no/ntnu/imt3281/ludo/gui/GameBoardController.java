@@ -79,6 +79,13 @@ public class GameBoardController {
         ludoController.sendDiceThrowRequest(this.gameHash);
     }
 
+    @FXML
+    void movePiece(){
+        int from = 0;   //TEMP make it dynamic with an event or something
+        int to = 1;     //same
+        ludoController.sendMovePieceRequest(this.gameHash, from, to);
+    }
+
     protected void runDiceEvent(int color, int diceNr){
         //player color threw a diceNr, update GUI
     }
@@ -97,5 +104,9 @@ public class GameBoardController {
 
     protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
         //TODO: move player color's pieceNr from Pos to Pos
+    }
+
+    protected void runJoinEvent(String username, int color){
+        //TODO: USERNAME joins as player COLOR
     }
 }
