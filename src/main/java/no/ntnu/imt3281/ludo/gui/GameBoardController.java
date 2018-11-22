@@ -1,18 +1,18 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import no.ntnu.imt3281.ludo.logic.Ludo;
 import javafx.scene.shape.Circle;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public class GameBoardController {
@@ -22,6 +22,7 @@ public class GameBoardController {
     private Ludo ludo;
     protected final int home = 216;
     protected final int offset = 48;
+    protected Circle[][] pieces = new Circle[4][4];
 
     public GameBoardController(String gameHash, LudoController ludoController){
         this.gameHash = gameHash;
@@ -31,100 +32,11 @@ public class GameBoardController {
     @FXML
     private void initialize(){
         //TODO: make the loops run acording to number of players
-        Color[]colors=new Color[4];
-        colors[0]=Color.RED;colors[1]=Color.BLUE;colors[2]=Color.YELLOW;colors[3]=Color.GREEN;
-        Circle[][]pieces=new Circle[4][4];
-        for(int i=0;i<4;i++){
-            for(int j=0;j<4;j++){
-                pieces[i][j]=new Circle(20, colors[i]);
-                pieces[i][j].setStroke(Color.BLACK);
-                pieces[i][j].setStrokeWidth(2);
-                board.getChildren().add(pieces[i][j]);
-                board.setAlignment(pieces[i][j],Pos.CENTER);
-                switch (i){
-                    case 0:
-                        switch (j){
-                            case 0:
-                                pieces[i][j].setTranslateX(home);
-                                pieces[i][j].setTranslateY(-home-offset);
-                                break;
-                            case 1:
-                                pieces[i][j].setTranslateX(home+offset);
-                                pieces[i][j].setTranslateY(-home);
-                                break;
-                            case 2:
-                                pieces[i][j].setTranslateX(home);
-                                pieces[i][j].setTranslateY(-home+offset);
-                                break;
-                            case 3:
-                                pieces[i][j].setTranslateX(home-offset);
-                                pieces[i][j].setTranslateY(-home);
-                                break;
-                        }
-                        break;
-                    case 1:
-                        switch (j){
-                            case 0:
-                                pieces[i][j].setTranslateX(home);
-                                pieces[i][j].setTranslateY(home-offset);
-                                break;
-                            case 1:
-                                pieces[i][j].setTranslateX(home+offset);
-                                pieces[i][j].setTranslateY(home);
-                                break;
-                            case 2:
-                                pieces[i][j].setTranslateX(home);
-                                pieces[i][j].setTranslateY(home+offset);
-                                break;
-                            case 3:
-                                pieces[i][j].setTranslateX(home-offset);
-                                pieces[i][j].setTranslateY(home);
-                                break;
-                        }
-                        break;
-                    case 2:
-                        switch (j){
-                            case 0:
-                                pieces[i][j].setTranslateX(-home);
-                                pieces[i][j].setTranslateY(home-offset);
-                                break;
-                            case 1:
-                                pieces[i][j].setTranslateX(-home+offset);
-                                pieces[i][j].setTranslateY(home);
-                                break;
-                            case 2:
-                                pieces[i][j].setTranslateX(-home);
-                                pieces[i][j].setTranslateY(home+offset);
-                                break;
-                            case 3:
-                                pieces[i][j].setTranslateX(-home-offset);
-                                pieces[i][j].setTranslateY(home);
-                                break;
-                        }
-                        break;
-                    case 3:
-                        switch (j){
-                            case 0:
-                                pieces[i][j].setTranslateX(-home);
-                                pieces[i][j].setTranslateY(-home-offset);
-                                break;
-                            case 1:
-                                pieces[i][j].setTranslateX(-home+offset);
-                                pieces[i][j].setTranslateY(-home);
-                                break;
-                            case 2:
-                                pieces[i][j].setTranslateX(-home);
-                                pieces[i][j].setTranslateY(-home+offset);
-                                break;
-                            case 3:
-                                pieces[i][j].setTranslateX(-home-offset);
-                                pieces[i][j].setTranslateY(-home);
-                                break;
-                        }
-                        break;
-                }
-            }
-        }
+        player2Active.setVisible(false);
+        player3Active.setVisible(false);
+        player4Active.setVisible(false);
+        player3.setVisible(false);
+        player4.setVisible(false);
     }
 
     @FXML
@@ -134,10 +46,19 @@ public class GameBoardController {
     private StackPane board;
 
     @FXML
+    private GridPane players;
+
+    @FXML
+    private Pane player1;
+
+    @FXML
     private ImageView player1Active;
 
     @FXML
     private Label player1Name;
+
+    @FXML
+    private Pane player2;
 
     @FXML
     private ImageView player2Active;
@@ -146,10 +67,16 @@ public class GameBoardController {
     private Label player2Name;
 
     @FXML
+    private Pane player3;
+
+    @FXML
     private ImageView player3Active;
 
     @FXML
     private Label player3Name;
+
+    @FXML
+    private Pane player4;
 
     @FXML
     private ImageView player4Active;
@@ -190,7 +117,27 @@ public class GameBoardController {
     }
 
     protected void runDiceEvent(int color, int diceNr){
-        //player color threw a diceNr, update GUI
+        //TODO: player color threw a diceNr, update GUI
+        switch (diceNr){
+            case 1:
+                diceThrown.setImage(new Image("/images/dice1.png"));
+                break;
+            case 2:
+                diceThrown.setImage(new Image("/images/dice2.png"));
+                break;
+            case 3:
+                diceThrown.setImage(new Image("/images/dice3.png"));
+                break;
+            case 4:
+                diceThrown.setImage(new Image("/images/dice4.png"));
+                break;
+            case 5:
+                diceThrown.setImage(new Image("/images/dice5.png"));
+                break;
+            case 6:
+                diceThrown.setImage(new Image("/images/dice6.png"));
+                break;
+        }
     }
 
     protected void runPlayerEvent(int color, int status){
@@ -199,9 +146,19 @@ public class GameBoardController {
         }else if(status == 300){ //won
             //TODO: Show flashy playername WON! message
         }else if(status == 200){ //playing
-            //todo: Activate player color
+            switch (color) {
+                case 0: player1Active.setVisible(true); break;
+                case 1: player1Active.setVisible(true); break;
+                case 2: player1Active.setVisible(true); break;
+                case 3: player1Active.setVisible(true); break;
+            }
         }else if(status == 100){ //waiting
-            //todo: Deactivate player color
+            switch (color) {
+                case 0: player1Active.setVisible(false); break;
+                case 1: player1Active.setVisible(false); break;
+                case 2: player1Active.setVisible(false); break;
+                case 3: player1Active.setVisible(false); break;
+            }
         }
     }
 
@@ -210,6 +167,125 @@ public class GameBoardController {
     }
 
     protected void runJoinEvent(String username, int color){
-        //TODO: USERNAME joins as player COLOR
+        Platform.runLater(()->{
+            switch (color){
+                case 0:
+                    player1Name.setText(username);
+                    placePieces(color);
+                    break;
+                case 1:
+                    player2Name.setText(username);
+                    placePieces(color);
+                    break;
+                case 2:
+                    player3Name.setText(username);
+                    player3.setVisible(true);
+                    placePieces(color);
+                    break;
+                case 3:
+                    player4Name.setText(username);
+                    player4.setVisible(true);
+                    placePieces(color);
+                    break;
+            }
+        });
+    }
+
+    protected void placePieces(int color) {
+        Color[]colors=new Color[4];
+        colors[0]=Color.RED;colors[1]=Color.BLUE;colors[2]=Color.YELLOW;colors[3]=Color.GREEN;
+        for(int j=0;j<4;j++){
+            pieces[color][j]=new Circle(20, colors[color]);
+            pieces[color][j].setStroke(Color.BLACK);
+            pieces[color][j].setStrokeWidth(2);
+            board.getChildren().add(pieces[color][j]);
+            board.setAlignment(pieces[color][j],Pos.CENTER);
+            moveHome(pieces,color,j);
+        }
+    }
+
+    public void moveHome(Circle[][] pieces, int color, int piece) {
+        switch (color){
+            case 0:
+                switch (piece){
+                    case 0:
+                        pieces[color][piece].setTranslateX(home);
+                        pieces[color][piece].setTranslateY(-home-offset);
+                        break;
+                    case 1:
+                        pieces[color][piece].setTranslateX(home+offset);
+                        pieces[color][piece].setTranslateY(-home);
+                        break;
+                    case 2:
+                        pieces[color][piece].setTranslateX(home);
+                        pieces[color][piece].setTranslateY(-home+offset);
+                        break;
+                    case 3:
+                        pieces[color][piece].setTranslateX(home-offset);
+                        pieces[color][piece].setTranslateY(-home);
+                        break;
+                }
+                break;
+            case 1:
+                switch (piece){
+                    case 0:
+                        pieces[color][piece].setTranslateX(home);
+                        pieces[color][piece].setTranslateY(home-offset);
+                        break;
+                    case 1:
+                        pieces[color][piece].setTranslateX(home+offset);
+                        pieces[color][piece].setTranslateY(home);
+                        break;
+                    case 2:
+                        pieces[color][piece].setTranslateX(home);
+                        pieces[color][piece].setTranslateY(home+offset);
+                        break;
+                    case 3:
+                        pieces[color][piece].setTranslateX(home-offset);
+                        pieces[color][piece].setTranslateY(home);
+                        break;
+                }
+                break;
+            case 2:
+                switch (piece){
+                    case 0:
+                        pieces[color][piece].setTranslateX(-home);
+                        pieces[color][piece].setTranslateY(home-offset);
+                        break;
+                    case 1:
+                        pieces[color][piece].setTranslateX(-home+offset);
+                        pieces[color][piece].setTranslateY(home);
+                        break;
+                    case 2:
+                        pieces[color][piece].setTranslateX(-home);
+                        pieces[color][piece].setTranslateY(home+offset);
+                        break;
+                    case 3:
+                        pieces[color][piece].setTranslateX(-home-offset);
+                        pieces[color][piece].setTranslateY(home);
+                        break;
+                }
+                break;
+            case 3:
+                switch (piece){
+                    case 0:
+                        pieces[color][piece].setTranslateX(-home);
+                        pieces[color][piece].setTranslateY(-home-offset);
+                        break;
+                    case 1:
+                        pieces[color][piece].setTranslateX(-home+offset);
+                        pieces[color][piece].setTranslateY(-home);
+                        break;
+                    case 2:
+                        pieces[color][piece].setTranslateX(-home);
+                        pieces[color][piece].setTranslateY(-home+offset);
+                        break;
+                    case 3:
+                        pieces[color][piece].setTranslateX(-home-offset);
+                        pieces[color][piece].setTranslateY(-home);
+                        break;
+                }
+                break;
+        }
     }
 }

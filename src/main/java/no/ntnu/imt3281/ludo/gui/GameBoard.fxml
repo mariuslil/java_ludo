@@ -35,7 +35,7 @@
                <children>
                   <Pane>
                      <children>
-                        <GridPane prefHeight="164.0" prefWidth="295.0">
+                        <GridPane fx:id="players" prefHeight="164.0" prefWidth="295.0">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -45,7 +45,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: FF0000;">
+                              <Pane fx:id="player1" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: FF0000;">
 
                                  <GridPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -57,14 +57,14 @@
                                           <Image url="@../../../../../images/rolldice.png" />
                                        </image>
                                     </ImageView>
-                                    <Label fx:id="player1Name" layoutX="7.0" layoutY="27.0" text="Name of player 1">
+                                    <Label fx:id="player1Name" layoutX="7.0" layoutY="27.0" text="Name of player 1" textAlignment="CENTER">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
                                     </Label>
                                  </children>
                               </Pane>
-                              <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #7070FF;" GridPane.columnIndex="1">
+                              <Pane fx:id="player2" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #7070FF;" GridPane.columnIndex="1">
 
                                  <GridPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -76,14 +76,14 @@
                                           <Image url="@../../../../../images/rolldice.png" />
                                        </image>
                                     </ImageView>
-                                    <Label fx:id="player2Name" layoutX="7.0" layoutY="27.0" text="Name of player 2">
+                                    <Label fx:id="player2Name" layoutX="7.0" layoutY="27.0" text="Name of player 2" textAlignment="CENTER">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
                                     </Label>
                                  </children>
                               </Pane>
-                              <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF00;" GridPane.rowIndex="1">
+                              <Pane fx:id="player3" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF00;" GridPane.rowIndex="1">
                                  <GridPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </GridPane.margin>
@@ -94,14 +94,14 @@
                                           <Image url="@../../../../../images/rolldice.png" />
                                        </image>
                                     </ImageView>
-                                    <Label fx:id="player3Name" layoutX="7.0" layoutY="27.0" text="Name of player 3">
+                                    <Label fx:id="player3Name" layoutX="7.0" layoutY="27.0" text="Name of player 3" textAlignment="CENTER">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
                                     </Label>
                                  </children>
                               </Pane>
-                              <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #40FF40;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <Pane fx:id="player4" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #40FF40;" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <GridPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </GridPane.margin>
@@ -112,7 +112,7 @@
                                           <Image url="@../../../../../images/rolldice.png" />
                                        </image>
                                     </ImageView>
-                                    <Label fx:id="player4Name" layoutX="7.0" layoutY="27.0" text="Name of player 4">
+                                    <Label fx:id="player4Name" layoutX="7.0" layoutY="27.0" text="Name of player 4" textAlignment="CENTER">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
