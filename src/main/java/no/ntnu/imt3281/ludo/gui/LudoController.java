@@ -54,12 +54,8 @@ public class LudoController {
         try {
             AnchorPane chat = loader.load();
             Tab tab = new Tab("Chat: Global");
-            tab.setOnCloseRequest(close -> {
-                if(close.getEventType().equals(Tab.TAB_CLOSE_REQUEST_EVENT)){
-                    System.out.println("KASPDOSKADOASK");
-                }
-            });
             tab.setContent(chat);
+            tab.setClosable(false);
             chatTab.getTabs().add(tab);
         } catch (IOException el) {
             el.printStackTrace();
@@ -167,11 +163,13 @@ public class LudoController {
 				AnchorPane gameBoard = loader.load();
 				Tab tab = new Tab(gameHash);
 				tab.setClosable(true);
-				tab.setOnCloseRequest(close -> {
-				    if(close.getEventType().equals(Tab.CLOSED_EVENT)){
-                        System.out.println("KASPDOSKADOASK");
+                tab.setOnCloseRequest(close -> {
+                    if(close.getEventType().equals(Tab.TAB_CLOSE_REQUEST_EVENT)){
+                        //TODO: handle
+                        client.leaveGame(gameHash);
                     }
                 });
+                tab.setClosable(true);
 				tab.setContent(gameBoard);
 				this.tabbedPane.getTabs().add(tab);
 

@@ -129,7 +129,7 @@ public class Client {
 								}
 
 								//PIECE//
-							}else if(event.startsWith("PIECE:")){ //piece event
+							}else if(event.startsWith("PLAYER:")){ //player event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
 
 								String[] payload = tmp.split("§");
@@ -138,7 +138,7 @@ public class Client {
 								}
 
 								//PLAYER//
-							}else if(event.startsWith("PLAYER:")){ //player event
+							}else if(event.startsWith("PIECE:")){ //PIECE event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
 
 								String[] payload = tmp.split("§");
@@ -273,6 +273,16 @@ public class Client {
 			}
 		}
 
+	}
+
+	public void leaveGame(String gameHash){
+		if (connected && loggedIn){
+			try{
+				connection.send("LEAVEGAME:"+gameHash);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
 	}
 
 	public void request(String request){

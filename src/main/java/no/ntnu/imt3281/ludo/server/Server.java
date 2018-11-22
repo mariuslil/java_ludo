@@ -138,6 +138,13 @@ public class Server {
                     wannaGame.add(player);
                 } else if (msg != null && msg.equals("PING")) { //handle PING from user
                     player.setPingsNotReturned(0); //we heard from user, reset pings
+                } else if (msg != null && msg.startsWith("LEAVEGAME:")) { //user wants to leave game
+                    String gameHash = msg.replace("LEAVEGAME:","");
+                    if(player.activeGames.remove(gameHash)){
+                        games.get(gameHash).remove(player.getName());
+                        ludoServer.removeUserFromGame(gameHash, player.getName());
+                    }
+                    
                 }/*else if (msg != null && msg.startsWith("GAMEMSG:")){
                     // TODO : Get ludo-game id
                      messages.add("GAMEMSG:" + ludoID + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", ""));
