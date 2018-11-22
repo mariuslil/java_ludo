@@ -31,11 +31,11 @@ public class Server {
     private final Logger logger = Logger.getLogger("Chat server");
     protected boolean shutdown = false;
 
-    private final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
+    protected final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
     protected final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
-    private final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
+    protected final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
     protected final ConcurrentHashMap<String, LinkedBlockingQueue<String>> games = new ConcurrentHashMap<>();
-    private final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
+    protected final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
 
     ConcurrentHashMap<String, Player> waitingPlayers = new ConcurrentHashMap<>();
 
@@ -117,10 +117,7 @@ public class Server {
             players.forEachValue(100, player -> {
                 String msg = player.read();        // Read message from client
                 if (msg != null && msg.equals("§§BYEBYE§§")) {    // Client says goodbye
-
-                    if (players.remove(player.getName()) != null) {
-                        //todo: clientRemoved(client);		// Let other clients know this client has left, adds message to textarea
-                    }
+                    removePlayerFromServer(player);
 
                 } else if (msg != null && msg.startsWith("EVENT:")) {
                     if(msg.startsWith("EVENT:DICE:")){
@@ -263,21 +260,7 @@ public class Server {
                 player.setPingsNotReturned(player.getPingsNotReturned()+1);
 
                 if(player.getPingsNotReturned() > 6){//if player hasn't returned a ping for 1 minute
-                    player.close(); //disconnect user
-
-                    for (String gameHash:player.activeGames) { //remove player from all games and notify other players
-                        games.get(gameHash).remove(player.getName());
-                        ludoServer.removeUserFromGame(gameHash, player.getName());
-                    }
-
-                    players.forEachValue(100, player1 -> {
-                        //TODO: Brede fjern fra chats
-                        //player.write("DISCONNECTED:"+player.getName();
-                    });
-
-
-
-                    players.remove(player.getName()); //remove user from active players stack
+                    removePlayerFromServer(player); //remove player from server
                 }
             });
 
@@ -407,6 +390,22 @@ public class Server {
 
     public boolean playerInGame(String username, String game) {
         return players.get(username).activeGames.contains(game);
+    }
+
+    protected void removePlayerFromServer(Player player){
+        if (players.remove(player.getName()) != null) { //fjern fra players stacken
+            player.close(); //disconnect user
+
+            for (String gameHash : player.activeGames) { //remove player from all games and notify other players in the games
+                games.get(gameHash).remove(player.getName());
+                ludoServer.removeUserFromGame(gameHash, player.getName());
+            }
+
+            players.forEachValue(100, player1 -> { //tell everyone this player disconnected
+                //TODO: Brede fjern fra chats
+                //player.write("DISCONNECTED:"+player.getName();
+            });
+        }
     }
 
     class Player {
