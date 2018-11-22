@@ -403,6 +403,8 @@ public class Server {
         if (players.remove(player.getName()) != null) { //fjern fra players stacken
             player.close(); //disconnect user
 
+            System.out.println("SERVER: Player "+player.getName()+" DISCONNECTED.");
+
             for (String gameHash : player.activeGames) { //remove player from all games and notify other players in the games
                 games.get(gameHash).remove(player.getName());
                 ludoServer.removeUserFromGame(gameHash, player.getName());

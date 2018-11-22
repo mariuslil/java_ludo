@@ -8,7 +8,12 @@ import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -86,6 +91,7 @@ public class Client {
 							//todo: STORE COOKIE LOCALLY
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 							this.cookie = tmp.replace("COOKIE:",""); //set cookie
+							saveCookie(this.cookie);
 							this.loggedIn = true; //Client is logged in :)
 							if(ludoController!=null) {
 								ludoController.removeOpenDialog();
@@ -295,12 +301,29 @@ public class Client {
 		}
 	}
 
+	private void saveCookie(String cookie){
+		if(cookie != null)
+		try{
+			List<String> lines = new ArrayList<>();
+			lines.add(cookie);
+			Path file = Paths.get("cookie.txt");
+			Files.write(file, lines, Charset.forName("UTF-8"));
+		}catch (IOException e){
+			System.out.println(e.getMessage());
+			connection.close();
+		}
+	}
+
 	public boolean isLoggedIn() {
 		return loggedIn;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public void closeConnection(){
+		connection.close();
 	}
 
 	class Connection {

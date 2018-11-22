@@ -112,7 +112,8 @@ public class LudoController {
 
     @FXML
     void closeApp(ActionEvent event) {
-        //TODO: this
+        client.closeConnection();
+        System.exit(0);
     }
 
     @FXML
