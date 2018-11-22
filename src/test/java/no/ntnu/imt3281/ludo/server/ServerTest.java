@@ -28,7 +28,7 @@ public class ServerTest {
         client3.connect("REGISTER:", "Marius", "hei");
         client4.connect("REGISTER:", "Okolloen", "hei");
         try{
-            sleep(600); //wait 600ms to let the system connect
+            sleep(3000); //wait 600ms to let the system connect
         }catch (InterruptedException e){
 
         }
@@ -62,12 +62,29 @@ public class ServerTest {
         client4.sendDiceEvent(client4.test2); //send event
 
         try{
-            sleep(2000); //wait 2s to let the message run through
+            sleep(3000); //wait 2s to let the message run through
         }catch (InterruptedException e){
 
         }
 
         assertTrue(client1.test);
+    }
+
+    @Test
+    public void disconnectFromServer(){
+        assertTrue(server.playerExistInServer("Johan"));
+        assertTrue(server.playerExistInServer("Brede"));
+        assertTrue(server.playerExistInServer("Marius"));
+        assertTrue(server.playerExistInServer("Okolloen"));
+
+        server.removePlayerFromServer(server.players.get(client1.getName()));
+
+        //logget av:
+        assertFalse(server.playerExistInServer("Johan"));
+        //fremdeles logget på:
+        assertTrue(server.playerExistInServer("Brede"));
+        assertTrue(server.playerExistInServer("Marius"));
+        assertTrue(server.playerExistInServer("Okolloen"));
     }
 
 
