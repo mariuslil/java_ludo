@@ -18,6 +18,7 @@ public class main extends Application {
             AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("../gui/Ludo.fxml"), bundle);
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
+            primaryStage.setTitle(bundle.getString("clientludo.title"));
             primaryStage.show();
         } catch(Exception e) {
             e.printStackTrace();
