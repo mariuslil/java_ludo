@@ -179,12 +179,12 @@ public class Client {
 							//DISCONNECTED//
 						}else if(tmp != null && tmp.startsWith("DISCONNECTED:")){ // Disconnected from application
 							//todo: handle disconnect
+							String discUser = tmp.replace("DISCONNECTED:", "");
 
-							// Send message that user left
 							if(ludoController != null){
-								ludoController.setMessageInGlobalTextBox("LEFT", tmp.replace("DISCONNECTED:", ""));
+								// Send message to GLOBAL that user is leaving
+								ludoController.setMessageInGlobalTextBox("LEFT", discUser);
 							}
-							// Remove disconnected user from thing
 
 							//LOGINERROR//
 						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){

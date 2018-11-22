@@ -216,17 +216,13 @@ public class LudoController {
 
     @FXML
     public void setMessageInGlobalTextBox(String sender, String message){
-        Platform.runLater(() ->{
-            chatController.setTextInChat(sender, message);
-        });
+        chatController.setTextInChat(sender, message);
     }
 
 
 
     public void setMessageInLocalTextBox(String gameID, String sender, String message){
-        Platform.runLater(() ->{
-            gameControllers.get(gameID).setTextInChat(sender, message);
-        });
+        gameControllers.get(gameID).setTextInChat(sender, message);
     }
 
 	@FXML

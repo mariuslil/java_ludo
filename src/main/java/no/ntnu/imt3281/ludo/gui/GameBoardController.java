@@ -1,5 +1,6 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.event.ActionEvent;
@@ -86,6 +87,8 @@ public class GameBoardController {
     protected void runPlayerEvent(int color, int status){
         if(status == 400){ //left
             //TODO: remove players name and pieces from the game
+            // Send message that user left
+            setTextInChat("LEFT", getPlayer(color));
         }else if(status == 300){ //won
             //TODO: Show flashy playername WON! message
         }else if(status == 200){ //playing
@@ -95,14 +98,31 @@ public class GameBoardController {
         }
     }
 
+    private String getPlayer(int color){
+        String name;
+        switch (color){
+            case 0: name = player1Name.getText(); break;
+            case 1: name = player2Name.getText(); break;
+            case 2: name = player3Name.getText();break;
+            case 3: name = player4Name.getText();break;
+            default: name = "" ; break;
+        }
+        if(name == null || name.isEmpty()){
+            return "";
+        }
+        return name;
+    }
+
     protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
         //TODO: move player color's pieceNr from Pos to Pos
     }
 
 
     public void setTextInChat(String user, String message) {
-        String completeMessage = String.format("%s: %s%n", user, message);
-        chatArea.setText(chatArea.getText() + completeMessage);
+        Platform.runLater(() -> {
+            String completeMessage = String.format("%s: %s%n", user, message);
+            chatArea.setText(chatArea.getText() + completeMessage);
+        });
     }
 
     protected void runJoinEvent(String username, int color){

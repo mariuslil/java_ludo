@@ -1,5 +1,6 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -30,9 +31,10 @@ public class ChatController {
     }
 
     public void setTextInChat(String user, String message) {
-        String completeMessage = String.format("%s: %s%n", user, message);
-        chatArea.setText(chatArea.getText() + completeMessage);
+        Platform.runLater(()->{
+            String completeMessage = String.format("%s: %s%n", user, message);
+            chatArea.setText(chatArea.getText() + completeMessage);
+        });
     }
-
 }
 

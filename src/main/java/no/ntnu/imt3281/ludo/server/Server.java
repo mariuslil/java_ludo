@@ -404,7 +404,7 @@ public class Server {
 
             players.forEachValue(100, player1 -> { //tell everyone this player disconnected
                 //TODO: Brede fjern fra chats
-                //player.write("DISCONNECTED:"+player.getName();
+                player.write("DISCONNECTED:"+player.getName());
             });
         }
     }
