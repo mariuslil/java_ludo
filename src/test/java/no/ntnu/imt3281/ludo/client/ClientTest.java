@@ -1,20 +1,16 @@
 package no.ntnu.imt3281.ludo.client;
 
-import no.ntnu.imt3281.ludo.logic.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.Ludo;
 import no.ntnu.imt3281.ludo.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.*;
 
 public class ClientTest {
 
+    private int sleepTime = 3000;
     Server server;
     Client client1;
     Client client2;
@@ -28,7 +24,7 @@ public class ClientTest {
         client1.connect("REGISTER:", "Johan", "hei");
         client2.connect("REGISTER:", "Brede", "HEI");
         try{
-            sleep(500); //wait 500ms to let the system connect
+            sleep(sleepTime); //wait 500ms to let the system connect
         }catch (InterruptedException e){
 
         }
@@ -61,7 +57,7 @@ public class ClientTest {
         client1.sendGLOBALText(message);
 
         try{
-            sleep(100); //wait 100ms to let the message go through the system.
+            sleep(sleepTime); //wait 100ms to let the message go through the system.
         }catch (InterruptedException e){
 
         }
@@ -94,7 +90,7 @@ public class ClientTest {
         client3.connect("REGISTER:", "Marius", "hei");
         client4.connect("REGISTER:", "Okolloen", "hei");
         try{
-            sleep(500); //wait 500ms to let the system connect
+            sleep(sleepTime); //wait 500ms to let the system connect
         }catch (InterruptedException e){
 
         }
@@ -106,7 +102,7 @@ public class ClientTest {
 
 
         try{
-            sleep(4000); //wait 4s to let the request run through the system and create a game.
+            sleep(sleepTime); //wait 4s to let the request run through the system and create a game.
         }catch (InterruptedException e){
 
         }
