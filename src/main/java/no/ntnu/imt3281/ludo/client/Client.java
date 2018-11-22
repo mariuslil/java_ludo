@@ -77,9 +77,9 @@ public class Client {
 				if (connection.input.ready()) {		// A line can be read
 					String tmp = connection.input.readLine();
 					//Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
+
 							//JOIN//
 						if(tmp != null && tmp.startsWith("JOIN:")){
-							//todo: handle join
 							String newUser = tmp.replace("JOIN:", "");
 							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
 
@@ -100,7 +100,6 @@ public class Client {
 
 							//GLOBAL MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GLOBALMSG:")){
-							// TODO : Handle message
 							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
 							messages.add(tmp);
 
@@ -118,7 +117,6 @@ public class Client {
 
 							//GAME MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GAMEMSG:")){
-							// TODO : fix this to have id with
 							String message = tmp.replace("GAMEMSG:", "");
 							String[] messageInfo = message.split("§");
 							if(activeGames.size() > 0 && activeGames.contains(messageInfo[0])){
@@ -179,10 +177,14 @@ public class Client {
 							}
 
 							//DISCONNECTED//
-						}else if(tmp != null && tmp.startsWith("DISCONNECTED:")){
+						}else if(tmp != null && tmp.startsWith("DISCONNECTED:")){ // Disconnected from application
 							//todo: handle disconnect
-							// ludoController.setMessageInGlobalTextBox(tmp.replace("DISCONNECTED:", "").toUpperCase(), "LEFT");
-							//remove disconnected user from thing
+
+							// Send message that user left
+							if(ludoController != null){
+								ludoController.setMessageInGlobalTextBox("LEFT", tmp.replace("DISCONNECTED:", ""));
+							}
+							// Remove disconnected user from thing
 
 							//LOGINERROR//
 						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){
