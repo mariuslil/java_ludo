@@ -165,7 +165,6 @@ public class LudoController {
 				tab.setClosable(true);
                 tab.setOnCloseRequest(close -> {
                     if(close.getEventType().equals(Tab.TAB_CLOSE_REQUEST_EVENT)){
-                        //TODO: handle
                         client.leaveGame(gameHash);
                     }
                 });
