@@ -272,7 +272,19 @@ public class Client {
 				connection.close();
 			}
 		}
+	}
 
+	public void requestProfileInformation(){
+		if(connected && loggedIn){
+			if(ludoController != null){
+				try {
+					// TODO : change with activeChats
+					ludoController.openProfileInfoDialog(name, activeGames.size(), 0);
+				} catch (IOException e) {
+					connection.close();
+				}
+			}
+		}
 	}
 
 	public void leaveGame(String gameHash){

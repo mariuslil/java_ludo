@@ -1,6 +1,7 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -101,22 +102,8 @@ public class LudoController {
     }
 
     @FXML
-    void about(ActionEvent event) throws IOException {
-        //TODO: Profile information
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileInformation.fxml"));
-
-        ProfileInformationController profileController = new ProfileInformationController(this);
-        loader.setController(profileController);
-        loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
-
-        Parent parent = loader.load();
-
-
-        Scene scene = new Scene(parent, 600, 400);
-        this.openDialog = new Stage();
-        this.openDialog.initModality(Modality.APPLICATION_MODAL);
-        this.openDialog.setScene(scene);
-        this.openDialog.showAndWait();
+    void about(ActionEvent event) {
+        client.requestProfileInformation();
     }
 
     @FXML
@@ -208,8 +195,27 @@ public class LudoController {
         this.openDialog.initModality(Modality.APPLICATION_MODAL);
         this.openDialog.setScene(scene);
         this.openDialog.showAndWait();
+    }
+
+    @FXML
+    public void openProfileInfoDialog(String username, int activeGames, int activeChats) throws IOException {
+        System.out.println("Username: " + username + " activeGames: " + activeGames + " activeChats: " + activeChats);
+        //TODO: Profile information
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileInformation.fxml"));
+
+        ProfileInformationController profileController = new ProfileInformationController(this);
+        profileController.setProfileData(username, activeGames, activeChats);
+        loader.setController(profileController);
+        loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+        Parent parent = loader.load();
 
 
+        Scene scene = new Scene(parent, 600, 400);
+        this.openDialog = new Stage();
+        this.openDialog.initModality(Modality.APPLICATION_MODAL);
+        this.openDialog.setScene(scene);
+        this.openDialog.showAndWait();
     }
 
     public void loginUser(String username, String password) {
