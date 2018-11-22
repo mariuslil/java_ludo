@@ -48,6 +48,7 @@ public class Client {
 
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
+		this.activeChats.add("Global");
 	}
 
 	public void connect(String type, String username, String password) {
@@ -221,9 +222,11 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("CHATJOIN:")){
 							String[] payload = tmp.split("§");
 							if(payload.length == 3 && ludoController!=null){
-
+								if(payload[2] == this.getName()){
+									ludoController.createChat(payload[1]);
+								}
 								ludoController.addPlayerToChat(payload[1], payload[2]);
-								ludoController.sendMessageToChat(payload[2]+" joined the chatroom.");
+								ludoController.sendMessageToChat(payload[1],payload[2]," joined the chatroom.");
 							}
 							//CHATLEFT//
 						}else if(tmp != null && tmp.startsWith("CHATLEFT:")){
@@ -231,14 +234,14 @@ public class Client {
 							if(payload.length == 3 && ludoController!=null){
 
 								ludoController.removePlayerFromChat(payload[1], payload[2]);
-								ludoController.sendMessageToChat(payload[2]+" left the chatroom.");
+								ludoController.sendMessageToChat(payload[1], payload[2], " left the chatroom.");
 							}
 							//CHATMESSAGE//
 						}else if(tmp != null && tmp.startsWith("CHATMESSAGE:")){
 							String[] payload = tmp.split("§");
 							if(payload.length == 4 && ludoController!=null){
 
-								ludoController.sendMessageToChat(payload[2]+": "+payload[3]);
+								ludoController.sendMessageToChat(payload[1], payload[2], payload[3]);
 							}
 						}
 					//});
@@ -318,6 +321,46 @@ public class Client {
 			}
 		}
 
+	}
+
+	public void requestCreateChat(String newChatName){
+		if (connected  && loggedIn){
+			try{
+				connection.send("CHATCREATE:"+newChatName);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	public void requestJoinChat(String joinChatName){
+		if (connected  && loggedIn){
+			try{
+				connection.send("CHATJOIN:"+joinChatName);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	public void requestLeaveChat(String leaveChatName){
+		if (connected  && loggedIn){
+			try{
+				connection.send("CHATLEAVE:"+leaveChatName);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	public void requestSendChatMessage(String chatName, String message){
+		if (connected  && loggedIn){
+			try{
+				connection.send("CHATMESSAGE:"+chatName+"§"+message);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
 	}
 
 	public void request(String request){

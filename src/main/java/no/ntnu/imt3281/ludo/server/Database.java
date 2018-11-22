@@ -44,12 +44,14 @@ public class Database {
             stmnt.close();
             System.out.println("DATABASE: USERS Table created");
 
-            //insert mock data
-           /* String sql1 = "INSERT INTO USERS VALUES (1,'Johan Aanesen', 0), (2, 'Brede', 0)";
-            Statement stmnt1 = connect.createStatement();
-            int rows = stmnt1.executeUpdate(sql1);
-
-            System.out.println("DATABASE: Rows inserted: "+rows);*/
+            String sql2 = "CREATE TABLE CHATS\n" +
+                    "    (ChatName VARCHAR(64) NOT NULL,\n" +
+                    "     Message VARCHAR(512) NOT NULL,\n " +
+                    "     UserName VARCHAR(64) NOT NULL FOREIGN KEY REFERENCES USERS(Name))";
+            Statement stmnt2 = connect.createStatement();
+            stmnt2.execute(sql2);
+            stmnt2.close();
+            System.out.println("DATABASE: CHATS Table created");
 
             return connect;
         } catch (SQLException e1) {
@@ -139,6 +141,28 @@ public class Database {
         }
 
         return exists;
+    }
+
+    protected boolean addMessageToDatabase(String chatName, String userName, String message){
+        try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
+
+            if(chatName!=""&&userName!=""&&message!=""){
+                String sql = "INSERT INTO CHATS (ChatName, Message, UserName) VALUES (?,?,?)";
+                PreparedStatement stmnt = connect.prepareStatement(sql);
+                stmnt.setString(1, chatName);
+                stmnt.setString(2, message);
+                stmnt.setString(3, userName);
+                int rows = stmnt.executeUpdate();
+                stmnt.close();
+                System.out.println("DATABASE: Rows inserted: " + rows);
+            }
+
+        }catch (SQLException e){
+            //shit bricks
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     private String hashFunc(String hashPls){

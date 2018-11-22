@@ -35,6 +35,7 @@ public class Server {
     protected final LinkedBlockingQueue<String> events = new LinkedBlockingQueue<>();
     protected final ConcurrentHashMap<String, Player> players = new ConcurrentHashMap<>();
     protected final ConcurrentHashMap<String, LinkedBlockingQueue<String>> games = new ConcurrentHashMap<>();
+    protected final ConcurrentHashMap<String, LinkedBlockingQueue<String>> chats = new ConcurrentHashMap<>();
     protected final LinkedBlockingQueue<Player> wannaGame = new LinkedBlockingQueue<>();
 
     ConcurrentHashMap<String, Player> waitingPlayers = new ConcurrentHashMap<>();
@@ -142,6 +143,47 @@ public class Server {
 
                 }else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
                     wannaGame.add(player);
+                }else if (msg != null && msg.startsWith("CHATCREATE:")) {
+                    String payload = msg.replace("CHATCREATE:","");
+                    LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
+                    try {
+                        lbq.put(player.getName());
+                        chats.put(payload, lbq);
+                        player.write("CHATJOIN:§"+payload+"§"+player.getName()); //add player to created game
+                    }catch (InterruptedException e){
+                        //fuckoff
+                    }
+                }else if (msg != null && msg.startsWith("CHATJOIN:")) {
+                    String payload = msg.replace("CHATJOIN:","");
+                    try {
+                        for(String notifyPlayer: chats.get(payload)){
+                            players.get(notifyPlayer).write("CHATJOIN:§"+payload+"§"+notifyPlayer);
+                        }
+                        chats.get(payload).put(player.getName());
+                        player.write("CHATJOIN:§"+payload+"§"+player.getName()); //add player to created game
+
+                        for(String notifyPlayer: chats.get(payload)){
+                            if(!notifyPlayer.equals(player.getName()))
+                            player.write("CHATJOIN:§"+payload+"§"+notifyPlayer);
+                        }
+                    }catch (InterruptedException e){
+                        //fuckoff
+                    }
+                }else if (msg != null && msg.startsWith("CHATLEAVE:")) {
+                    String payload = msg.replace("CHATLEAVE:","");
+
+                    chats.get(payload).remove(player.getName());
+                    for(String notifyPlayer: chats.get(payload)){
+                        players.get(notifyPlayer).write("CHATLEFT:§"+payload+"§"+notifyPlayer);
+                    }
+                }else if (msg != null && msg.startsWith("CHATMESSAGE:")) {
+                    String[] payload = msg.replace("CHATMESSAGE:","").split("§");
+                    if(payload.length==2) {
+                        database.addMessageToDatabase(payload[0], player.getName(), payload[1]);
+                        for (String notifyPlayers : chats.get(payload[1])) {
+                            player.write("CHATMESSAGE:§" + payload[0] + "§" + player.getName() + "§" + payload[1]);
+                        }
+                    }
                 } // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {

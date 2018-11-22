@@ -62,7 +62,7 @@ public class ServerTest {
         client4.sendDiceEvent(client4.test2); //send event
 
         try{
-            sleep(3000); //wait 2s to let the message run through
+            sleep(4000); //wait 2s to let the message run through
         }catch (InterruptedException e){
 
         }

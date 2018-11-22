@@ -16,9 +16,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.client.Client;
-import no.ntnu.imt3281.ludo.logic.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.PieceEvent;
-import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,9 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LudoController {
 
     private Client client = new Client(this);
-    private ChatController chatController = new ChatController(this);
+    //private ChatController chatController = new ChatController(this);
 
 	private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ChatController> chatControllers = new ConcurrentHashMap<>();
 
 	@FXML
 	private WaitDialogController waitDialogController;
@@ -39,13 +37,17 @@ public class LudoController {
     @FXML
     private void initialize() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+
+        ChatController chatController = new ChatController(this);
+        chatControllers.put("Global", chatController);
+
         loader.setController(chatController);
         loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
 
 
         try {
             AnchorPane chat = loader.load();
-            Tab tab = new Tab("Chat: Global");
+            Tab tab = new Tab("Global");
             tab.setContent(chat);
             chatTab.getTabs().add(tab);
         } catch (IOException el) {
@@ -135,6 +137,41 @@ public class LudoController {
     }
 
     @FXML
+    public void createChat(String chatName){
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+
+        ChatController chatController = new ChatController(this);
+        chatControllers.put(chatName, chatController);
+
+        loader.setController(chatController);
+        loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+        try {
+            AnchorPane chat = loader.load();
+            Tab tab = new Tab(chatName);
+            tab.setContent(chat);
+            chatTab.getTabs().add(tab);
+        } catch (IOException el) {
+            el.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void addPlayerToChat(String chatName, String playerName){
+        this.chatControllers.get(chatName).addPlayer(playerName);
+    }
+
+    @FXML
+    public void sendMessageToChat(String chatName, String userName, String message){
+        this.chatControllers.get(chatName).setTextInChat(userName, message);
+    }
+
+    @FXML
+    public void removePlayerFromChat(String chatName, String userName){
+        this.chatControllers.get(chatName).removePlayer(userName);
+    }
+
+    @FXML
     public void joinRandomGame(ActionEvent e) {
         client.requestNewGame();
     }
@@ -216,7 +253,7 @@ public class LudoController {
 
     @FXML
     public void setMessageInGlobalTextBox(String sender, String message){
-        chatController.setTextInChat(sender, message);
+        chatControllers.get("Global").setTextInChat(sender, message);
     }
 
 
