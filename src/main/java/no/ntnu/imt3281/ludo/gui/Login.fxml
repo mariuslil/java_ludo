@@ -27,14 +27,14 @@
             <Line endX="303.0" endY="336.5" startX="303.0" />
             <TextField fx:id="loginUsername" layoutX="76.0" layoutY="167.0" />
             <PasswordField fx:id="loginPassword" layoutX="75.0" layoutY="211.0" />
-            <Text layoutX="76.0" layoutY="164.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username" />
-            <Text layoutX="78.0" layoutY="205.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password" />
+            <Button layoutX="127.0" layoutY="271.0" mnemonicParsing="false" onAction="#login" text="%ludologin.login" />
+            <Text layoutX="76.0" layoutY="164.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%ludologin.username" />
+            <Text layoutX="78.0" layoutY="205.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%ludologin.password" />
             <TextField fx:id="registerUsername" layoutX="382.0" layoutY="167.0" />
             <PasswordField fx:id="registerPassword" layoutX="382.0" layoutY="211.0" />
-            <Text layoutX="380.0" layoutY="164.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username" />
-            <Text layoutX="382.0" layoutY="205.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password" />
-            <Button layoutX="127.0" layoutY="271.0" mnemonicParsing="false" onAction="#login" text="Login" />
-            <Button layoutX="427.0" layoutY="271.0" mnemonicParsing="false" onAction="#register" text="Register" />
+            <Text layoutX="380.0" layoutY="164.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%ludologin.username" />
+            <Text layoutX="382.0" layoutY="205.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%ludologin.password" />
+            <Button layoutX="427.0" layoutY="271.0" mnemonicParsing="false" onAction="#register" text="%ludologin.register" />
          </children>
       </AnchorPane>
    </content>
