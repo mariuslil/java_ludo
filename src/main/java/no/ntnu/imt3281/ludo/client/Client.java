@@ -48,7 +48,7 @@ public class Client {
 
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
-		this.activeChats.add("Global");
+		requestJoinChat("Global");
 	}
 
 	public void connect(String type, String username, String password) {

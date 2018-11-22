@@ -158,6 +158,11 @@ public class LudoController {
             AnchorPane chat = loader.load();
             Tab tab = new Tab(chatName);
             tab.setClosable(true);
+            tab.setOnCloseRequest(close -> {
+                if(close.getEventType().equals(Tab.TAB_CLOSE_REQUEST_EVENT)){
+                    client.requestLeaveChat(chatName);
+                }
+            });
             tab.setContent(chat);
             chatTab.getTabs().add(tab);
         } catch (IOException el) {
