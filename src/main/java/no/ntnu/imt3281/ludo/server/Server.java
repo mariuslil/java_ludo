@@ -129,9 +129,6 @@ public class Server {
                             ludoServer.movePiece(payload[1], player.getName(), Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
                         }
                     }
-                } else if (msg != null && msg.equals("PING")) { //handle PING from user
-                    player.setPingsNotReturned(0); //we heard from user, reset pings
-
                 } else if (msg != null && msg.startsWith("GLOBALMSG:")) {
                     // GLOBALMSG: <user>§<message>
                     messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
@@ -143,6 +140,7 @@ public class Server {
 
                 }else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
                     wannaGame.add(player);
+
                 }else if (msg != null && msg.startsWith("CHATCREATE:")) {
                     String payload = msg.replace("CHATCREATE:","");
                     LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
@@ -184,7 +182,16 @@ public class Server {
                             player.write("CHATMESSAGE:§" + payload[0] + "§" + player.getName() + "§" + payload[1]);
                         }
                     }
-                } // TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
+                } else if (msg != null && msg.equals("PING")) { //handle PING from user
+                    player.setPingsNotReturned(0); //we heard from user, reset pings
+                } else if (msg != null && msg.startsWith("LEAVEGAME:")) { //user wants to leave game
+                    String gameHash = msg.replace("LEAVEGAME:","");
+                    if(player.activeGames.remove(gameHash)){
+                        games.get(gameHash).remove(player.getName());
+                        ludoServer.removeUserFromGame(gameHash, player.getName());
+                    }
+                    
+                }// TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
                 Thread.sleep(10);    // Prevent excessive processor usage

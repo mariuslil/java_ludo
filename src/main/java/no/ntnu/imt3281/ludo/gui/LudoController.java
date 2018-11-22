@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -36,6 +39,10 @@ public class LudoController {
 
     @FXML
     private void initialize() {
+
+        tabbedPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+        chatTab.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
 
         ChatController chatController = new ChatController(this, "Global");
@@ -49,6 +56,7 @@ public class LudoController {
             AnchorPane chat = loader.load();
             Tab tab = new Tab("Global");
             tab.setContent(chat);
+            tab.setClosable(false);
             chatTab.getTabs().add(tab);
         } catch (IOException el) {
             el.printStackTrace();
@@ -196,6 +204,13 @@ public class LudoController {
 			try {
 				AnchorPane gameBoard = loader.load();
 				Tab tab = new Tab(gameHash);
+				tab.setClosable(true);
+                tab.setOnCloseRequest(close -> {
+                    if(close.getEventType().equals(Tab.TAB_CLOSE_REQUEST_EVENT)){
+                        client.leaveGame(gameHash);
+                    }
+                });
+                tab.setClosable(true);
 				tab.setContent(gameBoard);
 				this.tabbedPane.getTabs().add(tab);
 
