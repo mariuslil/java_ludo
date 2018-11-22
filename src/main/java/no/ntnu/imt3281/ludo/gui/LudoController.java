@@ -246,6 +246,10 @@ public class LudoController {
 		client.sendDiceEvent(gameHash);
 	}
 
+    public void sendMovePieceRequest(String gameHash, int from, int to){
+        client.sendMoveEvent(gameHash, from, to);
+    }
+
     public void sendMessageFromGlobal(String message){
         // TODO : change this so I can get the actual message
         if(message != null && !message.isEmpty()){

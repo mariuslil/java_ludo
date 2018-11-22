@@ -223,10 +223,10 @@ public class Server {
 
                 } else if (msg != null && msg.startsWith("EVENT:")) {
                     if(msg.startsWith("EVENT:DICE:")){
-                        ludoServer.throwDice(msg.replace("EVENT:DICE:",""), player.getName());
+                        ludoServer.throwDice(msg.replace("EVENT:DICE:§",""), player.getName());
                     }else if(msg.startsWith("EVENT:MOVE:")){
                         String[] payload = msg.split("§");
-                        if(payload.length == 3){
+                        if(payload.length == 4){
                             ludoServer.movePiece(payload[1], player.getName(), Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
                         }
                     }

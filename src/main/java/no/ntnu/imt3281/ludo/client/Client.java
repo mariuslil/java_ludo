@@ -201,13 +201,22 @@ public class Client {
 	public void sendDiceEvent(String gameHash){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:DICE:"+gameHash);
+				connection.send("EVENT:DICE:§"+gameHash);
 			}catch (IOException e){
 				connection.close();
 			}
 		}
 	}
 
+	public void sendMoveEvent(String gameHash, int from, int to){
+		if (connected && loggedIn){
+			try{
+				connection.send("EVENT:MOVE:§"+gameHash);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
 
 	public void sendGLOBALText(String message){
 		if (connected  && loggedIn){
