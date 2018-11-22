@@ -1,14 +1,9 @@
 package no.ntnu.imt3281.ludo.client;
 
-import no.ntnu.imt3281.ludo.logic.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.Ludo;
 import no.ntnu.imt3281.ludo.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.*;
@@ -106,7 +101,7 @@ public class ClientTest {
 
 
         try{
-            sleep(3000); //wait 100ms to let the message go through the system.
+            sleep(4000); //wait 4s to let the request run through the system and create a game.
         }catch (InterruptedException e){
 
         }
