@@ -33,60 +33,95 @@ public class GameBoardController {
         //TODO: make the loops run acording to number of players
         Color[]colors=new Color[4];
         colors[0]=Color.RED;colors[1]=Color.BLUE;colors[2]=Color.YELLOW;colors[3]=Color.GREEN;
-        Circle[][]pieces=new Circle[2][4];
-        for(int i=0;i<1;i++){
+        Circle[][]pieces=new Circle[4][4];
+        for(int i=0;i<4;i++){
             for(int j=0;j<4;j++){
                 pieces[i][j]=new Circle(20, colors[i]);
                 pieces[i][j].setStroke(Color.BLACK);
-                pieces[i][j].setStrokeWidth(1);
-                board.getChildren().add(i*10+j,pieces[i][j]);
+                pieces[i][j].setStrokeWidth(2);
+                board.getChildren().add(pieces[i][j]);
                 board.setAlignment(pieces[i][j],Pos.CENTER);
                 switch (i){
                     case 0:
                         switch (j){
                             case 0:
-                                board.getChildren().get(0).setTranslateX(home);
-                                board.getChildren().get(0).setTranslateY(-home-offset);
+                                pieces[i][j].setTranslateX(home);
+                                pieces[i][j].setTranslateY(-home-offset);
+                                break;
                             case 1:
-                                //board.getChildren().get(1).setTranslateX(home+offset);
-                                //board.getChildren().get(1).setTranslateY(-home);
+                                pieces[i][j].setTranslateX(home+offset);
+                                pieces[i][j].setTranslateY(-home);
+                                break;
                             case 2:
-                                //board.getChildren().get(2).setTranslateX(home);
-                                //board.getChildren().get(2).setTranslateY(-home+offset);
+                                pieces[i][j].setTranslateX(home);
+                                pieces[i][j].setTranslateY(-home+offset);
+                                break;
                             case 3:
-                                //board.getChildren().get(3).setTranslateX(home-offset);
-                                //board.getChildren().get(3).setTranslateY(-home);
+                                pieces[i][j].setTranslateX(home-offset);
+                                pieces[i][j].setTranslateY(-home);
+                                break;
                         }
+                        break;
                     case 1:
                         switch (j){
                             case 0:
-
+                                pieces[i][j].setTranslateX(home);
+                                pieces[i][j].setTranslateY(home-offset);
+                                break;
                             case 1:
-
+                                pieces[i][j].setTranslateX(home+offset);
+                                pieces[i][j].setTranslateY(home);
+                                break;
                             case 2:
-
+                                pieces[i][j].setTranslateX(home);
+                                pieces[i][j].setTranslateY(home+offset);
+                                break;
                             case 3:
+                                pieces[i][j].setTranslateX(home-offset);
+                                pieces[i][j].setTranslateY(home);
+                                break;
                         }
+                        break;
                     case 2:
                         switch (j){
                             case 0:
-
+                                pieces[i][j].setTranslateX(-home);
+                                pieces[i][j].setTranslateY(home-offset);
+                                break;
                             case 1:
-
+                                pieces[i][j].setTranslateX(-home+offset);
+                                pieces[i][j].setTranslateY(home);
+                                break;
                             case 2:
-
+                                pieces[i][j].setTranslateX(-home);
+                                pieces[i][j].setTranslateY(home+offset);
+                                break;
                             case 3:
+                                pieces[i][j].setTranslateX(-home-offset);
+                                pieces[i][j].setTranslateY(home);
+                                break;
                         }
+                        break;
                     case 3:
                         switch (j){
                             case 0:
-
+                                pieces[i][j].setTranslateX(-home);
+                                pieces[i][j].setTranslateY(-home-offset);
+                                break;
                             case 1:
-
+                                pieces[i][j].setTranslateX(-home+offset);
+                                pieces[i][j].setTranslateY(-home);
+                                break;
                             case 2:
-
+                                pieces[i][j].setTranslateX(-home);
+                                pieces[i][j].setTranslateY(-home+offset);
+                                break;
                             case 3:
+                                pieces[i][j].setTranslateX(-home-offset);
+                                pieces[i][j].setTranslateY(-home);
+                                break;
                         }
+                        break;
                 }
             }
         }
