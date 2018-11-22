@@ -1,6 +1,8 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,10 +12,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChatController {
     private String chatName;
     private LudoController ludoController;
-    private ObservableList<String> playerList = FXCollections.observableArrayList();
+
+    protected ListProperty<String> listProperty = new SimpleListProperty<>();
+    protected List<String> playerList = new ArrayList<>();
 
     public ChatController(LudoController ludoController, String chatName) {
         this.ludoController = ludoController;
@@ -22,7 +29,7 @@ public class ChatController {
 
     @FXML
     private void initialize(){
-        playerArea.setItems(playerList);
+        playerArea.itemsProperty().bind(listProperty);
     }
 
     @FXML
@@ -52,9 +59,10 @@ public class ChatController {
     }
 
     public void addPlayer(String userName){
+        System.out.println("CHATCONTROLLER:"+this.chatName.toUpperCase()+": adding player "+userName);
         Platform.runLater(()->{
             playerList.add(userName);
-            playerArea.setItems(playerList);
+            listProperty.setValue(FXCollections.observableArrayList(playerList));
             playerArea.refresh();
         });
     }
@@ -62,7 +70,7 @@ public class ChatController {
     public void removePlayer(String userName){
         Platform.runLater(()->{
             playerList.remove(userName);
-            playerArea.setItems(playerList);
+            listProperty.setValue(FXCollections.observableArrayList(playerList));
             playerArea.refresh();
         });
     }
