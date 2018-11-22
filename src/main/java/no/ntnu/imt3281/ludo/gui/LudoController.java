@@ -101,8 +101,22 @@ public class LudoController {
     }
 
     @FXML
-    void about(ActionEvent event) {
-        //TODO: this
+    void about(ActionEvent event) throws IOException {
+        //TODO: Profile information
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileInformation.fxml"));
+
+        ProfileInformationController profileController = new ProfileInformationController(this);
+        loader.setController(profileController);
+        loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+        Parent parent = loader.load();
+
+
+        Scene scene = new Scene(parent, 600, 400);
+        this.openDialog = new Stage();
+        this.openDialog.initModality(Modality.APPLICATION_MODAL);
+        this.openDialog.setScene(scene);
+        this.openDialog.showAndWait();
     }
 
     @FXML
@@ -132,7 +146,6 @@ public class LudoController {
         this.openDialog.initModality(Modality.APPLICATION_MODAL);
         this.openDialog.setScene(scene);
         this.openDialog.showAndWait();
-
 
         //TODO: close stage when logged In or registered.
 
