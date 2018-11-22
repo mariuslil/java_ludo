@@ -4,6 +4,7 @@ import no.ntnu.imt3281.ludo.gui.LudoController;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
 import no.ntnu.imt3281.ludo.logic.PieceEvent;
 import no.ntnu.imt3281.ludo.logic.PlayerEvent;
+import org.apache.derby.impl.sql.catalog.SYSCOLUMNSRowFactory;
 
 import java.io.*;
 import java.net.Socket;
@@ -79,8 +80,14 @@ public class Client {
 							//JOIN//
 						if(tmp != null && tmp.startsWith("JOIN:")){
 							//todo: handle join
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp.replace("JOIN:", ""));
+							String newUser = tmp.replace("JOIN:", "");
+							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
 
+							// Send message in Global chat that a new user has logged in and if anyone has logged in before him
+							// then show them too
+							if(ludoController != null){
+								ludoController.setMessageInGlobalTextBox("JOINED", newUser);
+							}
 							//COOKIE//
 						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
@@ -163,10 +170,11 @@ public class Client {
 								//JOIN//
 							}else if(event.startsWith("JOIN:")){ //join game event
 								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
-
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 4){
 									ludoController.receiveJoinEvent(payload[1], payload[2],  Integer.parseInt(payload[3]));
+									// Send message in local game chat that a user has joined
+									ludoController.setMessageInLocalTextBox(payload[1], "JOINED", payload[2]);
 								}
 							}
 
