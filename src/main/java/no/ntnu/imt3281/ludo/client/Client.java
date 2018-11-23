@@ -13,12 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 /**
  * This is the main class for the client.
  * Note, change this to extend other classes if desired.
  */
 public class Client {
+
+    private final Logger logger = Logger.getLogger("Chat client");
 
 	protected String name = "";
 	protected List<String> messages = new ArrayList<>();
@@ -50,7 +53,7 @@ public class Client {
 
 		if(this.cookie != null){
 			try {
-				System.out.println("CLIENT: "+this.cookie+" Connecting to server.");
+				logger.info("CLIENT: "+this.cookie+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true; //connected but not logged in
 				connection.send("SESSION:"+this.cookie); 	// Send cookie
@@ -74,7 +77,7 @@ public class Client {
 			loggedIn = false;
 		} else {
 			try {
-				System.out.println("CLIENT: "+username+" Connecting to server.");
+				logger.info("CLIENT: "+username+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true; //connected but not logged in
 				connection.send(type+username+"§"+password); 	// Send username&password
@@ -99,7 +102,7 @@ public class Client {
 							//JOIN//
 						if(tmp != null && tmp.startsWith("JOIN:")){
 							String newUser = tmp.replace("JOIN:", "");
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
+							logger.info("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
 
 							// Send message in Global chat that a new user has logged in and if anyone has logged in before him
 							// then show them too
@@ -110,7 +113,7 @@ public class Client {
 							//COOKIE//
 						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
-							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
+							logger.info("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 
 							String[] payload = tmp.replace("COOKIE:","").split("§");
 							if(payload.length==2){
@@ -125,7 +128,7 @@ public class Client {
 
 							//GLOBAL MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GLOBALMSG:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
+							logger.info("CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
 							messages.add(tmp);
 
 							// This is so the sendMessageToClient test won't fail
@@ -145,7 +148,7 @@ public class Client {
 							String message = tmp.replace("GAMEMSG:", "");
 							String[] messageInfo = message.split("§");
 							if(activeGames.size() > 0 && activeGames.contains(messageInfo[0])){
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_CHAT_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
+								logger.info("CLIENT:"+name.toUpperCase()+":RECEIVED_CHAT_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
 								messages.add(tmp);
 
 								if(ludoController != null){
@@ -164,7 +167,7 @@ public class Client {
 
 								//DICE//
 							if(event.startsWith("DICE:")){ //dice event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
+								logger.info("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
 
 								this.test = true;
 								String[] payload = tmp.split("§");
@@ -174,7 +177,7 @@ public class Client {
 
 								//PIECE//
 							}else if(event.startsWith("PLAYER:")){ //player event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
+								logger.info("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
 
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 4){
@@ -183,7 +186,7 @@ public class Client {
 
 								//PLAYER//
 							}else if(event.startsWith("PIECE:")){ //PIECE event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
+								logger.info("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
 
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 6){
@@ -192,7 +195,7 @@ public class Client {
 
 								//JOIN//
 							}else if(event.startsWith("JOIN:")){ //join game event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
+								logger.info("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 4){
 									ludoController.receiveJoinEvent(payload[1], payload[2],  Integer.parseInt(payload[3]));
@@ -216,15 +219,15 @@ public class Client {
 
 							//LOGINERROR//
 						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
+							logger.info("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
 							this.connected = false;
 							connection.close();
 							this.loggedIn = false;
-							System.out.println("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
+							logger.info("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
 
 							//NEWGAME//
 						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
+							logger.info("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
 							String game = tmp.replace("STARTGAME:","");
 							this.test2 = game;
 							if(this.lookingForGame){
@@ -273,7 +276,7 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("ROOMLIST:")){
 							String payload = tmp.replace("ROOMLIST:","");
 							if(!payload.equals("") && ludoController!=null){
-								System.out.println("CLINT:RECEIVED_ROOMLIST:ROOM: "+payload);
+								logger.info("CLINT:RECEIVED_ROOMLIST:ROOM: "+payload);
 								ludoController.updateRoomList(payload);
 							}
 						}
@@ -434,7 +437,7 @@ public class Client {
 			Path file = Paths.get("cookie.txt");
 			Files.write(file, lines, Charset.forName("UTF-8"));
 		}catch (IOException e){
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 			connection.close();
 		}
 	}
@@ -444,10 +447,10 @@ public class Client {
 		try {
 			byte[] encoded = Files.readAllBytes(Paths.get("cookie.txt"));
 			String cookie = new String(encoded, Charset.forName("UTF-8"));
-			System.out.println("COOKIE: "+cookie);
+			logger.info("COOKIE: "+cookie);
 			return cookie;
 		}catch (IOException e){
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 		}
 
 		return null;
