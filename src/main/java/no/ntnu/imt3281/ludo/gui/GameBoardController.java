@@ -8,6 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
 
+/**
+ * GameBoardController class, controller for GameBoard.fxml
+ */
 public class GameBoardController {
 
 
