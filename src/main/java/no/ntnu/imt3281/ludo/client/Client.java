@@ -20,6 +20,7 @@ import java.util.logging.Logger;
  * This is the main class for the client.
  * Note, change this to extend other classes if desired.
  */
+
 public class Client {
 
     private final Logger LOGGER = Logger.getLogger("Chat client");
@@ -60,7 +61,6 @@ public class Client {
 		this.ludoController = ludoController;
 
 		//this.cookie = readCookie();
-
 
 		if(this.cookie != null){
 			try {
@@ -349,7 +349,7 @@ public class Client {
 	public void sendMoveEvent(String gameHash, int from, int to){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:MOVE:§"+gameHash);
+				connection.send("EVENT:MOVE:§"+gameHash+"§"+from+"§"+to);
 			}catch (IOException e){
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();

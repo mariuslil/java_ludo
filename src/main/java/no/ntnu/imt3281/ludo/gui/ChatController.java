@@ -5,6 +5,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import no.ntnu.imt3281.ludo.client.Client;
 import javafx.scene.control.*;
 
 import java.util.logging.Logger;
@@ -17,6 +21,7 @@ public class ChatController {
     private static final Logger LOGGER = Logger.getLogger("Chat Controller");
 
     private String chatName;
+    private Client client;
     private LudoController ludoController;
 
     private ObservableList<String> playerList = FXCollections.observableArrayList();

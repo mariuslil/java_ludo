@@ -7,16 +7,15 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.stage.*;
 import no.ntnu.imt3281.ludo.client.Client;
-
+import no.ntnu.imt3281.ludo.logic.DiceEvent;
+import no.ntnu.imt3281.ludo.logic.PieceEvent;
+import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,8 +67,8 @@ public class LudoController {
     @FXML
     private TabPane tabbedPane;
 
-    @FXML
-    private TabPane chatTab;
+	@FXML
+	private TabPane chatTab;
 
     @FXML
     private void initialize() {
@@ -258,13 +257,36 @@ public class LudoController {
     }
 
     /**
+     * Shows a popup with a custom message
+     *
+     * @param title
+     * @param message
+     */
+	@FXML
+	public void PopUp(String title, String message) {
+
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+
+		alert.showAndWait();
+
+	}
+
+    /**
      * Sends a request to join a new random game through the client
      *
      * @param e auto-created
      */
     @FXML
     public void joinRandomGame(ActionEvent e) {
-        client.requestNewGame();
+		if(client.isLoggedIn()) {
+			client.requestNewGame();
+		}
+		else {
+			PopUp("Warning","Need to log in to play game");
+		}
     }
 
     /**
