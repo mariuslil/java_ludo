@@ -50,9 +50,11 @@ public class ServerTest {
         //server.ludoServer.newGame("TEST");
         //server.ludoServer.addPlayerToGame("TEST", client1.getName());
         //server.ludoServer.addPlayerToGame("TEST", client2.getName());
+
         try {
             sleep(3000); //wait 3s to let the request run through server
         } catch (InterruptedException e) {
+
             System.out.println(e.getMessage());
         }
 
@@ -65,6 +67,7 @@ public class ServerTest {
         try {
             sleep(4000); //wait 4s to let the message run through
         } catch (InterruptedException e) {
+
 
         }
 
