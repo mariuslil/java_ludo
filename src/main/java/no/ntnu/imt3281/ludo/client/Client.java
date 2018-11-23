@@ -1,9 +1,6 @@
 package no.ntnu.imt3281.ludo.client;
 
 import no.ntnu.imt3281.ludo.gui.LudoController;
-import no.ntnu.imt3281.ludo.logic.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.PieceEvent;
-import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,336 +11,410 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 
- * This is the main class for the client. 
- * **Note, change this to extend other classes if desired.**
- * 
- * @author 
- *
+ * Client Class
  */
 public class Client {
 
-	protected String name = "";
-	protected List<String> messages = new ArrayList<>();
-	protected List<String> activeGames = new ArrayList<>();
-	private boolean connected = false;
-	private boolean loggedIn = false;
-	private boolean lookingForGame = false;
-	private int PORT = 1234;
-	private Connection connection;
-	ExecutorService executor = Executors.newFixedThreadPool(1);
+    protected String name = "";
+    protected List<String> messages = new ArrayList<>();
+    protected List<String> activeGames = new ArrayList<>();
+    private boolean connected = false;
+    private boolean loggedIn = false;
+    private boolean lookingForGame = false;
+    private int PORT = 1234;
+    private Connection connection;
+    ExecutorService executor = Executors.newFixedThreadPool(1);
 
-	public boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
-	public String test2 = "";
+    public boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
+    public String test2 = "";
 
-	private String cookie = "";
+    private String cookie = "";
 
-	private LudoController ludoController = null;
+    private LudoController ludoController = null;
 
-	public Client(){
 
-	}
+    /**
+     * Empty Client constructor
+     */
+    public Client() {
 
-	public Client(LudoController ludoController){
-		this.ludoController = ludoController;
-	}
+    }
 
-	public void connect(String type, String username, String password) {
-		if (connected) {				// Currently connected, disconnect from server
-			connected = false;
-			connection.close();			// This will send a message to the server notifying the server about this client leaving
-			loggedIn = false;
-		} else {
-			try {
-				System.out.println("CLIENT: "+username+" Connecting to server.");
-				connection = new Connection();			// Connect to the server
-				connected = true; //connected but not logged in
-				connection.send(type+username+"§"+password); 	// Send username&password
-				this.name = username;
-				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
-			} catch (UnknownHostException e) {
-				// Ignored, means no connection (should have informed the user.)
-			} catch (IOException e) {
-				// Ignored, means no connection (should have informed the user.)
-			}
-		}
-	}
+    /**
+     * Client Constructor with ludoController
+     *
+     * @param ludoController controller to Ludo.fxml
+     */
+    public Client(LudoController ludoController) {
+        this.ludoController = ludoController;
+    }
 
-	// This message will run in a separate thread while the client is connected
-	private void listen() {
-		while (connected) {		// End when connection is closed
-			try {
-				if (connection.input.ready()) {		// A line can be read
-					String tmp = connection.input.readLine();
-					//Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
-							//JOIN//
-						if(tmp != null && tmp.startsWith("JOIN:")){
-							//todo: handle join
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+tmp.replace("JOIN:", ""));
+    /**
+     * TODO : Description here
+     *
+     * @param type     LOGIN or REGISTER
+     * @param username name of user
+     * @param password to the user
+     */
+    public void connect(String type, String username, String password) {
+        if (connected) {                // Currently connected, disconnect from server
+            connected = false;
+            connection.close();            // This will send a message to the server notifying the server about this client leaving
+            loggedIn = false;
+        } else {
+            try {
+                System.out.println("CLIENT: " + username + " Connecting to server.");
+                connection = new Connection();            // Connect to the server
+                connected = true; //connected but not logged in
+                connection.send(type + username + "§" + password);    // Send username&password
+                this.name = username;
+                executor.execute(() -> listen());            // Starts a new thread, listening to messages from the server
+            } catch (UnknownHostException e) {
+                // Ignored, means no connection (should have informed the user.)
+            } catch (IOException e) {
+                // Ignored, means no connection (should have informed the user.)
+            }
+        }
+    }
 
-							//COOKIE//
-						}else if(tmp != null && tmp.startsWith("COOKIE:")){
-							//todo: STORE COOKIE LOCALLY
-							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
-							this.cookie = tmp.replace("COOKIE:",""); //set cookie
-							this.loggedIn = true; //Client is logged in :)
-							if(ludoController!=null) {
-								ludoController.removeOpenDialog();
-							}
+    /**
+     * TODO : maybe more description here?
+     * Listens to the server and responds.
+     * This message will run in a separate thread while the client is connected
+     */
+    private void listen() {
+        while (connected) {        // End when connection is closed
+            try {
+                if (connection.input.ready()) {        // A line can be read
+                    String tmp = connection.input.readLine();
+                    //Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
+                    //JOIN//
+                    if (tmp != null && tmp.startsWith("JOIN:")) {
+                        //todo: handle join
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":LOGGED_ON: " + tmp.replace("JOIN:", ""));
 
-							//GLOBAL MESSAGE//
-						}else if(tmp != null && tmp.startsWith("GLOBALMSG:")){
-							// TODO : Handle message
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
-							messages.add(tmp);
+                        //COOKIE//
+                    } else if (tmp != null && tmp.startsWith("COOKIE:")) {
+                        //todo: STORE COOKIE LOCALLY
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":COOKIE_RECEIVED: " + tmp.replace("COOKIE:", ""));
+                        this.cookie = tmp.replace("COOKIE:", ""); //set cookie
+                        this.loggedIn = true; //Client is logged in :)
+                        if (ludoController != null) {
+                            ludoController.removeOpenDialog();
+                        }
 
-							// This is so the sendMessageToClient test won't fail
-							if(ludoController != null){
-								// Show message in GUI
-								String message = tmp.replace("GLOBALMSG:", "");
-								String[] messageInfo = message.split("§");
-								if(messageInfo.length == 2){
-									ludoController.setMessageInGlobalTextBox(messageInfo[0], messageInfo[1]);
-								}
-							}
+                        //GLOBAL MESSAGE//
+                    } else if (tmp != null && tmp.startsWith("GLOBALMSG:")) {
+                        // TODO : Handle message
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_MESSAGE: " + tmp.replace("GLOBALMSG:", ""));
+                        messages.add(tmp);
 
-							//GAME MESSAGE//
-						}else if(tmp != null && tmp.startsWith("GAMEMSG:")){
-							// TODO : Handle local message
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
-							messages.add(tmp);
+                        // This is so the sendMessageToClient test won't fail
+                        if (ludoController != null) {
+                            // Show message in GUI
+                            String message = tmp.replace("GLOBALMSG:", "");
+                            String[] messageInfo = message.split("§");
+                            if (messageInfo.length == 2) {
+                                ludoController.setMessageInGlobalTextBox(messageInfo[0], messageInfo[1]);
+                            }
+                        }
 
-							//EVENT//
-						} else if(tmp != null && tmp.startsWith("EVENT:")){
-							//todo: handle event
-							String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
+                        //GAME MESSAGE//
+                    } else if (tmp != null && tmp.startsWith("GAMEMSG:")) {
+                        // TODO : Handle local message
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_MESSAGE: " + tmp.replace("GAMEMSG:", ""));
+                        messages.add(tmp);
 
-								//DICE//
-							if(event.startsWith("DICE:")){ //dice event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
+                        //EVENT//
+                    } else if (tmp != null && tmp.startsWith("EVENT:")) {
+                        //todo: handle event
+                        String event = tmp.replace("EVENT:", ""); //remove EVENT: from string
 
-								this.test = true;
-								String[] payload = tmp.split("§");
-								if(ludoController!=null && payload.length == 4){
-									ludoController.receiveDiceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]));
-								}
+                        //DICE//
+                        if (event.startsWith("DICE:")) { //dice event
+                            System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_DICE_EVENT: " + event.replace("DICE:", ""));
 
-								//PIECE//
-							}else if(event.startsWith("PLAYER:")){ //player event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
+                            this.test = true;
+                            String[] payload = tmp.split("§");
+                            if (ludoController != null && payload.length == 4) {
+                                ludoController.receiveDiceEvent(payload[1], Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
+                            }
 
-								String[] payload = tmp.split("§");
-								if(ludoController!=null && payload.length == 4){
-									ludoController.receivePlayerEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]));
-								}
+                            //PIECE//
+                        } else if (event.startsWith("PLAYER:")) { //player event
+                            System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_PIECE_EVENT: " + event.replace("PIECE:", ""));
 
-								//PLAYER//
-							}else if(event.startsWith("PIECE:")){ //PIECE event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
+                            String[] payload = tmp.split("§");
+                            if (ludoController != null && payload.length == 4) {
+                                ludoController.receivePlayerEvent(payload[1], Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
+                            }
 
-								String[] payload = tmp.split("§");
-								if(ludoController!=null && payload.length == 6){
-									ludoController.receivePieceEvent(payload[1], Integer.parseInt(payload[2]),  Integer.parseInt(payload[3]), Integer.parseInt(payload[4]), Integer.parseInt(payload[5]));
-								}
+                            //PLAYER//
+                        } else if (event.startsWith("PIECE:")) { //PIECE event
+                            System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_PLAYER_EVENT: " + event.replace("PLAYER:", ""));
 
-								//JOIN//
-							}else if(event.startsWith("JOIN:")){ //join game event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
+                            String[] payload = tmp.split("§");
+                            if (ludoController != null && payload.length == 6) {
+                                ludoController.receivePieceEvent(payload[1], Integer.parseInt(payload[2]), Integer.parseInt(payload[3]), Integer.parseInt(payload[4]), Integer.parseInt(payload[5]));
+                            }
 
-								String[] payload = tmp.split("§");
-								if(ludoController!=null && payload.length == 4){
-									ludoController.receiveJoinEvent(payload[1], payload[2],  Integer.parseInt(payload[3]));
-								}
-							}
+                            //JOIN//
+                        } else if (event.startsWith("JOIN:")) { //join game event
+                            System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_JOIN_EVENT: " + event.replace("PLAYER:", ""));
 
-							//DISCONNECTED//
-						}else if(tmp != null && tmp.startsWith("DISCONNECTED:")){
-							//todo: handle disconnect
-							//remove disconnected user from thing
+                            String[] payload = tmp.split("§");
+                            if (ludoController != null && payload.length == 4) {
+                                ludoController.receiveJoinEvent(payload[1], payload[2], Integer.parseInt(payload[3]));
+                            }
+                        }
 
-							//LOGINERROR//
-						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
-							this.connected = false;
-							connection.close();
-							this.loggedIn = false;
-							System.out.println("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
+                        //DISCONNECTED//
+                    } else if (tmp != null && tmp.startsWith("DISCONNECTED:")) {
+                        //todo: handle disconnect
+                        //remove disconnected user from thing
 
-							//NEWGAME//
-						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
-							String game = tmp.replace("STARTGAME:","");
-							this.test2 = game;
-							if(this.lookingForGame){
-								activeGames.add(game);
-								if(ludoController!=null) {
-									ludoController.startNewGame(game);
-									ludoController.removeOpenDialog();
-								}
-							}
-						}else if(tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")){
-							String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
-							if(ludoController!=null){
-								ludoController.updateWaitDialog(update);
-							}
-						}else if(tmp != null && tmp.equals("PING")){
-							sendPing();
-						}
-					//});
-				}
-				Thread.sleep(50); 	// Prevent client from using 100% CPU
-			} catch (IOException e) {
-				// Ignored, should have disconnected
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+                        //LOGINERROR//
+                    } else if (tmp != null && tmp.startsWith("LOGINERROR:")) {
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":LOGINERROR: " + tmp.replace("LOGINERROR:", ""));
+                        this.connected = false;
+                        connection.close();
+                        this.loggedIn = false;
+                        System.out.println("CLIENT:" + name.toUpperCase() + ": Disconnected from server.");
 
-	private void sendPing(){
-		if (connected && loggedIn){
-			try{
-				connection.send("PING");
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+                        //NEWGAME//
+                    } else if (tmp != null && tmp.startsWith("STARTGAME:")) {
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":STARTGAME: " + tmp.replace("STARTGAME:", ""));
+                        String game = tmp.replace("STARTGAME:", "");
+                        this.test2 = game;
+                        if (this.lookingForGame) {
+                            activeGames.add(game);
+                            if (ludoController != null) {
+                                ludoController.startNewGame(game);
+                                ludoController.removeOpenDialog();
+                            }
+                        }
+                    } else if (tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")) {
+                        String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
+                        if (ludoController != null) {
+                            ludoController.updateWaitDialog(update);
+                        }
+                    } else if (tmp != null && tmp.equals("PING")) {
+                        sendPing();
+                    }
+                    //});
+                }
+                Thread.sleep(50);    // Prevent client from using 100% CPU
+            } catch (IOException e) {
+                // Ignored, should have disconnected
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
 
-	public void sendDiceEvent(String gameHash){
-		if (connected && loggedIn){
-			try{
-				connection.send("EVENT:DICE:§"+gameHash);
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+    /**
+     * TODO : more descriptive
+     * Sends a ping
+     */
+    private void sendPing() {
+        if (connected && loggedIn) {
+            try {
+                connection.send("PING");
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	public void sendMoveEvent(String gameHash, int from, int to){
-		if (connected && loggedIn){
-			try{
-				connection.send("EVENT:MOVE:§"+gameHash);
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+    /**
+     * Sends a dicevent to the server with the gameHash
+     *
+     * @param gameHash to the game
+     */
+    public void sendDiceEvent(String gameHash) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("EVENT:DICE:§" + gameHash);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	public void sendGLOBALText(String message){
-		if (connected  && loggedIn){
-			try{
-				connection.send("GLOBALMSG:"+message);
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+    /**
+     * Sens pieceevent with the gamehash, from position and to position
+     *
+     * @param gameHash to the game
+     * @param from     position to the piece
+     * @param to       position to the piece
+     */
+    public void sendMoveEvent(String gameHash, int from, int to) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("EVENT:MOVE:§" + gameHash);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	public void sendLOCALText(String message, String ludoID){
-		if(connected && loggedIn){
-			try{
-				connection.send("GAMEMSG:"+message);
-			} catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+    /**
+     * Sends a message in the global chat
+     *
+     * @param message to be displayed in chat
+     */
+    public void sendGLOBALText(String message) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("GLOBALMSG:" + message);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	protected void sendText(String message){
-		if (connected  && loggedIn){
-			try{
-				connection.send("MSG:"+message);
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+    /**
+     * Sends a message in chat room
+     *
+     * @param message to be displayed
+     * @param ludoID  index for the chat
+     */
+    public void sendLOCALText(String message, String ludoID) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("GAMEMSG:" + message);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	public void requestNewGame(){
-		if (connected  && loggedIn){
-			try{
-				connection.send("JOINRANDOMGAME");
-				this.lookingForGame = true;
-				if(ludoController!=null){
-					ludoController.startWaitForGame();
-				}
-			}catch (IOException e){
-				connection.close();
-			}
-		}
+    /**
+     * Old code for messaging
+     *
+     * @param message to be displayed
+     * @deprecated not in use
+     */
+    protected void sendText(String message) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("MSG:" + message);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	}
+    /**
+     * TODO : description here
+     */
+    public void requestNewGame() {
+        if (connected && loggedIn) {
+            try {
+                connection.send("JOINRANDOMGAME");
+                this.lookingForGame = true;
+                if (ludoController != null) {
+                    ludoController.startWaitForGame();
+                }
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
 
-	public void leaveGame(String gameHash){
-		if (connected && loggedIn){
-			try{
-				connection.send("LEAVEGAME:"+gameHash);
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+    }
 
-	public void request(String request){
-		if (connected  && loggedIn){
-			try{
-				connection.send(request);
-			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
+    /**
+     * TODO : description here
+     *
+     * @param gameHash
+     */
+    public void leaveGame(String gameHash) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("LEAVEGAME:" + gameHash);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	public boolean isLoggedIn() {
-		return loggedIn;
-	}
+    /**
+     * TODO description here
+     *
+     * @param request
+     */
+    public void request(String request) {
+        if (connected && loggedIn) {
+            try {
+                connection.send(request);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
 
-	public String getName() {
-		return name;
-	}
+    /**
+     * returns true if the user is logged in
+     *
+     * @return loggedIn about the user
+     */
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
 
-	class Connection {
-		private final Socket socket;
-		private final BufferedReader input;
-		private final BufferedWriter output;
+    /**
+     * Returns the name of the player
+     *
+     * @return name of player
+     */
+    public String getName() {
+        return name;
+    }
 
-		/**
-		 * Creates a new connection to the server.
-		 *
-		 * @throws IOException
-		 */
-		public Connection() throws IOException {
-			socket = new Socket("localhost", PORT);
-			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-		}
+    /**
+     * Connection class
+     */
+    class Connection {
+        private final Socket socket;
+        private final BufferedReader input;
+        private final BufferedWriter output;
 
-		/**
-		 * Sends a message to the server, adds a newline and flushes the bufferedWriter.
+        /**
+         * Creates a new connection to the server.
+         *
+         * @throws IOException
+         */
+        public Connection() throws IOException {
+            socket = new Socket("localhost", PORT);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        }
 
-		 * @param text the message to send (no newline)
-		 * @throws IOException thrown if error during transmission
-		 */
-		public void send(String text) throws IOException {
-			output.write(text);
-			output.newLine();
-			output.flush();
-		}
+        /**
+         * Sends a message to the server, adds a newline and flushes the bufferedWriter.
+         *
+         * @param text the message to send (no newline)
+         * @throws IOException thrown if error during transmission
+         */
+        public void send(String text) throws IOException {
+            output.write(text);
+            output.newLine();
+            output.flush();
+        }
 
-		/**
-		 * Sends a message to the server notifying it about this client
-		 * leaving and then closes the connection.
-		 */
-		public void close() {
-			try {
-				send("§§BYEBYE§§");
-				output.close();
-				input.close();
-				socket.close();
-			} catch (IOException e) {
-				// Nothing to do, the connection is closed
-			}
-		}
-	}
+        /**
+         * Sends a message to the server notifying it about this client
+         * leaving and then closes the connection.
+         */
+        public void close() {
+            try {
+                send("§§BYEBYE§§");
+                output.close();
+                input.close();
+                socket.close();
+            } catch (IOException e) {
+                // Nothing to do, the connection is closed
+            }
+        }
+    }
 }
