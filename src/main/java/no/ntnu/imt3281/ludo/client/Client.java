@@ -49,14 +49,14 @@ public class Client {
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
 
-		readCookie();
+		this.cookie = readCookie();
 
 		if(this.cookie != null){
 			try {
 				System.out.println("CLIENT: "+this.cookie+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true; //connected but not logged in
-				connection.send("COOKIE:"+this.cookie); 	// Send username&password
+				connection.send("SESSION:"+this.cookie); 	// Send cookie
 				
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
 			} catch (UnknownHostException e) {
@@ -114,11 +114,16 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
-							this.cookie = tmp.replace("COOKIE:",""); //set cookie
-							saveCookie(this.cookie);
-							this.loggedIn = true; //Client is logged in :)
-							if(ludoController!=null) {
-								ludoController.removeOpenDialog();
+
+							String[] payload = tmp.replace("COOKIE:","").split("§");
+							if(payload.length==2){
+								this.name = payload[0];
+								this.cookie = payload[1]; //set cookie
+								saveCookie(this.cookie);
+								this.loggedIn = true; //Client is logged in :)
+								if(ludoController!=null) {
+									ludoController.removeOpenDialog();
+								}
 							}
 
 							//GLOBAL MESSAGE//
