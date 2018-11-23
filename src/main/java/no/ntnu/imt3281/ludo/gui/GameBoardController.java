@@ -17,6 +17,13 @@ public class GameBoardController {
     private String gameHash;
     private LudoController ludoController;
 
+
+    /**
+     * Constructor for GameBoardController
+     *
+     * @param gameHash for this game
+     * @param ludoController to control the ludo dialog
+     */
     public GameBoardController(String gameHash, LudoController ludoController){
         this.gameHash = gameHash;
         this.ludoController = ludoController;
@@ -121,6 +128,12 @@ public class GameBoardController {
     }
 
 
+    /**
+     * Function for adding message in this gamechat textfield
+     *
+     * @param user that sent the message
+     * @param message actual message
+     */
     public void setTextInChat(String user, String message) {
         Platform.runLater(() -> {
             String completeMessage = String.format("%s: %s%n", user, message);

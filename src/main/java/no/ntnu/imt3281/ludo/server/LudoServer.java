@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 
 /**
- * LudoServer class
+ * LudoServer class, controls Ludo.fxml
  */
 public class LudoServer {
 
