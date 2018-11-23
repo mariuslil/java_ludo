@@ -241,7 +241,6 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("CHATMESSAGE:")){
 							String[] payload = tmp.split("§");
 							if(payload.length == 4 && ludoController!=null){
-
 								ludoController.sendMessageToChat(payload[1], payload[2], payload[3]);
 							}
 							//ROOMLIST//

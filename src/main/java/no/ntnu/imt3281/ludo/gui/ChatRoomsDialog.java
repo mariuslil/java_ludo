@@ -2,8 +2,6 @@ package no.ntnu.imt3281.ludo.gui;
 
 
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,9 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ChatRoomsDialog {
 
@@ -28,6 +23,12 @@ public class ChatRoomsDialog {
     public void initialize(){
         ludoController.sendRoomRequestToServer();
         listView.setItems(roomList);
+        listView.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2) {
+                ludoController.requestJoinChat(listView.getSelectionModel().getSelectedItem());
+            }
+        });
+
     }
 
     @FXML
@@ -50,6 +51,10 @@ public class ChatRoomsDialog {
 
     @FXML
     public void addRoom(String roomName){
-        Platform.runLater(()-> roomList.add(roomName));
+        Platform.runLater(()-> {
+            if(!roomList.contains(roomName)){
+                roomList.add(roomName);
+            }
+        });
     }
 }

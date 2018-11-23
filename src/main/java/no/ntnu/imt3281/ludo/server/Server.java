@@ -53,8 +53,10 @@ public class Server {
     public Server() {
         this.database = new Database();
         this.ludoServer = new LudoServer(this);
-        //ExecutorService executor = Executors.newCachedThreadPool();
-        //executor.execute(()->connectionListenerThread());
+
+        this.chats.put("Global", new LinkedBlockingQueue<>());
+
+        //THREADS
         executor.execute(() -> connectionListenerThread());    // This thread listens for connections from clients
         executor.execute(() -> playerListenerThread());        // This thread waits for messages to send to clients, then sends the message(s) to all clients.
         executor.execute(() -> messageSenderThread());        // This thread listens for messages from clients
@@ -156,7 +158,7 @@ public class Server {
                     String payload = msg.replace("CHATJOIN:","");
                     try {
                         for(String notifyPlayer: chats.get(payload)){
-                            players.get(notifyPlayer).write("CHATJOIN:§"+payload+"§"+notifyPlayer);
+                            players.get(notifyPlayer).write("CHATJOIN:§"+payload+"§"+player.getName());
                         }
                         chats.get(payload).put(player.getName());
                         player.write("CHATJOIN:§"+payload+"§"+player.getName()); //add player to created game
@@ -179,8 +181,9 @@ public class Server {
                     String[] payload = msg.replace("CHATMESSAGE:","").split("§");
                     if(payload.length==2) {
                         database.addMessageToDatabase(payload[0], player.getName(), payload[1]);
-                        for (String notifyPlayers : chats.get(payload[1])) {
-                            player.write("CHATMESSAGE:§" + payload[0] + "§" + player.getName() + "§" + payload[1]);
+
+                        for (String notifyPlayers : chats.get(payload[0])) {
+                            players.get(notifyPlayers).write("CHATMESSAGE:§" + payload[0] + "§" + player.getName() + "§" + payload[1]);
                         }
                     }
                 } else if (msg != null && msg.equals("PING")) { //handle PING from user
@@ -426,6 +429,8 @@ public class Server {
                     players.put(player.getName(), player);
                     //send all players that this player has logged in.
                     messages.add("JOIN:" + player.getName());
+                    //add player to global chat
+                    chats.get("Global").add(player.getName());
                 } else { //failed to log in
                     System.out.println("SERVER: Failed to login user " + namePass[0].toUpperCase());
                     player.write("LOGINERROR: Failed to login user");
@@ -449,6 +454,7 @@ public class Server {
     }
 
     protected void removePlayerFromServer(Player player){
+        System.out.println("SERVER: Disconnecting user "+player.getName());
         if (players.remove(player.getName()) != null) { //fjern fra players stacken
             player.close(); //disconnect user
 
@@ -458,8 +464,7 @@ public class Server {
             }
 
             players.forEachValue(100, player1 -> { //tell everyone this player disconnected
-                //TODO: Brede fjern fra chats
-                player.write("DISCONNECTED:"+player.getName());
+                player1.write("DISCONNECTED:"+player.getName());
             });
         }
     }

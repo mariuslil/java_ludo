@@ -155,7 +155,7 @@ public class LudoController {
     }
 
     @FXML
-    void joinChat(String chatName) {
+    void requestJoinChat(String chatName) {
         client.requestJoinChat(chatName);
     }
 
