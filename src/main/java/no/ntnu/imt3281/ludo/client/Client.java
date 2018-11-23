@@ -49,6 +49,7 @@ public class Client {
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
 		requestJoinChat("Global");
+		this.activeChats.add("Global");
 	}
 
 	public void connect(String type, String username, String password) {
@@ -187,6 +188,9 @@ public class Client {
 							if(ludoController != null){
 								// Send message to GLOBAL that user is leaving
 								ludoController.setMessageInGlobalTextBox("LEFT", discUser);
+								for(String chat: activeChats){
+									ludoController.removeUserFromAllChats(chat, discUser);
+								}
 							}
 
 							//LOGINERROR//
@@ -225,6 +229,7 @@ public class Client {
 							if(payload.length == 3 && ludoController!=null){
 								if(payload[2].equals(this.getName())){
 									ludoController.createChat(payload[1]);
+									activeChats.add(payload[1]);
 								}
 								ludoController.addPlayerToChat(payload[1], payload[2]);
 								ludoController.sendMessageToChat(payload[1],payload[2]," joined the chatroom.");

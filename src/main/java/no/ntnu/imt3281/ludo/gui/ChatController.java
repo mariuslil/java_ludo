@@ -63,7 +63,9 @@ public class ChatController {
 
     public void removePlayer(String userName){
         Platform.runLater(()->{
-            playerList.remove(userName);
+            if(playerList.contains(userName)) {
+                playerList.remove(userName);
+            }
         });
     }
 }

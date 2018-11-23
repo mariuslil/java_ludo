@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LudoController {
 
     private Client client = new Client(this);
-    //private ChatController chatController = new ChatController(this);
 
 	private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, ChatController> chatControllers = new ConcurrentHashMap<>();
@@ -338,5 +337,9 @@ public class LudoController {
         if(message != null && !message.isEmpty() && !message.contains("§")){
             client.sendLOCALText(message, gameHash);
         }
+    }
+
+    public void removeUserFromAllChats(String chatName, String userName){
+        chatControllers.get(chatName).removePlayer(userName);
     }
 }
