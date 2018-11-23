@@ -4,6 +4,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
 
+
+/**
+ * WaitDialogController class, controls the WaitDialog.fxml
+ */
 public class WaitDialogController {
 
         @FXML
@@ -12,6 +16,11 @@ public class WaitDialogController {
         @FXML
         private Text lastMsg;
 
+    /**
+     * Updates the textArea with the queue
+     *
+     * @param text to be added
+     */
         public void updateTextArea(String text){
             setLastMsg(text);
             this.textArea.setText(textArea.getText()+"\n"+text);
