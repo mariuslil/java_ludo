@@ -127,11 +127,11 @@ public class Server {
                     removePlayerFromServer(player);
 
                 } else if (msg != null && msg.startsWith("EVENT:")) {
-                    if(msg.startsWith("EVENT:DICE:")){
-                        ludoServer.throwDice(msg.replace("EVENT:DICE:§",""), player.getName());
-                    }else if(msg.startsWith("EVENT:MOVE:")){
+                    if (msg.startsWith("EVENT:DICE:")) {
+                        ludoServer.throwDice(msg.replace("EVENT:DICE:§", ""), player.getName());
+                    } else if (msg.startsWith("EVENT:MOVE:")) {
                         String[] payload = msg.split("§");
-                        if(payload.length == 4){
+                        if (payload.length == 4) {
                             ludoServer.movePiece(payload[1], player.getName(), Integer.parseInt(payload[2]), Integer.parseInt(payload[3]));
                         }
                     }
@@ -139,50 +139,50 @@ public class Server {
                     // GLOBALMSG: <user>§<message>
                     messages.add("GLOBALMSG:" + player.getName() + "§" + msg.replace("GLOBALMSG:", ""));    // Add message to message queue
 
-                } else if (msg != null && msg.startsWith("GAMEMSG:")){
+                } else if (msg != null && msg.startsWith("GAMEMSG:")) {
                     String[] messageInfo = msg.replace("GAMEMSG:", "").split("§");
                     // GAMEMSG: <gameid>§<user>§<message>
                     messages.add("GAMEMSG:" + messageInfo[0] + "§" + player.getName() + "§" + msg.replace("GAMEMSG:", "").replace(messageInfo[0], "").replace("§", ""));
 
-                }else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
+                } else if (msg != null && msg.startsWith("JOINRANDOMGAME")) {
                     wannaGame.add(player);
 
-                }else if (msg != null && msg.startsWith("CHATCREATE:")) {
-                    String payload = msg.replace("CHATCREATE:","");
-                    if(chats.get(payload)==null) {
+                } else if (msg != null && msg.startsWith("CHATCREATE:")) {
+                    String payload = msg.replace("CHATCREATE:", "");
+                    if (chats.get(payload) == null) {
                         LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
 
                         lbq.add(player.getName());
                         this.chats.put(payload, lbq);
                     }
-                    player.write("CHATJOIN:§"+payload+"§"+player.getName()); //add player to created game
+                    player.write("CHATJOIN:§" + payload + "§" + player.getName()); //add player to created game
 
-                }else if (msg != null && msg.startsWith("CHATJOIN:")) {
-                    String payload = msg.replace("CHATJOIN:","");
+                } else if (msg != null && msg.startsWith("CHATJOIN:")) {
+                    String payload = msg.replace("CHATJOIN:", "");
                     try {
-                        for(String notifyPlayer: chats.get(payload)){
-                            players.get(notifyPlayer).write("CHATJOIN:§"+payload+"§"+player.getName());
+                        for (String notifyPlayer : chats.get(payload)) {
+                            players.get(notifyPlayer).write("CHATJOIN:§" + payload + "§" + player.getName());
                         }
                         chats.get(payload).put(player.getName());
-                        player.write("CHATJOIN:§"+payload+"§"+player.getName()); //add player to created game
+                        player.write("CHATJOIN:§" + payload + "§" + player.getName()); //add player to created game
 
-                        for(String notifyPlayer: chats.get(payload)){
-                            if(!notifyPlayer.equals(player.getName()))
-                            player.write("CHATJOIN:§"+payload+"§"+notifyPlayer);
+                        for (String notifyPlayer : chats.get(payload)) {
+                            if (!notifyPlayer.equals(player.getName()))
+                                player.write("CHATJOIN:§" + payload + "§" + notifyPlayer);
                         }
-                    }catch (InterruptedException e){
+                    } catch (InterruptedException e) {
                         //fuckoff
                     }
-                }else if (msg != null && msg.startsWith("CHATLEAVE:")) {
-                    String payload = msg.replace("CHATLEAVE:","");
+                } else if (msg != null && msg.startsWith("CHATLEAVE:")) {
+                    String payload = msg.replace("CHATLEAVE:", "");
 
                     chats.get(payload).remove(player.getName());
-                    for(String notifyPlayer: chats.get(payload)){
-                        players.get(notifyPlayer).write("CHATLEFT:§"+payload+"§"+notifyPlayer);
+                    for (String notifyPlayer : chats.get(payload)) {
+                        players.get(notifyPlayer).write("CHATLEFT:§" + payload + "§" + notifyPlayer);
                     }
-                }else if (msg != null && msg.startsWith("CHATMESSAGE:")) {
-                    String[] payload = msg.replace("CHATMESSAGE:","").split("§");
-                    if(payload.length==2) {
+                } else if (msg != null && msg.startsWith("CHATMESSAGE:")) {
+                    String[] payload = msg.replace("CHATMESSAGE:", "").split("§");
+                    if (payload.length == 2) {
                         database.addMessageToDatabase(payload[0], player.getName(), payload[1]);
 
                         for (String notifyPlayers : chats.get(payload[0])) {
@@ -192,16 +192,16 @@ public class Server {
                 } else if (msg != null && msg.equals("PING")) { //handle PING from user
                     player.setPingsNotReturned(0); //we heard from user, reset pings
                 } else if (msg != null && msg.startsWith("LEAVEGAME:")) { //user wants to leave game
-                    String gameHash = msg.replace("LEAVEGAME:","");
-                    if(player.activeGames.remove(gameHash)){
+                    String gameHash = msg.replace("LEAVEGAME:", "");
+                    if (player.activeGames.remove(gameHash)) {
                         games.get(gameHash).remove(player.getName());
                         ludoServer.removeUserFromGame(gameHash, player.getName());
                     }
-                    
+
                 } else if (msg != null && msg.equals("ROOMLIST")) { //handle PING from user
                     System.out.println("SERVER: RECEIVED ROOMLIST REQUEST, PROCESSING");
                     chats.forEachKey(100, chat -> {
-                        player.write("ROOMLIST:"+chat); //send all chatNames to player.
+                        player.write("ROOMLIST:" + chat); //send all chatNames to player.
                     });
                 }// TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
@@ -233,8 +233,8 @@ public class Server {
         }
     }
 
-    private void fillNewGameThread(){
-        while(!shutdown) {
+    private void fillNewGameThread() {
+        while (!shutdown) {
             try {
                 if (wannaGame.size() > 0 && newGame.size() < 4) {
                     Player player = wannaGame.take(); //this fucker
@@ -260,7 +260,7 @@ public class Server {
         int ticktock = 0;
         int newGamePlayers = 0;
         while (!shutdown) {
-            if(newGamePlayers != newGame.size()){
+            if (newGamePlayers != newGame.size()) {
                 ticktock = 0;
                 newGamePlayers = newGame.size();
             }
@@ -273,8 +273,7 @@ public class Server {
                 System.out.println("SERVER: Starting game: " + uniqID);
 
 
-
-                for (String playerName:newGame) {
+                for (String playerName : newGame) {
                     try {
                         lbq.put(playerName);
                         players.get(playerName).write("STARTGAME:" + uniqID);
@@ -282,7 +281,7 @@ public class Server {
                         waitingPlayers.remove(playerName);
                         ludoServer.addPlayerToGame(uniqID, playerName);
                         newGame.remove(playerName);
-                    }catch (InterruptedException e){
+                    } catch (InterruptedException e) {
                         System.out.println(e.getMessage());
                     }
                 }
@@ -316,13 +315,13 @@ public class Server {
         }
     }
 
-    private void pingOnlinePlayers(){
-        while(!shutdown){
+    private void pingOnlinePlayers() {
+        while (!shutdown) {
             players.forEachValue(100, player -> {
                 player.write("PING");
-                player.setPingsNotReturned(player.getPingsNotReturned()+1);
+                player.setPingsNotReturned(player.getPingsNotReturned() + 1);
 
-                if(player.getPingsNotReturned() > 6){//if player hasn't returned a ping for 1 minute
+                if (player.getPingsNotReturned() > 6) {//if player hasn't returned a ping for 1 minute
                     removePlayerFromServer(player); //remove player from server
                 }
             });
@@ -347,29 +346,30 @@ public class Server {
                  * eventParts[2] = Event information
                  */
 
-                for(String player : games.get(eventParts[1])){
-                    if (event.startsWith("EVENT:DICE:")) {
-                        if (eventParts.length == 4) {
-                            System.out.println("SERVER: Sending player " + player + " DICE event.");
-                            players.get(player).write(event);
-                        }
-                    } else if (event.startsWith("EVENT:PLAYER:")) {
-                        if (eventParts.length == 4) {
-                            System.out.println("SERVER: Sending player " + player + " PLAYER event.");
-                            players.get(player).write(event);
-                        }
-                    } else if (event.startsWith("EVENT:PIECE:")) {
-                        if (eventParts.length == 6) {
-                            System.out.println("SERVER: Sending player " + player + " PIECE event.");
-                            players.get(player).write(event);
-                        }
-                    } else if (event.startsWith("EVENT:JOIN:")) {
-                        if (eventParts.length == 4) {
-                            System.out.println("SERVER: Sending player " + player + " JOIN event.");
-                            players.get(player).write(event);
+                if(eventParts.length > 3 && eventParts[1]!=null && games.containsKey(eventParts[1])){
+                    for (String player : games.get(eventParts[1])) {
+                        if (event.startsWith("EVENT:DICE:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " DICE event.");
+                                players.get(player).write(event);
+                            }
+                        } else if (event.startsWith("EVENT:PLAYER:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " PLAYER event.");
+                                players.get(player).write(event);
+                            }
+                        } else if (event.startsWith("EVENT:PIECE:")) {
+                            if (eventParts.length == 6) {
+                                System.out.println("SERVER: Sending player " + player + " PIECE event.");
+                                players.get(player).write(event);
+                            }
+                        } else if (event.startsWith("EVENT:JOIN:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " JOIN event.");
+                                players.get(player).write(event);
+                            }
                         }
                     }
-
                 }
 
             } catch (InterruptedException e) {
@@ -424,7 +424,7 @@ public class Server {
                 if (cookie != null) { //no cookie, not a valid user
                     System.out.println("SERVER: User " + namePass[0].toUpperCase() + " logged in succesfully.");
                     player.setName(namePass[0]);
-                    player.write("COOKIE:" + cookie); //send cookie to client for it to keep
+                    player.write("COOKIE:"+ namePass[0] + "§" + cookie); //send cookie to client for it to keep
 
                     //send new player name of all logged in players
                     players.forEachValue(100, player1 -> player.write("JOIN:" + player1.getName()));
@@ -440,8 +440,24 @@ public class Server {
                 }
             }
         } else if (player.connectionString.startsWith("SESSION:")) { //login user through a session key instead
-            System.out.println("SERVER: client trying to connect through session key.");
-            //String trim = player.connectionString.replace("SESSION:", "");
+            System.out.println("SERVER: client trying to connect through cookie.");
+            String cookie = player.connectionString.replace("SESSION:", "");
+
+            String userName = database.loginUserWithCookie(cookie);
+            if(userName!=null){
+                System.out.println("SERVER: User " + userName.toUpperCase() + " logged in succesfully.");
+                player.setName(userName);
+                player.write("COOKIE:"+ userName + "§" + cookie); //send cookie to client for it to keep
+
+                //send new player name of all logged in players
+                players.forEachValue(100, player1 -> player.write("JOIN:" + player1.getName()));
+                //add player to logged in players list
+                players.put(player.getName(), player);
+                //send all players that this player has logged in.
+                messages.add("JOIN:" + player.getName());
+                //add player to global chat
+                chats.get("Global").add(player.getName());
+            }
             //TODO: THIS -> login client with only the cookie
         } else {
             System.out.println("SERVER: Something wrong validating user.");
@@ -469,10 +485,12 @@ public class Server {
         return players.get(username).activeGames.contains(game);
     }
 
-    protected void removePlayerFromServer(Player player){
-        System.out.println("SERVER: Disconnecting user "+player.getName());
+    protected void removePlayerFromServer(Player player) {
+        System.out.println("SERVER: Disconnecting user " + player.getName());
         if (players.remove(player.getName()) != null) { //fjern fra players stacken
             player.close(); //disconnect user
+
+            System.out.println("SERVER: Player " + player.getName() + " DISCONNECTED.");
 
             for (String gameHash : player.activeGames) { //remove player from all games and notify other players in the games
                 games.get(gameHash).remove(player.getName());
@@ -480,13 +498,13 @@ public class Server {
             }
 
             chats.forEachValue(100, chat -> {
-                if(chat.contains(player.getName())){
+                if (chat.contains(player.getName())) {
                     chat.remove(player.getName());
                 }
             });
 
             players.forEachValue(100, player1 -> { //tell everyone this player disconnected
-                player1.write("DISCONNECTED:"+player.getName());
+                player1.write("DISCONNECTED:" + player.getName());
             });
         }
     }

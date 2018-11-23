@@ -129,6 +129,29 @@ public class Database {
         return cookie;
     }
 
+    protected String loginUserWithCookie(String cookie){
+        String userName = null;
+
+        try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
+
+            String sql = "SELECT NAME, COOKIE FROM USERS WHERE Cookie LIKE (?)";
+            PreparedStatement stmnt = connect.prepareStatement(sql);
+            stmnt.setString(1, cookie);
+            ResultSet res = stmnt.executeQuery();
+
+
+            if (res.next()){
+                userName = res.getString("Name");
+            }
+            stmnt.close();
+        }catch (SQLException e) {
+            //rip
+            System.out.println(e.getMessage());
+        }
+
+        return userName;
+    }
+
     protected boolean userExists(String username){
         boolean exists = false;
         try (Connection connect = DriverManager.getConnection("jdbc:derby:LudoDB")) {
