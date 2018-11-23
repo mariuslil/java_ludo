@@ -430,7 +430,13 @@ public class GameBoardController {
         });
     }
 
-
+    /**
+     * Moves the colors piece to the home position
+     *
+     * @param pieces
+     * @param color
+     * @param piece
+     */
     public void moveHome(Circle[][] pieces, int color, int piece) {
         switch (color){
             case 0:
