@@ -11,13 +11,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Client Class
+ * This is the main class for the client.
+ * Note, change this to extend other classes if desired.
  */
 public class Client {
 
     protected String name = "";
     protected List<String> messages = new ArrayList<>();
     protected List<String> activeGames = new ArrayList<>();
+    protected List<String> activeChats = new ArrayList<>();
     private boolean connected = false;
     private boolean loggedIn = false;
     private boolean lookingForGame = false;
@@ -32,30 +34,16 @@ public class Client {
 
     private LudoController ludoController = null;
 
-
-    /**
-     * Empty Client constructor
-     */
     public Client() {
 
     }
 
-    /**
-     * Client Constructor with ludoController
-     *
-     * @param ludoController controller to Ludo.fxml
-     */
     public Client(LudoController ludoController) {
         this.ludoController = ludoController;
+        requestJoinChat("Global");
+        this.activeChats.add("Global");
     }
 
-    /**
-     * TODO : Description here
-     *
-     * @param type     LOGIN or REGISTER
-     * @param username name of user
-     * @param password to the user
-     */
     public void connect(String type, String username, String password) {
         if (connected) {                // Currently connected, disconnect from server
             connected = false;
@@ -77,22 +65,25 @@ public class Client {
         }
     }
 
-    /**
-     * TODO : maybe more description here?
-     * Listens to the server and responds.
-     * This message will run in a separate thread while the client is connected
-     */
+    // This message will run in a separate thread while the client is connected
     private void listen() {
         while (connected) {        // End when connection is closed
             try {
                 if (connection.input.ready()) {        // A line can be read
                     String tmp = connection.input.readLine();
                     //Platform.runLater(()-> {		// NOTE! IMPORTANT! DO NOT UPDATE THE GUI IN ANY OTHER WAY
+
                     //JOIN//
                     if (tmp != null && tmp.startsWith("JOIN:")) {
-                        //todo: handle join
-                        System.out.println("CLIENT:" + name.toUpperCase() + ":LOGGED_ON: " + tmp.replace("JOIN:", ""));
+                        String newUser = tmp.replace("JOIN:", "");
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":LOGGED_ON: " + newUser);
 
+                        // Send message in Global chat that a new user has logged in and if anyone has logged in before him
+                        // then show them too
+                        if (ludoController != null) {
+                            ludoController.addPlayerToChat("Global", newUser);
+                            ludoController.setMessageInGlobalTextBox("JOINED", newUser);
+                        }
                         //COOKIE//
                     } else if (tmp != null && tmp.startsWith("COOKIE:")) {
                         //todo: STORE COOKIE LOCALLY
@@ -105,8 +96,7 @@ public class Client {
 
                         //GLOBAL MESSAGE//
                     } else if (tmp != null && tmp.startsWith("GLOBALMSG:")) {
-                        // TODO : Handle message
-                        System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_MESSAGE: " + tmp.replace("GLOBALMSG:", ""));
+                        System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_GLOBAL_MESSAGE: " + tmp.replace("GLOBALMSG:", ""));
                         messages.add(tmp);
 
                         // This is so the sendMessageToClient test won't fail
@@ -114,6 +104,8 @@ public class Client {
                             // Show message in GUI
                             String message = tmp.replace("GLOBALMSG:", "");
                             String[] messageInfo = message.split("§");
+
+                            // 0: userName, 1: message
                             if (messageInfo.length == 2) {
                                 ludoController.setMessageInGlobalTextBox(messageInfo[0], messageInfo[1]);
                             }
@@ -121,9 +113,20 @@ public class Client {
 
                         //GAME MESSAGE//
                     } else if (tmp != null && tmp.startsWith("GAMEMSG:")) {
-                        // TODO : Handle local message
-                        System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_MESSAGE: " + tmp.replace("GAMEMSG:", ""));
-                        messages.add(tmp);
+                        String message = tmp.replace("GAMEMSG:", "");
+                        String[] messageInfo = message.split("§");
+                        if (activeGames.size() > 0 && activeGames.contains(messageInfo[0])) {
+                            System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_CHAT_MESSAGE: " + tmp.replace("GAMEMSG:", ""));
+                            messages.add(tmp);
+
+                            if (ludoController != null) {
+                                // 0: gameID, 1: userName, 2: message
+                                if (messageInfo.length == 3) {
+                                    ludoController.setMessageInLocalTextBox(messageInfo[0], messageInfo[1], messageInfo[2]);
+                                }
+                            }
+                        }
+
 
                         //EVENT//
                     } else if (tmp != null && tmp.startsWith("EVENT:")) {
@@ -161,17 +164,26 @@ public class Client {
                             //JOIN//
                         } else if (event.startsWith("JOIN:")) { //join game event
                             System.out.println("CLIENT:" + name.toUpperCase() + ":RECEIVED_JOIN_EVENT: " + event.replace("PLAYER:", ""));
-
                             String[] payload = tmp.split("§");
                             if (ludoController != null && payload.length == 4) {
                                 ludoController.receiveJoinEvent(payload[1], payload[2], Integer.parseInt(payload[3]));
+                                // Send message in local game chat that a user has joined
+                                ludoController.setMessageInLocalTextBox(payload[1], "JOINED", payload[2]);
                             }
                         }
 
                         //DISCONNECTED//
-                    } else if (tmp != null && tmp.startsWith("DISCONNECTED:")) {
+                    } else if (tmp != null && tmp.startsWith("DISCONNECTED:")) { // Disconnected from application
                         //todo: handle disconnect
-                        //remove disconnected user from thing
+                        String discUser = tmp.replace("DISCONNECTED:", "");
+
+                        if (ludoController != null) {
+                            // Send message to GLOBAL that user is leaving
+                            ludoController.setMessageInGlobalTextBox("LEFT", discUser);
+                            for (String chat : activeChats) {
+                                ludoController.removeUserFromAllChats(chat, discUser);
+                            }
+                        }
 
                         //LOGINERROR//
                     } else if (tmp != null && tmp.startsWith("LOGINERROR:")) {
@@ -193,13 +205,48 @@ public class Client {
                                 ludoController.removeOpenDialog();
                             }
                         }
+                        //RANDOMGAMEREQUESTUPDATE//
                     } else if (tmp != null && tmp.startsWith("RANDOMGAMEREQUESTUPDATE:")) {
                         String update = tmp.replace("RANDOMGAMEREQUESTUPDATE:", "");
                         if (ludoController != null) {
                             ludoController.updateWaitDialog(update);
                         }
+                        //PING//
                     } else if (tmp != null && tmp.equals("PING")) {
                         sendPing();
+
+                        //CHATJOIN//
+                    } else if (tmp != null && tmp.startsWith("CHATJOIN:")) {
+                        String[] payload = tmp.split("§");
+                        if (payload.length == 3 && ludoController != null) {
+                            if (payload[2].equals(this.getName())) {
+                                ludoController.createChat(payload[1]);
+                                activeChats.add(payload[1]);
+                            }
+                            ludoController.addPlayerToChat(payload[1], payload[2]);
+                            ludoController.sendMessageToChat(payload[1], payload[2], " joined the chatroom.");
+                        }
+                        //CHATLEFT//
+                    } else if (tmp != null && tmp.startsWith("CHATLEFT:")) {
+                        String[] payload = tmp.split("§");
+                        if (payload.length == 3 && ludoController != null) {
+
+                            ludoController.removePlayerFromChat(payload[1], payload[2]);
+                            ludoController.sendMessageToChat(payload[1], payload[2], " left the chatroom.");
+                        }
+                        //CHATMESSAGE//
+                    } else if (tmp != null && tmp.startsWith("CHATMESSAGE:")) {
+                        String[] payload = tmp.split("§");
+                        if (payload.length == 4 && ludoController != null) {
+                            ludoController.sendMessageToChat(payload[1], payload[2], payload[3]);
+                        }
+                        //ROOMLIST//
+                    } else if (tmp != null && tmp.startsWith("ROOMLIST:")) {
+                        String payload = tmp.replace("ROOMLIST:", "");
+                        if (!payload.equals("") && ludoController != null) {
+                            System.out.println("CLINT:RECEIVED_ROOMLIST:ROOM: " + payload);
+                            ludoController.updateRoomList(payload);
+                        }
                     }
                     //});
                 }
@@ -212,10 +259,6 @@ public class Client {
         }
     }
 
-    /**
-     * TODO : more descriptive
-     * Sends a ping
-     */
     private void sendPing() {
         if (connected && loggedIn) {
             try {
@@ -226,11 +269,6 @@ public class Client {
         }
     }
 
-    /**
-     * Sends a dicevent to the server with the gameHash
-     *
-     * @param gameHash to the game
-     */
     public void sendDiceEvent(String gameHash) {
         if (connected && loggedIn) {
             try {
@@ -241,13 +279,6 @@ public class Client {
         }
     }
 
-    /**
-     * Sens pieceevent with the gamehash, from position and to position
-     *
-     * @param gameHash to the game
-     * @param from     position to the piece
-     * @param to       position to the piece
-     */
     public void sendMoveEvent(String gameHash, int from, int to) {
         if (connected && loggedIn) {
             try {
@@ -258,11 +289,6 @@ public class Client {
         }
     }
 
-    /**
-     * Sends a message in the global chat
-     *
-     * @param message to be displayed in chat
-     */
     public void sendGLOBALText(String message) {
         if (connected && loggedIn) {
             try {
@@ -273,41 +299,19 @@ public class Client {
         }
     }
 
-    /**
-     * Sends a message in chat room
-     *
-     * @param message to be displayed
-     * @param ludoID  index for the chat
-     */
-    public void sendLOCALText(String message, String ludoID) {
+    public void sendLOCALText(String message, String gameHash) {
         if (connected && loggedIn) {
             try {
-                connection.send("GAMEMSG:" + message);
+                if (activeGames.size() > 0) {
+                    connection.send("GAMEMSG:" + gameHash + "§" + message);
+                }
+
             } catch (IOException e) {
                 connection.close();
             }
         }
     }
 
-    /**
-     * Old code for messaging
-     *
-     * @param message to be displayed
-     * @deprecated not in use
-     */
-    protected void sendText(String message) {
-        if (connected && loggedIn) {
-            try {
-                connection.send("MSG:" + message);
-            } catch (IOException e) {
-                connection.close();
-            }
-        }
-    }
-
-    /**
-     * TODO : description here
-     */
     public void requestNewGame() {
         if (connected && loggedIn) {
             try {
@@ -323,11 +327,46 @@ public class Client {
 
     }
 
-    /**
-     * TODO : description here
-     *
-     * @param gameHash
-     */
+    public void requestCreateChat(String newChatName) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("CHATCREATE:" + newChatName);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
+
+    public void requestJoinChat(String joinChatName) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("CHATJOIN:" + joinChatName);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
+
+    public void requestLeaveChat(String leaveChatName) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("CHATLEAVE:" + leaveChatName);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
+
+    public void requestSendChatMessage(String chatName, String message) {
+        if (connected && loggedIn) {
+            try {
+                connection.send("CHATMESSAGE:" + chatName + "§" + message);
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
+
     public void leaveGame(String gameHash) {
         if (connected && loggedIn) {
             try {
@@ -338,11 +377,16 @@ public class Client {
         }
     }
 
-    /**
-     * TODO description here
-     *
-     * @param request
-     */
+    public void requestRoomList() {
+        if (connected && loggedIn) {
+            try {
+                connection.send("ROOMLIST");
+            } catch (IOException e) {
+                connection.close();
+            }
+        }
+    }
+
     public void request(String request) {
         if (connected && loggedIn) {
             try {
@@ -353,27 +397,14 @@ public class Client {
         }
     }
 
-    /**
-     * returns true if the user is logged in
-     *
-     * @return loggedIn about the user
-     */
     public boolean isLoggedIn() {
         return loggedIn;
     }
 
-    /**
-     * Returns the name of the player
-     *
-     * @return name of player
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Connection class
-     */
     class Connection {
         private final Socket socket;
         private final BufferedReader input;

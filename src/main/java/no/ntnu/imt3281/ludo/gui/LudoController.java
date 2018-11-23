@@ -23,9 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LudoController {
 
     private Client client = new Client(this);
-    private ChatController chatController = new ChatController(this);
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n");
     private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ChatController> chatControllers = new ConcurrentHashMap<>();
+    private ResourceBundle resourceBundle = ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n");
+    private ChatRoomsDialog chatRoomsDialog;
 
     @FXML
     private WaitDialogController waitDialogController;
@@ -73,13 +74,17 @@ public class LudoController {
         chatTab.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+
+        ChatController chatController = new ChatController(this, resourceBundle.getString("ludo.globalchat"));
+        chatControllers.put("Global", chatController);
+
         loader.setController(chatController);
         loader.setResources(resourceBundle);
 
 
         try {
             AnchorPane chat = loader.load();
-            Tab tab = new Tab(resourceBundle.getString("ludo.globalchat"));
+            Tab tab = new Tab("Global");
             tab.setContent(chat);
             tab.setClosable(false);
             chatTab.getTabs().add(tab);
@@ -88,10 +93,30 @@ public class LudoController {
         }
     }
 
-
     @FXML
-    void ListRooms(ActionEvent event) {
-        //TODO: this
+    void ListRooms(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatRoomsDialog.fxml"));
+
+        this.chatRoomsDialog = new ChatRoomsDialog(this); //create controller that points to this controller
+        loader.setController(chatRoomsDialog);                                        //set controller to this custom controller
+        loader.setResources(resourceBundle);
+
+        Parent parent = loader.load();
+
+        Scene scene = new Scene(parent, 600, 400);
+        this.openDialog = new Stage();
+        this.openDialog.initModality(Modality.APPLICATION_MODAL);
+        this.openDialog.setTitle(resourceBundle.getString("ludo.listrooms"));
+        this.openDialog.setScene(scene);
+        this.openDialog.showAndWait();
+    }
+
+    public void sendRoomRequestToServer() {
+        client.requestRoomList();
+    }
+
+    public void updateRoomList(String roomName) {
+        this.chatRoomsDialog.addRoom(roomName);
     }
 
     @FXML
@@ -129,8 +154,59 @@ public class LudoController {
     }
 
     @FXML
-    void joinChat(ActionEvent event) {
-        //TODO: this
+    void requestJoinChat(String chatName) {
+        client.requestJoinChat(chatName);
+    }
+
+    @FXML
+    public void createChat(String chatName) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+
+        ChatController chatController = new ChatController(this, chatName);
+        chatControllers.put(chatName, chatController);
+
+        loader.setController(chatController);
+        loader.setResources(resourceBundle);
+
+        try {
+            AnchorPane chat = loader.load();
+            Tab tab = new Tab(chatName);
+            tab.setClosable(true);
+            tab.setOnCloseRequest(close -> {
+                if (close.getEventType().equals(Tab.TAB_CLOSE_REQUEST_EVENT)) {
+                    client.requestLeaveChat(chatName);
+                }
+            });
+            tab.setContent(chat);
+            Platform.runLater(() -> chatTab.getTabs().add(tab));
+        } catch (IOException el) {
+            el.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void requestCreateChat(String chatName) {
+        client.requestCreateChat(chatName);
+    }
+
+    @FXML
+    public void addPlayerToChat(String chatName, String playerName) {
+        this.chatControllers.get(chatName).addPlayer(playerName);
+    }
+
+    @FXML
+    public void sendMessageToChat(String chatName, String userName, String message) {
+        this.chatControllers.get(chatName).setTextInChat(userName, message);
+    }
+
+    @FXML
+    public void sendMessageToServer(String chatName, String message) {
+        this.client.requestSendChatMessage(chatName, message);
+    }
+
+    @FXML
+    public void removePlayerFromChat(String chatName, String userName) {
+        this.chatControllers.get(chatName).removePlayer(userName);
     }
 
     @FXML
@@ -143,10 +219,10 @@ public class LudoController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
         loader.setResources(resourceBundle);
 
-        GameBoardController controller = new GameBoardController(gameHash, this);
-        loader.setController(controller);
+        GameBoardController gameBoardController = new GameBoardController(gameHash, this);
+        loader.setController(gameBoardController);
 
-        gameControllers.put(gameHash, controller);
+        gameControllers.put(gameHash, gameBoardController);
 
         Platform.runLater(() -> {
             try {
@@ -221,9 +297,12 @@ public class LudoController {
 
     @FXML
     public void setMessageInGlobalTextBox(String sender, String message) {
-        Platform.runLater(() -> {
-            chatController.setTextInChat(sender, message);
-        });
+        chatControllers.get("Global").setTextInChat(sender, message);
+    }
+
+    @FXML
+    public void setMessageInLocalTextBox(String gameID, String sender, String message) {
+        gameControllers.get(gameID).setTextInChat(sender, message);
     }
 
     @FXML
@@ -254,9 +333,14 @@ public class LudoController {
         client.sendMoveEvent(gameHash, from, to);
     }
 
-    public void sendMessageFromGlobal(String message) {
-        if (message != null && !message.isEmpty()) {
-            client.sendGLOBALText(message);
+
+    public void sendMessageFromLocal(String message, String gameHash) {
+        if (message != null && !message.isEmpty() && !message.contains("§")) {
+            client.sendLOCALText(message, gameHash);
         }
+    }
+
+    public void removeUserFromAllChats(String chatName, String userName) {
+        chatControllers.get(chatName).removePlayer(userName);
     }
 }
