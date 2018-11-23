@@ -6,10 +6,22 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
-public class main extends Application {
+/**
+ * Client Main
+ */
+public class Main extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger("Client Main");
+
+    /**
+     * Start
+     * Desc: start the javafx program
+     * @param primaryStage primary window for javafx program
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -18,12 +30,17 @@ public class main extends Application {
             AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource("../gui/Ludo.fxml"), bundle);
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
+            primaryStage.setTitle(bundle.getString("clientludo.title"));
             primaryStage.show();
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(IOException e) {
+            LOGGER.info(e.getMessage());
         }
     }
 
+    /**
+     * Main
+     * @param args cmd line arguments
+     */
     public static void main(String[] args) {
         launch(args);
         System.exit(0);

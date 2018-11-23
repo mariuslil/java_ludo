@@ -5,10 +5,20 @@ import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+
+/**
+ * LoginController class, for controlling Login.fxml
+ */
 public class LoginController {
 
     private LudoController ludoController;
 
+
+    /**
+     * Constructor for LoginController
+     *
+     * @param ludoController to control the Ludo dialog
+     */
     public LoginController(LudoController ludoController){
         this.ludoController = ludoController;
     }

@@ -27,9 +27,10 @@ public class ServerTest {
         client2.connect("REGISTER:", "Brede", "HEI");
         client3.connect("REGISTER:", "Marius", "hei");
         client4.connect("REGISTER:", "Okolloen", "hei");
-        try{
-            sleep(3000); //wait 600ms to let the system connect
-        }catch (InterruptedException e){
+
+        try {
+            sleep(3000); //wait 3ss to let the system connect
+        } catch (InterruptedException e) {
 
         }
     }
@@ -40,7 +41,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testGameSetup(){
+    public void testGameSetup() {
 
         client1.requestNewGame();
         client2.requestNewGame();
@@ -49,9 +50,11 @@ public class ServerTest {
         //server.ludoServer.newGame("TEST");
         //server.ludoServer.addPlayerToGame("TEST", client1.getName());
         //server.ludoServer.addPlayerToGame("TEST", client2.getName());
-        try{
-            sleep(2000); //wait 1s to let the request run through server
-        }catch (InterruptedException e){
+
+        try {
+            sleep(3000); //wait 3s to let the request run through server
+        } catch (InterruptedException e) {
+
             System.out.println(e.getMessage());
         }
 
@@ -61,9 +64,10 @@ public class ServerTest {
         client3.sendDiceEvent(client3.test2); //send event
         client4.sendDiceEvent(client4.test2); //send event
 
-        try{
-            sleep(3000); //wait 2s to let the message run through
-        }catch (InterruptedException e){
+        try {
+            sleep(4000); //wait 4s to let the message run through
+        } catch (InterruptedException e) {
+
 
         }
 
@@ -71,7 +75,7 @@ public class ServerTest {
     }
 
     @Test
-    public void disconnectFromServer(){
+    public void disconnectFromServer() {
         assertTrue(server.playerExistInServer("Johan"));
         assertTrue(server.playerExistInServer("Brede"));
         assertTrue(server.playerExistInServer("Marius"));
@@ -86,6 +90,4 @@ public class ServerTest {
         assertTrue(server.playerExistInServer("Marius"));
         assertTrue(server.playerExistInServer("Okolloen"));
     }
-
-
 }

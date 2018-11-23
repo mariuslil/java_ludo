@@ -1,23 +1,32 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Logger;
 
+/**
+ * ChatController class, controls chat.fxml
+ */
 public class ChatController {
+
+    private static final Logger LOGGER = Logger.getLogger("Chat Controller");
+
     private String chatName;
     private LudoController ludoController;
 
     private ObservableList<String> playerList = FXCollections.observableArrayList();
 
+    /**
+     * ChatController
+     * Constructor
+     * @param ludoController LudoController to talk to parent class
+     * @param chatName this custom chat's title
+     */
     public ChatController(LudoController ludoController, String chatName) {
         this.ludoController = ludoController;
         this.chatName = chatName;
@@ -47,6 +56,12 @@ public class ChatController {
         ludoController.sendMessageToServer(this.chatName, message);
     }
 
+    /**
+     * setTextInChat
+     * adds text to chat
+     * @param user user who sent the text
+     * @param message text to be added
+     */
     public void setTextInChat(String user, String message) {
         Platform.runLater(()->{
             String completeMessage = String.format("%s: %s%n", user, message);
@@ -54,13 +69,21 @@ public class ChatController {
         });
     }
 
+    /**
+     * addPlayer
+     * adds player to chat list
+     * @param userName name of player to be added
+     */
     public void addPlayer(String userName){
-        System.out.println("CHATCONTROLLER:"+this.chatName.toUpperCase()+": adding player "+userName);
-        Platform.runLater(()->{
-            playerList.add(userName);
-        });
+        LOGGER.info("CHATCONTROLLER:"+this.chatName.toUpperCase()+": adding player "+userName);
+        Platform.runLater(()->playerList.add(userName));
     }
 
+    /**
+     * removePlayer
+     * removes player from chat list
+     * @param userName name of player to be removed
+     */
     public void removePlayer(String userName){
         Platform.runLater(()->{
             if(playerList.contains(userName)) {
