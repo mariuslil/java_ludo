@@ -188,17 +188,26 @@ public class GameBoardController {
     void movePiece(int color, int x, int y){
         int from = 0;
 
-        int xPos = x%offset+7;
-        int yPos = y%offset+7;
+        if(x == -216 || x == 216 || y == -216 || y == 216){
+            from = 0;
+            System.out.println("MOVE FOR: "+color+" X: "+x+" Y: "+y+" FROM: "+from);
+        }
+        else{
+            int xPos = (x+350)/offset;
+            int yPos = (y+350)/offset;
 
-        switch (color) {
-            case 0: from = numberBoard0[xPos][yPos]; break;
-            case 1: from = numberBoard1[xPos][yPos]; break;
-            case 2: from = numberBoard2[xPos][yPos]; break;
-            case 3: from = numberBoard3[xPos][yPos]; break;
+            System.out.println("MOVE PIECE FOR: "+color+" X:"+xPos+" Y:"+yPos+" FROM: "+from);
+
+            switch (color) {
+                case 0: from = numberBoard0[xPos][yPos]; break;
+                case 1: from = numberBoard1[xPos][yPos]; break;
+                case 2: from = numberBoard2[xPos][yPos]; break;
+                case 3: from = numberBoard3[xPos][yPos]; break;
+            }
+
+            System.out.println("MOVE PIECE FOR: "+color+" X:"+xPos+" Y:"+yPos+" FROM: "+from);
         }
 
-        System.out.println("MOVE PIECE FOR: "+color+" X:"+xPos+" Y:"+yPos+" FROM: "+from);
 
         ludoController.sendMovePieceRequest(this.gameHash, from, from+this.diceNr);
     }
