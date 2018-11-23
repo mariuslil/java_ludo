@@ -28,8 +28,6 @@ public class ChatRoomsDialog {
     public void initialize(){
         ludoController.sendRoomRequestToServer();
         listView.setItems(roomList);
-        roomList.add("JOHAN");
-        roomList.add("TEST123");
     }
 
     @FXML

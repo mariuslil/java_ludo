@@ -88,6 +88,7 @@ public class Client {
 							// Send message in Global chat that a new user has logged in and if anyone has logged in before him
 							// then show them too
 							if(ludoController != null){
+								ludoController.addPlayerToChat("Global", newUser);
 								ludoController.setMessageInGlobalTextBox("JOINED", newUser);
 							}
 							//COOKIE//

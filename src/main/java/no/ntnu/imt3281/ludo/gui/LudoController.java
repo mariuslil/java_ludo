@@ -104,7 +104,7 @@ public class LudoController {
 
         Parent parent = loader.load();
 
-        Scene scene = new Scene(parent, 600, 340);
+        Scene scene = new Scene(parent, 600, 400);
         this.openDialog = new Stage();
         this.openDialog.initModality(Modality.APPLICATION_MODAL);
         this.openDialog.setScene(scene);
@@ -116,7 +116,6 @@ public class LudoController {
     }
 
     public void updateRoomList(String roomName){
-        System.out.println("GOT HERE");
         this.chatRoomsDialog.addRoom(roomName);
     }
 
@@ -152,9 +151,6 @@ public class LudoController {
         this.openDialog.initModality(Modality.APPLICATION_MODAL);
         this.openDialog.setScene(scene);
         this.openDialog.showAndWait();
-
-
-        //TODO: close stage when logged In or registered.
 
     }
 
