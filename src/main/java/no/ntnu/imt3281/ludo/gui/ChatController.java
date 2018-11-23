@@ -38,7 +38,7 @@ public class ChatController {
             }
         }
         else {
-            ludoController.warningPopUp("Need to log in to speak in chat");
+            ludoController.PopUp("Warning","Need to log in to speak in chat");
         }
     }
 

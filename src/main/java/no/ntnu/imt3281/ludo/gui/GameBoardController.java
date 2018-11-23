@@ -190,17 +190,17 @@ public class GameBoardController {
 
         if(x == -216 || x == 216 || y == -216 || y == 216){
             from = 0;
-            System.out.println("MOVE FOR: "+color+" X: "+x+" Y: "+y+" FROM: "+from);
         }
+
         else{
             int xPos = (x+350)/offset;
             int yPos = (y+350)/offset;
 
             switch (color) {
-                case 0: from = numberBoard0[xPos][yPos]; break;
-                case 1: from = numberBoard1[xPos][yPos]; break;
-                case 2: from = numberBoard2[xPos][yPos]; break;
-                case 3: from = numberBoard3[xPos][yPos]; break;
+                case 0: from = numberBoard0[yPos][xPos]; break;
+                case 1: from = numberBoard1[yPos][xPos]; break;
+                case 2: from = numberBoard2[yPos][xPos]; break;
+                case 3: from = numberBoard3[yPos][xPos]; break;
             }
 
             System.out.println("MOVE PIECE FOR: "+color+" X:"+xPos+" Y:"+yPos+" FROM: "+from);
@@ -210,7 +210,6 @@ public class GameBoardController {
     }
 
     protected void runDiceEvent(int color, int diceNr){
-        //TODO: player color threw a diceNr, update GUI
         this.diceNr = diceNr;
         switch (diceNr){
             case 1:
@@ -264,7 +263,14 @@ public class GameBoardController {
                     break;
             }
         }else if(status == 300){ //won
-            //TODO: Show flashy playername WON! message
+            String player = "";
+            switch (color){
+                case 0: player = "Player 1"; break;
+                case 1: player = "Player 2"; break;
+                case 2: player = "Player 3"; break;
+                case 3: player = "Player 4"; break;
+            }
+            ludoController.PopUp("Victory Royale", "Congratulations "+player+" on wining the game");
         }else if(status == 200){ //playing
             switch (color) {
                 case 0: player1Active.setVisible(true); break;
@@ -283,8 +289,16 @@ public class GameBoardController {
     }
 
     protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
-        //TODO: move player color's pieceNr from Pos to Pos
         System.out.println("RUN PIECE EVENT FOR: "+color+" MED BRIKKE: "+pieceNr+" FRA: "+fromPos+" TIL: "+toPos);
+
+
+        if(pieceNr == 69){
+            pieceNr = 0;
+        }
+
+        if(fromPos == 53){
+            toPos = toPos-fromPos;
+        }
 
         if (fromPos == 0) {
             switch (color) {
