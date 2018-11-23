@@ -1,6 +1,8 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
@@ -14,6 +16,10 @@ import javafx.scene.paint.Color;
 import no.ntnu.imt3281.ludo.logic.Ludo;
 import javafx.scene.shape.Circle;
 
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GameBoardController {
 
@@ -23,6 +29,75 @@ public class GameBoardController {
     protected final int home = 216;
     protected final int offset = 48;
     protected Circle[][] pieces = new Circle[4][4];
+    private int diceNr;
+    protected int[][] numberBoard0 = new int[][]{
+            {0,0,0,0,0,0,50,51,52,0,0,0,0,0,0},
+            {0,0,0,0,0,0,49,54,53,0,0,0,0,0,0},
+            {0,0,0,0,0,0,48,55,2,0,0,0,0,0,0},
+            {0,0,0,0,0,0,47,56,3,0,0,0,0,0,0},
+            {0,0,0,0,0,0,46,57,4,0,0,0,0,0,0},
+            {0,0,0,0,0,0,45,58,5,0,0,0,0,0,0},
+        {39,40,41,42,43,44,0,59,0,6,7,8,9,10,11},
+            {38,0,0,0,0,0,0,0,0,0,0,0,0,0,12},
+        {37,36,35,34,33,32,0,0,0,18,17,16,15,14,13},
+            {0,0,0,0,0,0,31,0,19,0,0,0,0,0,0},
+            {0,0,0,0,0,0,30,0,20,0,0,0,0,0,0},
+            {0,0,0,0,0,0,29,0,21,0,0,0,0,0,0},
+            {0,0,0,0,0,0,28,0,22,0,0,0,0,0,0},
+            {0,0,0,0,0,0,27,0,23,0,0,0,0,0,0},
+            {0,0,0,0,0,0,26,25,24,0,0,0,0,0,0}};
+
+    protected int[][] numberBoard1 = new int[][]{
+            {0,0,0,0,0,0,37,38,39,0,0,0,0,0,0},
+            {0,0,0,0,0,0,36,0,40,0,0,0,0,0,0},
+            {0,0,0,0,0,0,35,0,41,0,0,0,0,0,0},
+            {0,0,0,0,0,0,34,0,42,0,0,0,0,0,0},
+            {0,0,0,0,0,0,33,0,43,0,0,0,0,0,0},
+            {0,0,0,0,0,0,32,0,44,0,0,0,0,0,0},
+        {26,27,28,29,30,31,0,0,0,45,46,47,48,49,50},
+        {25,0,0,0,0,0,0,0,59,58,57,56,55,54,51},
+        {24,23,22,21,20,19,0,0,0,5,4,3,2,53,52},
+            {0,0,0,0,0,0,18,0,6,0,0,0,0,0,0},
+            {0,0,0,0,0,0,17,0,7,0,0,0,0,0,0},
+            {0,0,0,0,0,0,16,0,8,0,0,0,0,0,0},
+            {0,0,0,0,0,0,15,0,9,0,0,0,0,0,0},
+            {0,0,0,0,0,0,14,0,10,0,0,0,0,0,0},
+            {0,0,0,0,0,0,13,12,11,0,0,0,0,0,0}};
+
+    protected int[][] numberBoard2 = new int[][]{
+            {0,0,0,0,0,0,24,25,26,0,0,0,0,0,0},
+            {0,0,0,0,0,0,23,0,27,0,0,0,0,0,0},
+            {0,0,0,0,0,0,22,0,28,0,0,0,0,0,0},
+            {0,0,0,0,0,0,21,0,29,0,0,0,0,0,0},
+            {0,0,0,0,0,0,20,0,30,0,0,0,0,0,0},
+            {0,0,0,0,0,0,19,0,31,0,0,0,0,0,0},
+            {13,14,15,16,17,18,0,0,0,32,33,34,35,36,37},
+            {12,0,0,0,0,0,0,0,0,0,0,0,0,0,38},
+            {11,10,9,8,7,6,0,59,0,44,43,42,41,40,39},
+            {0,0,0,0,0,0,5,58,45,0,0,0,0,0,0},
+            {0,0,0,0,0,0,4,57,46,0,0,0,0,0,0},
+            {0,0,0,0,0,0,3,56,47,0,0,0,0,0,0},
+            {0,0,0,0,0,0,2,55,48,0,0,0,0,0,0},
+            {0,0,0,0,0,0,53,54,49,0,0,0,0,0,0},
+            {0,0,0,0,0,0,52,51,50,0,0,0,0,0,0}};
+
+    protected int[][] numberBoard3 = new int[][]{
+            {0,0,0,0,0,0,11,12,13,0,0,0,0,0,0},
+            {0,0,0,0,0,0,10,0,14,0,0,0,0,0,0},
+            {0,0,0,0,0,0,9,0,15,0,0,0,0,0,0},
+            {0,0,0,0,0,0,8,0,16,0,0,0,0,0,0},
+            {0,0,0,0,0,0,7,0,17,0,0,0,0,0,0},
+            {0,0,0,0,0,0,6,0,18,0,0,0,0,0,0},
+        {52,53,2,3,4,5,0,0,0,19,20,21,22,23,24},
+        {51,54,55,56,57,58,59,0,0,0,0,0,0,0,25},
+        {50,59,58,47,46,45,0,0,0,31,30,29,28,27,26},
+            {0,0,0,0,0,0,44,0,32,0,0,0,0,0,0},
+            {0,0,0,0,0,0,43,0,33,0,0,0,0,0,0},
+            {0,0,0,0,0,0,42,0,34,0,0,0,0,0,0},
+            {0,0,0,0,0,0,41,0,35,0,0,0,0,0,0},
+            {0,0,0,0,0,0,40,0,36,0,0,0,0,0,0},
+            {0,0,0,0,0,0,39,38,37,0,0,0,0,0,0}};
+
 
     public GameBoardController(String gameHash, LudoController ludoController){
         this.gameHash = gameHash;
@@ -110,14 +185,27 @@ public class GameBoardController {
     }
 
     @FXML
-    void movePiece(){
-        int from = 0;   //TEMP make it dynamic with an event or something
-        int to = 1;     //same
-        ludoController.sendMovePieceRequest(this.gameHash, from, to);
+    void movePiece(int color, int x, int y){
+        int from = 0;
+
+        int xPos = x%offset+7;
+        int yPos = y%offset+7;
+
+        switch (color) {
+            case 0: from = numberBoard0[xPos][yPos]; break;
+            case 1: from = numberBoard1[xPos][yPos]; break;
+            case 2: from = numberBoard2[xPos][yPos]; break;
+            case 3: from = numberBoard3[xPos][yPos]; break;
+        }
+
+        System.out.println("MOVE PIECE FOR: "+color+" X:"+xPos+" Y:"+yPos+" FROM: "+from);
+
+        ludoController.sendMovePieceRequest(this.gameHash, from, from+this.diceNr);
     }
 
     protected void runDiceEvent(int color, int diceNr){
         //TODO: player color threw a diceNr, update GUI
+        this.diceNr = diceNr;
         switch (diceNr){
             case 1:
                 diceThrown.setImage(new Image("/images/dice1.png"));
@@ -142,28 +230,114 @@ public class GameBoardController {
 
     protected void runPlayerEvent(int color, int status){
         if(status == 400){ //left
-            //TODO: remove players name and pieces from the game
+            int i = 0;
+            switch (color) {
+                case 0:
+                    player1.setVisible(false);
+                    while (i < 4){
+                        pieces[color][i].setVisible(false);
+                }
+                    break;
+                case 1:
+                    player2.setVisible(false);
+                    while (i < 4){
+                        pieces[color][i].setVisible(false);
+                    }
+                    break;
+                case 2:
+                    player3.setVisible(false);
+                    while (i < 4){
+                        pieces[color][i].setVisible(false);
+                    }
+                    break;
+                case 3:
+                    player4.setVisible(false);
+                    while (i < 4){
+                        pieces[color][i].setVisible(false);
+                    }
+                    break;
+            }
         }else if(status == 300){ //won
             //TODO: Show flashy playername WON! message
         }else if(status == 200){ //playing
             switch (color) {
                 case 0: player1Active.setVisible(true); break;
-                case 1: player1Active.setVisible(true); break;
-                case 2: player1Active.setVisible(true); break;
-                case 3: player1Active.setVisible(true); break;
+                case 1: player2Active.setVisible(true); break;
+                case 2: player3Active.setVisible(true); break;
+                case 3: player4Active.setVisible(true); break;
             }
         }else if(status == 100){ //waiting
             switch (color) {
                 case 0: player1Active.setVisible(false); break;
-                case 1: player1Active.setVisible(false); break;
-                case 2: player1Active.setVisible(false); break;
-                case 3: player1Active.setVisible(false); break;
+                case 1: player2Active.setVisible(false); break;
+                case 2: player3Active.setVisible(false); break;
+                case 3: player4Active.setVisible(false); break;
             }
         }
     }
 
     protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
         //TODO: move player color's pieceNr from Pos to Pos
+        System.out.println("RUN PIECE EVENT FOR: "+color+" MED BRIKKE: "+pieceNr+" FRA: "+fromPos+" TIL: "+toPos);
+
+        switch (color) {
+            case 0:
+                if(toPos == 16){
+                    pieces[color][pieceNr].setTranslateX(offset);
+                    pieces[color][pieceNr].setTranslateY(-offset*6);
+                }
+                break;
+            case 1:
+                if(toPos == 29){
+                    pieces[color][pieceNr].setTranslateX(offset*6);
+                    pieces[color][pieceNr].setTranslateY(offset);
+                }
+                break;
+            case 2:
+                if(toPos == 42){
+                    pieces[color][pieceNr].setTranslateX(-offset);
+                    pieces[color][pieceNr].setTranslateY(offset*6);
+                }
+                break;
+            case 3:
+                if(toPos == 55){
+                    pieces[color][pieceNr].setTranslateX(-offset*6);
+                    pieces[color][pieceNr].setTranslateY(-offset);
+                }
+                break;
+        }
+
+        for(int i = fromPos; i <= toPos; i++) { // For every step
+            if (toPos > 15 && toPos < 21 || toPos > 25 && toPos < 29 || toPos > 33 && toPos < 40){
+                // Move down
+                pieces[color][pieceNr].setTranslateY(pieces[color][pieceNr].getTranslateY()+offset);
+                if(i+1 == 21) {
+                    pieces[color][pieceNr].setTranslateY(pieces[color][pieceNr].getTranslateY()+offset);
+                }
+            }
+            if (toPos > 20 && toPos < 27 || toPos > 53 && toPos < 60 || toPos > 64 && toPos < 68) {
+                // Move right
+                pieces[color][pieceNr].setTranslateX(pieces[color][pieceNr].getTranslateX()+offset);
+                if(i+1 == 60) {
+                    pieces[color][pieceNr].setTranslateX(pieces[color][pieceNr].getTranslateX()+offset);
+                }
+            }
+            if (toPos > 28 && toPos < 34 || toPos > 39 && toPos < 42 || toPos > 46 && toPos < 53) {
+                // Move left
+                pieces[color][pieceNr].setTranslateX(pieces[color][pieceNr].getTranslateX()-offset);
+                if(i+1 == 34) {
+                    pieces[color][pieceNr].setTranslateX(pieces[color][pieceNr].getTranslateX()-offset);
+                }
+            }
+            if(toPos > 41 && toPos < 47 || toPos > 52 && toPos < 55 || toPos > 59 && toPos < 66){
+                // Move up
+                pieces[color][pieceNr].setTranslateY(pieces[color][pieceNr].getTranslateY()-offset);
+                if(i+1 == 47) {
+                    pieces[color][pieceNr].setTranslateY(pieces[color][pieceNr].getTranslateY()-offset);
+                }
+            }
+        }
+
     }
 
     protected void runJoinEvent(String username, int color){
@@ -195,13 +369,22 @@ public class GameBoardController {
         Color[]colors=new Color[4];
         colors[0]=Color.RED;colors[1]=Color.BLUE;colors[2]=Color.YELLOW;colors[3]=Color.GREEN;
         for(int j=0;j<4;j++){
-            pieces[color][j]=new Circle(20, colors[color]);
-            pieces[color][j].setStroke(Color.BLACK);
-            pieces[color][j].setStrokeWidth(2);
-            board.getChildren().add(pieces[color][j]);
-            board.setAlignment(pieces[color][j],Pos.CENTER);
-            moveHome(pieces,color,j);
+           placePiece(color, j, colors);
         }
+    }
+
+    private void placePiece(int color, int j, Color[] colors){
+        pieces[color][j]=new Circle(20, colors[color]);
+        pieces[color][j].setStroke(Color.BLACK);
+        pieces[color][j].setStrokeWidth(2);
+        board.getChildren().add(pieces[color][j]);
+        board.setAlignment(pieces[color][j],Pos.CENTER);
+        moveHome(pieces,color,j);
+        pieces[color][j].setOnMouseClicked(click -> {
+
+                movePiece(color, (int)pieces[color][j].getTranslateX(), (int)pieces[color][j].getTranslateY());
+
+        });
     }
 
     public void moveHome(Circle[][] pieces, int color, int piece) {
@@ -288,4 +471,5 @@ public class GameBoardController {
                 break;
         }
     }
+
 }
