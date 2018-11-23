@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 public class LudoServer {
+
+    private final Logger logger = Logger.getLogger("ludoServer");
 
     protected Server server;
     protected final ConcurrentHashMap<String, Ludo> games = new ConcurrentHashMap<>(); //games by gamehash
@@ -23,20 +26,20 @@ public class LudoServer {
         games.put(gameHash, new Ludo());
         players.put(gameHash, new ArrayList<>());
         gameSize.put(gameHash, size);
-        System.out.println("LUDOSERVER: New game created with hash: "+gameHash);
+        logger.info("LUDOSERVER: New game created with hash: "+gameHash);
 
         games.get(gameHash).addDiceListener(new DiceListener(gameHash){
             @Override
             public void diceThrown(DiceEvent event){
                 try {
-                    System.out.println("LUDOSERVER: Color: " +event.getColor()+" threw a "+event.getDiceNr());
+                    logger.info("LUDOSERVER: Color: " +event.getColor()+" threw a "+event.getDiceNr());
                     server.events.put("EVENT:DICE:§"+this.getGameHash()+"§"+event.getColor()+"§"+event.getDiceNr());
                 }catch (InterruptedException e){
-                    System.out.println("DICEEVENT:ERROR: "+e.getMessage());
+                    logger.info("DICEEVENT:ERROR: "+e.getMessage());
                 }
             }
         });
-        System.out.println("LUDOSERVER: Created DiceListener for game: "+gameHash);
+        logger.info("LUDOSERVER: Created DiceListener for game: "+gameHash);
 
         games.get(gameHash).addPlayerListener(new PlayerListener(gameHash){
             @Override
@@ -44,11 +47,11 @@ public class LudoServer {
                 try {
                     server.events.put("EVENT:PLAYER:§"+this.getGameHash()+"§"+event.getColor()+"§"+event.getStatus());
                 }catch (InterruptedException e){
-                    System.out.println("PLAYEREVENT:ERROR: "+e.getMessage());
+                    logger.info("PLAYEREVENT:ERROR: "+e.getMessage());
                 }
             }
         });
-        System.out.println("LUDOSERVER: Created PlayerListener for game: "+gameHash);
+        logger.info("LUDOSERVER: Created PlayerListener for game: "+gameHash);
 
         games.get(gameHash).addPieceListener(new PieceListener(gameHash){
             @Override
@@ -56,16 +59,16 @@ public class LudoServer {
                 try {
                     server.events.put("EVENT:PIECE:§"+this.getGameHash()+"§"+event.getColor()+"§"+event.getPieceNr()+"§"+event.getFromPos()+"§"+event.getToPos());
                 }catch (InterruptedException e){
-                    System.out.println("PIECEEVENT:ERROR: "+e.getMessage());
+                    logger.info("PIECEEVENT:ERROR: "+e.getMessage());
                 }
             }
         });
-        System.out.println("LUDOSERVER: Created PieceListener for game: "+gameHash);
+        logger.info("LUDOSERVER: Created PieceListener for game: "+gameHash);
     }
 
     protected void addPlayerToGame(String gameHash, String player){
 
-        System.out.println("LUDOSERVER: Player "+player+" joined game: "+gameHash);
+        logger.info("LUDOSERVER: Player "+player+" joined game: "+gameHash);
 
 
         players.get(gameHash).add(player);
@@ -77,7 +80,7 @@ public class LudoServer {
                 try {
                     server.events.put("EVENT:JOIN:§" + gameHash + "§" + client + "§" + players.get(gameHash).indexOf(client));
                 }catch (InterruptedException e){
-                    System.out.println(e.getMessage());
+                    logger.info(e.getMessage());
                 }
             }
 
@@ -95,7 +98,7 @@ public class LudoServer {
         if(games.get(gameHash).getPlayerName(games.get(gameHash).activePlayer()).equals(player)){ //only active player can issue this command
             games.get(gameHash).throwDice(); //throw dice
         }else{
-            System.out.println("LUDOSERVER: A not active player tried to issue DICE event");
+            logger.info("LUDOSERVER: A not active player tried to issue DICE event");
         }
     }
 
