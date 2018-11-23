@@ -47,14 +47,9 @@ public class ChatController {
 
     @FXML
     void sendMessageToServer(ActionEvent event){
-        if(client.isLoggedIn()) {
-            String message = textToSay.getText();
-            textToSay.clear();
-            ludoController.sendMessageToServer(this.chatName, message);
-        }
-        else {
-            ludoController.PopUp("Warning","Need to log in to speak in chat");
-        }
+        String message = textToSay.getText();
+        textToSay.clear();
+        ludoController.sendMessageToServer(this.chatName, message);
     }
 
     public void setTextInChat(String user, String message) {

@@ -39,7 +39,7 @@ public class Client {
 	public boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
 	public String test2 = "";
 
-	private String cookie = "";
+	private String cookie;
 
 	private LudoController ludoController = null;
 
@@ -50,7 +50,7 @@ public class Client {
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
 
-		this.cookie = readCookie();
+		//this.cookie = readCookie();
 
 		if(this.cookie != null){
 			try {
