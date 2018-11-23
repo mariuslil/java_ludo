@@ -10,7 +10,7 @@ import javafx.scene.control.*;
 import java.util.logging.Logger;
 
 /**
- *
+ * ChatController class, controls chat.fxml
  */
 public class ChatController {
 

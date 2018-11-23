@@ -10,6 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
+
+/**
+ * ChatRoomsDialog class, controller to ChatRoomsDialog.fxml
+ */
 public class ChatRoomsDialog {
 
     private LudoController ludoController;
@@ -19,6 +23,9 @@ public class ChatRoomsDialog {
         this.ludoController = ludoController;
     }
 
+    /**
+     * TODO : description here
+     */
     @FXML
     public void initialize(){
         ludoController.sendRoomRequestToServer();
@@ -51,6 +58,11 @@ public class ChatRoomsDialog {
         }
     }
 
+    /**
+     * Adds aroom to the roomlist
+     *
+     * @param roomName to be added
+     */
     @FXML
     public void addRoom(String roomName){
         Platform.runLater(()-> {

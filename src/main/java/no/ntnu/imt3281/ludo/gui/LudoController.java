@@ -20,6 +20,10 @@ import no.ntnu.imt3281.ludo.client.Client;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+/**
+ * LudoController class, for controlling Ludo.fxml
+ */
 public class LudoController {
 
     private Client client = new Client(this);
@@ -111,10 +115,18 @@ public class LudoController {
         this.openDialog.showAndWait();
     }
 
+    /**
+     * Sends a room request to the server through the client
+     */
     public void sendRoomRequestToServer() {
         client.requestRoomList();
     }
 
+    /**
+     * Updates the room list by adding a new room
+     *
+     * @param roomName to update
+     */
     public void updateRoomList(String roomName) {
         this.chatRoomsDialog.addRoom(roomName);
     }
@@ -159,6 +171,11 @@ public class LudoController {
         client.requestJoinChat(chatName);
     }
 
+    /**
+     * Creates the chat dialog
+     *
+     * @param chatName name of the new chat
+     */
     @FXML
     public void createChat(String chatName) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
@@ -185,36 +202,76 @@ public class LudoController {
         }
     }
 
+    /**
+     * Sends a request to create a chat through the client
+     *
+     * @param chatName of new chatRoom
+     */
     @FXML
     public void requestCreateChat(String chatName) {
         client.requestCreateChat(chatName);
     }
 
+    /**
+     * Adds a player to a chat
+     *
+     * @param chatName of the chat the player wants to join
+     * @param playerName is the name of the player
+     */
     @FXML
     public void addPlayerToChat(String chatName, String playerName) {
         this.chatControllers.get(chatName).addPlayer(playerName);
     }
 
+    /**
+     * Sends a message to a chat
+     *
+     * @param chatName of the chat
+     * @param userName of the player
+     * @param message is message to be sent
+     */
     @FXML
     public void sendMessageToChat(String chatName, String userName, String message) {
         this.chatControllers.get(chatName).setTextInChat(userName, message);
     }
 
+    /**
+     * TODO : description here
+     *
+     * @param chatName
+     * @param message
+     */
     @FXML
     public void sendMessageToServer(String chatName, String message) {
         this.client.requestSendChatMessage(chatName, message);
     }
 
+    /**
+     * Removes the player from the chat
+     *
+     * @param chatName of the chat to remove the player from
+     * @param userName of the player to be removed
+     */
     @FXML
     public void removePlayerFromChat(String chatName, String userName) {
         this.chatControllers.get(chatName).removePlayer(userName);
     }
 
+    /**
+     * Sends a request to join a new random game through the client
+     *
+     * @param e auto-created
+     */
     @FXML
     public void joinRandomGame(ActionEvent e) {
         client.requestNewGame();
     }
 
+    /**
+     * Starts a new game
+     *
+     * @param gameHash is the gamehash the game is going to have
+     */
     @FXML
     public void startNewGame(String gameHash) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
@@ -246,6 +303,12 @@ public class LudoController {
     }
 
 
+    /**
+     * Starts the WaitDialog dialog and is open until a game is found.
+     * It's to show the queue.
+     *
+     * @throws IOException if it can't load loader
+     */
     @FXML
     public void startWaitForGame() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("WaitDialog.fxml"));
@@ -265,6 +328,12 @@ public class LudoController {
         this.openDialog.showAndWait();
     }
 
+    /**
+     * Sends a server message to login a user through the client
+     *
+     * @param username to log in with
+     * @param password to log in with
+     */
     public void loginUser(String username, String password) {
         System.out.println("CONTROLLER: User: " + username + " is logging in");
 
@@ -273,6 +342,12 @@ public class LudoController {
         }
     }
 
+    /**
+     * Sends a server message to register a user through the client
+     *
+     * @param username to register with
+     * @param password to register with
+     */
     public void registerUser(String username, String password) {
         System.out.println("CONTROLLER: User " + username + " is registering");
 
@@ -282,6 +357,11 @@ public class LudoController {
 
     }
 
+    /**
+     * Updates the waitDialog
+     *
+     * @param update update text
+     */
     @FXML
     public void updateWaitDialog(String update) {
         if (waitDialogController != null) {
@@ -289,6 +369,9 @@ public class LudoController {
         }
     }
 
+    /**
+     * Removes/closes the open dialog
+     */
     @FXML
     public void removeOpenDialog() {
         if (openDialog != null) {
@@ -296,51 +379,118 @@ public class LudoController {
         }
     }
 
+    /**
+     * Sets a message in the global chat
+     *
+     * @param sender is the name of the user
+     * @param message is the actual message
+     */
     @FXML
     public void setMessageInGlobalTextBox(String sender, String message) {
         chatControllers.get("Global").setTextInChat(sender, message);
     }
 
+    /**
+     * Sets a message in a chat
+     *
+     * @param gameID gamehash of the chat to set message in
+     * @param sender is the name of the user
+     * @param message is the actual message
+     */
     @FXML
     public void setMessageInLocalTextBox(String gameID, String sender, String message) {
         gameControllers.get(gameID).setTextInChat(sender, message);
     }
 
+    /**
+     * TODO : description here
+     *
+     * @param gameHash
+     * @param color
+     * @param diceNr
+     */
     @FXML
     public void receiveDiceEvent(String gameHash, int color, int diceNr) {
         gameControllers.get(gameHash).runDiceEvent(color, diceNr);
     }
 
+    /**
+     * TODO : description here
+     *
+     * @param gameHash
+     * @param color
+     * @param status
+     */
     @FXML
     public void receivePlayerEvent(String gameHash, int color, int status) {
         gameControllers.get(gameHash).runPlayerEvent(color, status);
     }
 
+    /**
+     * TODO : description here
+     *
+     * @param gameHash
+     * @param color
+     * @param pieceNr
+     * @param fromPos
+     * @param toPos
+     */
     @FXML
     public void receivePieceEvent(String gameHash, int color, int pieceNr, int fromPos, int toPos) {
         gameControllers.get(gameHash).runPieceEvent(color, pieceNr, fromPos, toPos);
     }
 
+    /**
+     * TODO : description here
+     *
+     * @param gameHash
+     * @param username
+     * @param color
+     */
     @FXML
     public void receiveJoinEvent(String gameHash, String username, int color) {
         gameControllers.get(gameHash).runJoinEvent(username, color);
     }
 
+    /**
+     * Sends a diceevent through the client
+     *
+     * @param gameHash is to know wich game it came from
+     */
     public void sendDiceThrowRequest(String gameHash) {
         client.sendDiceEvent(gameHash);
     }
 
+    /**
+     * Sends a pieceevent through the client
+     *
+     * @param gameHash of the game
+     * @param from position to the piece
+     * @param to position to the piece
+     */
     public void sendMovePieceRequest(String gameHash, int from, int to) {
         client.sendMoveEvent(gameHash, from, to);
     }
 
 
+    /**
+     * Sends a messaeg to a chat through the client
+     *
+     * @param message to be sent
+     * @param gameHash to the chat
+     */
     public void sendMessageFromLocal(String message, String gameHash) {
         if (message != null && !message.isEmpty() && !message.contains("§")) {
             client.sendLOCALText(message, gameHash);
         }
     }
 
+    /**
+     * Removes a user from all chats
+     *
+     * @param chatName to the game
+     * @param userName to the player
+     */
     public void removeUserFromAllChats(String chatName, String userName) {
         chatControllers.get(chatName).removePlayer(userName);
     }
