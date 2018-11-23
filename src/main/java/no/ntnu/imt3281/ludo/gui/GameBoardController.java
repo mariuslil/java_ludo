@@ -21,6 +21,9 @@ import java.util.List;
 import javafx.scene.image.ImageView;
 
 
+/**
+ * GameBoardController class, controller for GameBoard.fxml
+ */
 public class GameBoardController {
 
 
@@ -100,6 +103,13 @@ public class GameBoardController {
             {0,0,0,0,0,0,39,38,37,0,0,0,0,0,0}};
 
 
+
+    /**
+     * Constructor for GameBoardController
+     *
+     * @param gameHash for this game
+     * @param ludoController to control the ludo dialog
+     */
     public GameBoardController(String gameHash, LudoController ludoController){
         this.gameHash = gameHash;
         this.ludoController = ludoController;
@@ -360,6 +370,12 @@ public class GameBoardController {
     }
 
 
+    /**
+     * Function for adding message in this gamechat textfield
+     *
+     * @param user that sent the message
+     * @param message actual message
+     */
     public void setTextInChat(String user, String message) {
         Platform.runLater(() -> {
             String completeMessage = String.format("%s: %s%n", user, message);

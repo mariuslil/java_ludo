@@ -13,17 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
  * This is the main class for the client.
- * **Note, change this to extend other classes if desired.**
- *
- * @author
- *
+ * Note, change this to extend other classes if desired.
  */
 
 public class Client {
+
+    private final Logger LOGGER = Logger.getLogger("Chat client");
 
 	protected String name = "";
 	protected List<String> messages = new ArrayList<>();
@@ -32,21 +32,31 @@ public class Client {
 	private boolean connected = false;
 	private boolean loggedIn = false;
 	private boolean lookingForGame = false;
-	private int PORT = 1234;
+	private int port = 1234;
 	private Connection connection;
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
+	//variable used for testing
 	public boolean test = false; //TEMP VAR TO SEE IF DICE EVENT WORKS
+    //variable used for testing
 	public String test2 = "";
 
 	private String cookie;
 
 	private LudoController ludoController = null;
 
+    /**
+     * empty constructor
+     */
 	public Client(){
 
 	}
 
+    /**
+     * Client constructor
+     * Takes a ludocontroller to control the GUI
+     * @param ludoController LudoController
+     */
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
 
@@ -54,23 +64,31 @@ public class Client {
 
 		if(this.cookie != null){
 			try {
-				System.out.println("CLIENT: "+this.cookie+" Connecting to server.");
+				LOGGER.log(Level.SEVERE, "CLIENT: "+this.cookie+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true; //connected but not logged in
 				connection.send("SESSION:"+this.cookie); 	// Send cookie
 				
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
 			} catch (UnknownHostException e) {
-				// Ignored, means no connection (should have informed the user.)
-			} catch (IOException e) {
-				// Ignored, means no connection (should have informed the user.)
-			}
+                // Ignored, means no connection (should have informed the user.)
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            } catch (IOException e2) {
+                // Ignored, means no connection (should have informed the user.)
+                LOGGER.log(Level.SEVERE, e2.getMessage(), e2);
+            }
 		}
 
-		//requestJoinChat("Global");
 		this.activeChats.add("Global");
 	}
 
+    /**
+     * Connect
+     * Connects user to server
+     * @param type LOGIN|REGISTER|SESSION
+     * @param username username
+     * @param password password
+     */
 	public void connect(String type, String username, String password) {
 		if (connected) {				// Currently connected, disconnect from server
 			connected = false;
@@ -78,17 +96,19 @@ public class Client {
 			loggedIn = false;
 		} else {
 			try {
-				System.out.println("CLIENT: "+username+" Connecting to server.");
+                LOGGER.log(Level.SEVERE, "CLIENT: "+username+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true; //connected but not logged in
 				connection.send(type+username+"§"+password); 	// Send username&password
 				this.name = username;
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
 			} catch (UnknownHostException e) {
-				// Ignored, means no connection (should have informed the user.)
-			} catch (IOException e) {
-				// Ignored, means no connection (should have informed the user.)
-			}
+                // Ignored, means no connection (should have informed the user.)
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            } catch (IOException e2) {
+                // Ignored, means no connection (should have informed the user.)
+                LOGGER.log(Level.SEVERE, e2.getMessage(), e2);
+            }
 		}
 	}
 
@@ -103,7 +123,7 @@ public class Client {
 							//JOIN//
 						if(tmp != null && tmp.startsWith("JOIN:")){
 							String newUser = tmp.replace("JOIN:", "");
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
+                            LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
 
 							// Send message in Global chat that a new user has logged in and if anyone has logged in before him
 							// then show them too
@@ -114,7 +134,7 @@ public class Client {
 							//COOKIE//
 						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
-							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
+                            LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 
 							String[] payload = tmp.replace("COOKIE:","").split("§");
 							if(payload.length==2){
@@ -129,7 +149,7 @@ public class Client {
 
 							//GLOBAL MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GLOBALMSG:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
+                            LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
 							messages.add(tmp);
 
 							// This is so the sendMessageToClient test won't fail
@@ -149,7 +169,7 @@ public class Client {
 							String message = tmp.replace("GAMEMSG:", "");
 							String[] messageInfo = message.split("§");
 							if(activeGames.size() > 0 && activeGames.contains(messageInfo[0])){
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_CHAT_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
+                                LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_CHAT_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
 								messages.add(tmp);
 
 								if(ludoController != null){
@@ -168,7 +188,7 @@ public class Client {
 
 								//DICE//
 							if(event.startsWith("DICE:")){ //dice event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
+                                LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
 
 								this.test = true;
 								String[] payload = tmp.split("§");
@@ -178,7 +198,7 @@ public class Client {
 
 								//PIECE//
 							}else if(event.startsWith("PLAYER:")){ //player event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
+								LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
 
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 4){
@@ -187,7 +207,7 @@ public class Client {
 
 								//PLAYER//
 							}else if(event.startsWith("PIECE:")){ //PIECE event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
+								LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
 
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 6){
@@ -196,7 +216,7 @@ public class Client {
 
 								//JOIN//
 							}else if(event.startsWith("JOIN:")){ //join game event
-								System.out.println("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
+								LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 4){
 									ludoController.receiveJoinEvent(payload[1], payload[2],  Integer.parseInt(payload[3]));
@@ -220,15 +240,15 @@ public class Client {
 
 							//LOGINERROR//
 						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
+							LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
 							this.connected = false;
 							connection.close();
 							this.loggedIn = false;
-							System.out.println("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
+							LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+": Disconnected from server.");
 
 							//NEWGAME//
 						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
-							System.out.println("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
+							LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
 							String game = tmp.replace("STARTGAME:","");
 							this.test2 = game;
 							if(this.lookingForGame){
@@ -277,7 +297,7 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("ROOMLIST:")){
 							String payload = tmp.replace("ROOMLIST:","");
 							if(!payload.equals("") && ludoController!=null){
-								System.out.println("CLINT:RECEIVED_ROOMLIST:ROOM: "+payload);
+								LOGGER.log(Level.SEVERE, "CLINT:RECEIV, eED_ROOMLIST:ROOM: "+payload);
 								ludoController.updateRoomList(payload);
 							}
 						}
@@ -297,41 +317,68 @@ public class Client {
 			try{
 				connection.send("PING");
 			}catch (IOException e){
+			    LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * sendDiceEvent
+     * sends dice event to server
+     * @param gameHash Unique game identifier
+     */
 	public void sendDiceEvent(String gameHash){
 		if (connected && loggedIn){
 			try{
 				connection.send("EVENT:DICE:§"+gameHash);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * sendMoveEvent
+     * sends move event to server
+     * @param gameHash Unique game identifier
+     * @param from from position
+     * @param to to position
+     */
 	public void sendMoveEvent(String gameHash, int from, int to){
 		if (connected && loggedIn){
 			try{
 				connection.send("EVENT:MOVE:§"+gameHash+"§"+from+"§"+to);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * sendGLOBALText
+     * send message to global chat
+     * @param message message
+     */
 	public void sendGLOBALText(String message){
 		if (connected  && loggedIn){
 			try{
 				connection.send("GLOBALMSG:"+message);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * sendLOCALText
+     * send local text to gamechat
+     * @param message message
+     * @param gameHash game id
+     */
 	public void sendLOCALText(String message, String gameHash){
 		if(connected && loggedIn){
 			try{
@@ -340,11 +387,16 @@ public class Client {
 				}
 
 			} catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * requestNewGame
+     * requests new game from server and initializes a waitForGameDialog
+     */
 	public void requestNewGame(){
 		if (connected  && loggedIn){
 			try{
@@ -354,77 +406,104 @@ public class Client {
 					ludoController.startWaitForGame();
 				}
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 
 	}
 
+    /**
+     * requestCreateChat
+     * requests that a chat should be created form server
+     * @param newChatName the created chat should be named newChatName
+     */
 	public void requestCreateChat(String newChatName){
 		if (connected  && loggedIn){
 			try{
 				connection.send("CHATCREATE:"+newChatName);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * requestJoinChat
+     * requests server to join a specific chat
+     * @param joinChatName chatroom name
+     */
 	public void requestJoinChat(String joinChatName){
 		if (connected  && loggedIn){
 			try{
 				connection.send("CHATJOIN:"+joinChatName);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * requestLeaveChat
+     * requests server to leave a chat room
+     * @param leaveChatName chatroom name
+     */
 	public void requestLeaveChat(String leaveChatName){
 		if (connected  && loggedIn){
 			try{
 				connection.send("CHATLEAVE:"+leaveChatName);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * requestSendChatMessage
+     * requests server to send chat message
+     * @param chatName chatroom name
+     * @param message message
+     */
 	public void requestSendChatMessage(String chatName, String message){
 		if (connected  && loggedIn){
 			try{
 				connection.send("CHATMESSAGE:"+chatName+"§"+message);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * leaveGame
+     * leavesgame, makes server notify the rest
+     * @param gameHash game id
+     */
 	public void leaveGame(String gameHash){
 		if (connected && loggedIn){
 			try{
 				connection.send("LEAVEGAME:"+gameHash);
 			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
 	}
 
+    /**
+     * requestRoomList
+     * request roomlist form server
+     */
 	public void requestRoomList(){
 		if (connected && loggedIn){
 			try{
 				connection.send("ROOMLIST");
 			}catch (IOException e){
-				connection.close();
-			}
-		}
-	}
-
-	public void request(String request){
-		if (connected  && loggedIn){
-			try{
-				connection.send(request);
-			}catch (IOException e){
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -438,7 +517,7 @@ public class Client {
 			Path file = Paths.get("cookie.txt");
 			Files.write(file, lines, Charset.forName("UTF-8"));
 		}catch (IOException e){
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			connection.close();
 		}
 	}
@@ -448,27 +527,42 @@ public class Client {
 		try {
 			byte[] encoded = Files.readAllBytes(Paths.get("cookie.txt"));
 			String cookie = new String(encoded, Charset.forName("UTF-8"));
-			System.out.println("COOKIE: "+cookie);
+			LOGGER.log(Level.INFO, "COOKIE: "+cookie);
 			return cookie;
 		}catch (IOException e){
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 
 		return null;
 	}
 
+    /**
+     * isLoggedIn
+     * @return true|false
+     */
 	public boolean isLoggedIn() {
 		return loggedIn;
 	}
 
+    /**
+     * getName
+     * @return name
+     */
 	public String getName() {
 		return name;
 	}
 
+    /**
+     * closeConnection
+     * cloeses connection
+     */
 	public void closeConnection(){
 		connection.close();
 	}
 
+    /**
+     * Connection class
+     */
 	class Connection {
 		private final Socket socket;
 		private final BufferedReader input;
@@ -480,7 +574,7 @@ public class Client {
 		 * @throws IOException
 		 */
 		public Connection() throws IOException {
-			socket = new Socket("localhost", PORT);
+			socket = new Socket("localhost", port);
 			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		}
