@@ -343,29 +343,30 @@ public class Server {
                  * eventParts[2] = Event information
                  */
 
-                for (String player : games.get(eventParts[1])) {
-                    if (event.startsWith("EVENT:DICE:")) {
-                        if (eventParts.length == 4) {
-                            System.out.println("SERVER: Sending player " + player + " DICE event.");
-                            players.get(player).write(event);
-                        }
-                    } else if (event.startsWith("EVENT:PLAYER:")) {
-                        if (eventParts.length == 4) {
-                            System.out.println("SERVER: Sending player " + player + " PLAYER event.");
-                            players.get(player).write(event);
-                        }
-                    } else if (event.startsWith("EVENT:PIECE:")) {
-                        if (eventParts.length == 6) {
-                            System.out.println("SERVER: Sending player " + player + " PIECE event.");
-                            players.get(player).write(event);
-                        }
-                    } else if (event.startsWith("EVENT:JOIN:")) {
-                        if (eventParts.length == 4) {
-                            System.out.println("SERVER: Sending player " + player + " JOIN event.");
-                            players.get(player).write(event);
+                if(eventParts.length > 3 && eventParts[1]!=null){
+                    for (String player : games.get(eventParts[1])) {
+                        if (event.startsWith("EVENT:DICE:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " DICE event.");
+                                players.get(player).write(event);
+                            }
+                        } else if (event.startsWith("EVENT:PLAYER:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " PLAYER event.");
+                                players.get(player).write(event);
+                            }
+                        } else if (event.startsWith("EVENT:PIECE:")) {
+                            if (eventParts.length == 6) {
+                                System.out.println("SERVER: Sending player " + player + " PIECE event.");
+                                players.get(player).write(event);
+                            }
+                        } else if (event.startsWith("EVENT:JOIN:")) {
+                            if (eventParts.length == 4) {
+                                System.out.println("SERVER: Sending player " + player + " JOIN event.");
+                                players.get(player).write(event);
+                            }
                         }
                     }
-
                 }
 
             } catch (InterruptedException e) {
