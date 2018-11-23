@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -30,6 +27,7 @@ public class LudoController {
 
 	private final ConcurrentHashMap<String, GameBoardController> gameControllers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, ChatController> chatControllers = new ConcurrentHashMap<>();
+    private ChatRoomsDialog chatRoomsDialog;
 
 	@FXML
 	private WaitDialogController waitDialogController;
@@ -97,8 +95,29 @@ public class LudoController {
     private TabPane chatTab;
 
     @FXML
-    void ListRooms(ActionEvent event) {
-        //TODO: this
+    void ListRooms(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatRoomsDialog.fxml"));
+
+        this.chatRoomsDialog = new ChatRoomsDialog(this); //create controller that points to this controller
+        loader.setController(chatRoomsDialog);                                        //set controller to this custom controller
+        loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+
+        Parent parent = loader.load();
+
+        Scene scene = new Scene(parent, 600, 340);
+        this.openDialog = new Stage();
+        this.openDialog.initModality(Modality.APPLICATION_MODAL);
+        this.openDialog.setScene(scene);
+        this.openDialog.showAndWait();
+    }
+
+    public void sendRoomRequestToServer(){
+        client.requestRoomList();
+    }
+
+    public void updateRoomList(String roomName){
+        System.out.println("GOT HERE");
+        this.chatRoomsDialog.addRoom(roomName);
     }
 
     @FXML
@@ -140,8 +159,8 @@ public class LudoController {
     }
 
     @FXML
-    void joinChat(ActionEvent event) {
-        //TODO: this
+    void joinChat(String chatName) {
+        client.requestJoinChat(chatName);
     }
 
     @FXML
@@ -164,10 +183,15 @@ public class LudoController {
                 }
             });
             tab.setContent(chat);
-            chatTab.getTabs().add(tab);
+            Platform.runLater(()-> chatTab.getTabs().add(tab));
         } catch (IOException el) {
             el.printStackTrace();
         }
+    }
+
+    @FXML
+    public void requestCreateChat(String chatName){
+        client.requestCreateChat(chatName);
     }
 
     @FXML

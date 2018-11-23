@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -28,7 +27,7 @@ public class ChatController {
     }
 
     @FXML
-    private void initialize(){
+    private void initialize() {
         playerArea.itemsProperty().bind(listProperty);
     }
 

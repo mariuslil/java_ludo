@@ -222,7 +222,7 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("CHATJOIN:")){
 							String[] payload = tmp.split("§");
 							if(payload.length == 3 && ludoController!=null){
-								if(payload[2] == this.getName()){
+								if(payload[2].equals(this.getName())){
 									ludoController.createChat(payload[1]);
 								}
 								ludoController.addPlayerToChat(payload[1], payload[2]);
@@ -242,6 +242,13 @@ public class Client {
 							if(payload.length == 4 && ludoController!=null){
 
 								ludoController.sendMessageToChat(payload[1], payload[2], payload[3]);
+							}
+							//ROOMLIST//
+						}else if(tmp != null && tmp.startsWith("ROOMLIST:")){
+							String payload = tmp.replace("ROOMLIST:","");
+							if(!payload.equals("") && ludoController!=null){
+								System.out.println("CLINT:RECEIVED_ROOMLIST:ROOM: "+payload);
+								ludoController.updateRoomList(payload);
 							}
 						}
 					//});
@@ -367,6 +374,16 @@ public class Client {
 		if (connected && loggedIn){
 			try{
 				connection.send("LEAVEGAME:"+gameHash);
+			}catch (IOException e){
+				connection.close();
+			}
+		}
+	}
+
+	public void requestRoomList(){
+		if (connected && loggedIn){
+			try{
+				connection.send("ROOMLIST");
 			}catch (IOException e){
 				connection.close();
 			}

@@ -68,6 +68,7 @@ public class Server {
         executor.execute(() -> assignGameThread()); // This thread will add players to new games a
         executor.execute(() -> updateWaitingPlayers());
         executor.execute(() -> fillNewGameThread());
+
     }
 
     public void killServer() {
@@ -143,14 +144,14 @@ public class Server {
 
                 }else if (msg != null && msg.startsWith("CHATCREATE:")) {
                     String payload = msg.replace("CHATCREATE:","");
-                    LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
-                    try {
-                        lbq.put(player.getName());
-                        chats.put(payload, lbq);
-                        player.write("CHATJOIN:§"+payload+"§"+player.getName()); //add player to created game
-                    }catch (InterruptedException e){
-                        //fuckoff
+                    if(chats.get(payload)==null) {
+                        LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
+
+                        lbq.add(player.getName());
+                        this.chats.put(payload, lbq);
                     }
+                    player.write("CHATJOIN:§"+payload+"§"+player.getName()); //add player to created game
+
                 }else if (msg != null && msg.startsWith("CHATJOIN:")) {
                     String payload = msg.replace("CHATJOIN:","");
                     try {
@@ -191,6 +192,11 @@ public class Server {
                         ludoServer.removeUserFromGame(gameHash, player.getName());
                     }
                     
+                } else if (msg != null && msg.equals("ROOMLIST")) { //handle PING from user
+                    System.out.println("SERVER: RECEIVED ROOMLIST REQUEST, PROCESSING");
+                    chats.forEachKey(100, chat -> {
+                        player.write("ROOMLIST:"+chat); //send all chatNames to player.
+                    });
                 }// TODO: THIS IS WHERE YOU WANT TO ADD MORE ENDPOINTS FROM CLIENT
             });
             try {
