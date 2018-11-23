@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ public class Main extends Application {
     /**
      * Start
      * Desc: start the javafx program
-     * @param primaryStage
+     * @param primaryStage primary window for javafx program
      */
     @Override
     public void start(Stage primaryStage) {
@@ -31,14 +32,14 @@ public class Main extends Application {
             primaryStage.setScene(scene);
             primaryStage.setTitle(bundle.getString("clientludo.title"));
             primaryStage.show();
-        } catch(Exception e) {
-            LOGGER.severe(e.getMessage());
+        } catch(IOException e) {
+            LOGGER.info(e.getMessage());
         }
     }
 
     /**
      * Main
-     * @param args
+     * @param args cmd line arguments
      */
     public static void main(String[] args) {
         launch(args);
