@@ -7,9 +7,20 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
-public class main extends Application {
+/**
+ * Client Main
+ */
+public class Main extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger("Client Main");
+
+    /**
+     * Start
+     * Desc: start the javafx program
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -21,10 +32,14 @@ public class main extends Application {
             primaryStage.setTitle(bundle.getString("clientludo.title"));
             primaryStage.show();
         } catch(Exception e) {
-            e.printStackTrace();
+            LOGGER.severe(e.getMessage());
         }
     }
 
+    /**
+     * Main
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
         System.exit(0);
