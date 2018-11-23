@@ -140,10 +140,10 @@ public class LudoController {
     }
 
 	@FXML
-	public void warningPopUp(String message) {
+	public void PopUp(String title, String message) {
 
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle("Warning");
+		alert.setTitle(title);
 		alert.setHeaderText(null);
 		alert.setContentText(message);
 
@@ -157,7 +157,7 @@ public class LudoController {
 			client.requestNewGame();
 		}
 		else {
-			warningPopUp("Need to log in to play game");
+			PopUp("Warning","Need to log in to play game");
 		}
     }
 
@@ -192,7 +192,7 @@ public class LudoController {
             });
 		}
 		else {
-			warningPopUp("Need to log in to play game");
+			PopUp("Warning","Need to log in to play game");
 		}
     }
 
