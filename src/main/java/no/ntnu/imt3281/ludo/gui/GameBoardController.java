@@ -196,8 +196,6 @@ public class GameBoardController {
             int xPos = (x+350)/offset;
             int yPos = (y+350)/offset;
 
-            System.out.println("MOVE PIECE FOR: "+color+" X:"+xPos+" Y:"+yPos+" FROM: "+from);
-
             switch (color) {
                 case 0: from = numberBoard0[xPos][yPos]; break;
                 case 1: from = numberBoard1[xPos][yPos]; break;
@@ -207,7 +205,6 @@ public class GameBoardController {
 
             System.out.println("MOVE PIECE FOR: "+color+" X:"+xPos+" Y:"+yPos+" FROM: "+from);
         }
-
 
         ludoController.sendMovePieceRequest(this.gameHash, from, from+this.diceNr);
     }
@@ -289,31 +286,25 @@ public class GameBoardController {
         //TODO: move player color's pieceNr from Pos to Pos
         System.out.println("RUN PIECE EVENT FOR: "+color+" MED BRIKKE: "+pieceNr+" FRA: "+fromPos+" TIL: "+toPos);
 
-        switch (color) {
-            case 0:
-                if(toPos == 16){
-                    pieces[color][pieceNr].setTranslateX(offset);
-                    pieces[color][pieceNr].setTranslateY(-offset*6);
-                }
-                break;
-            case 1:
-                if(toPos == 29){
-                    pieces[color][pieceNr].setTranslateX(offset*6);
-                    pieces[color][pieceNr].setTranslateY(offset);
-                }
-                break;
-            case 2:
-                if(toPos == 42){
-                    pieces[color][pieceNr].setTranslateX(-offset);
-                    pieces[color][pieceNr].setTranslateY(offset*6);
-                }
-                break;
-            case 3:
-                if(toPos == 55){
-                    pieces[color][pieceNr].setTranslateX(-offset*6);
-                    pieces[color][pieceNr].setTranslateY(-offset);
-                }
-                break;
+        if (fromPos == 0) {
+            switch (color) {
+                case 0:
+                        pieces[color][pieceNr].setTranslateX(offset);
+                        pieces[color][pieceNr].setTranslateY(-offset * 6);
+                    break;
+                case 1:
+                        pieces[color][pieceNr].setTranslateX(offset * 6);
+                        pieces[color][pieceNr].setTranslateY(offset);
+                    break;
+                case 2:
+                        pieces[color][pieceNr].setTranslateX(-offset);
+                        pieces[color][pieceNr].setTranslateY(offset * 6);
+                    break;
+                case 3:
+                        pieces[color][pieceNr].setTranslateX(-offset * 6);
+                        pieces[color][pieceNr].setTranslateY(-offset);
+                    break;
+            }
         }
 
         for(int i = fromPos; i <= toPos; i++) { // For every step

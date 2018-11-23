@@ -222,7 +222,7 @@ public class Client {
 	public void sendMoveEvent(String gameHash, int from, int to){
 		if (connected && loggedIn){
 			try{
-				connection.send("EVENT:MOVE:§"+gameHash);
+				connection.send("EVENT:MOVE:§"+gameHash+"§"+from+"§"+to);
 			}catch (IOException e){
 				connection.close();
 			}
