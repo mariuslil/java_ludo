@@ -73,6 +73,9 @@ public class Server {
 
     }
 
+    /**
+     * Kills the server
+     */
     public void killServer() {
         this.shutdown = true;
         executor.shutdown();
@@ -461,10 +464,23 @@ public class Server {
         }
     }
 
+    /**
+     * Returns true if the player exists in the server
+     *
+     * @param username name of user
+     * @return true if user exists
+     */
     public boolean playerExistInServer(String username) {
         return (players.get(username) != null);
     }
 
+    /**
+     * Returns true if player exists in a game
+     *
+     * @param username og the user
+     * @param game gameHash to the game
+     * @return true if user exists in game
+     */
     public boolean playerInGame(String username, String game) {
         return players.get(username).activeGames.contains(game);
     }
@@ -545,30 +561,63 @@ public class Server {
             }
         }
 
+        /**
+         * Sets the name of the user
+         *
+         * @param name of the user
+         */
         public void setName(String name) {
             this.name = name;
         }
 
+        /**
+         * Returns true if player is active
+         *
+         * @return true if player is active
+         */
         public boolean getActive() {
             return active;
         }
 
+        /**
+         * Gets the name of the player
+         *
+         * @return name of the player
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * TODO : add stuff here
+         * @return
+         */
         public String getConnectionString() {
             return connectionString;
         }
 
+        /**
+         * Returns the socket
+         *
+         * @return s for socket to be returned
+         */
         public Socket getSocket() {
             return s;
         }
 
+        /**
+         * TODO : add description here
+         * @return
+         */
         public int getPingsNotReturned() {
             return pingsNotReturned;
         }
 
+        /**
+         * TODO : add description here
+         *
+         * @param pingsNotReturned
+         */
         public void setPingsNotReturned(int pingsNotReturned) {
             this.pingsNotReturned = pingsNotReturned;
         }
@@ -587,6 +636,10 @@ public class Server {
             }
         }
 
+        /**
+         * @param game
+         * @return
+         */
         public boolean isInThisGame(String game) {
             for (String activeGame : activeGames) {
                 if (activeGame.equals(game)) {
