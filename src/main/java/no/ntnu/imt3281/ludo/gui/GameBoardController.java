@@ -107,7 +107,6 @@ public class GameBoardController {
 
     @FXML
     private void initialize(){
-        //TODO: make the loops run acording to number of players
         player2Active.setVisible(false);
         player3Active.setVisible(false);
         player4Active.setVisible(false);
@@ -266,14 +265,7 @@ public class GameBoardController {
                     break;
             }
         }else if(status == 300){ //won
-            String player = "";
-            switch (color){
-                case 0: player = "Player 1"; break;
-                case 1: player = "Player 2"; break;
-                case 2: player = "Player 3"; break;
-                case 3: player = "Player 4"; break;
-            }
-            ludoController.PopUp("Victory Royale", "Congratulations "+player+" on wining the game");
+            ludoController.PopUp("Victory Royale", "Congratulations "+getPlayer(color)+" on wining the game");
         }else if(status == 200){ //playing
             switch (color) {
                 case 0: player1Active.setVisible(true); break;
@@ -308,11 +300,6 @@ public class GameBoardController {
 
     protected void runPieceEvent(int color, int pieceNr, int fromPos, int toPos){
         System.out.println("RUN PIECE EVENT FOR: "+color+" MED BRIKKE: "+pieceNr+" FRA: "+fromPos+" TIL: "+toPos);
-
-
-        if(pieceNr == 69){
-            pieceNr = 0;
-        }
 
         if(fromPos == 53){
             toPos = toPos-fromPos;
@@ -426,6 +413,7 @@ public class GameBoardController {
 
         });
     }
+
 
     public void moveHome(Circle[][] pieces, int color, int piece) {
         switch (color){
