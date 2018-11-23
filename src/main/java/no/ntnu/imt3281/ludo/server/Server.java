@@ -463,6 +463,12 @@ public class Server {
                 ludoServer.removeUserFromGame(gameHash, player.getName());
             }
 
+            chats.forEachValue(100, chat -> {
+                if(chat.contains(player.getName())){
+                    chat.remove(player.getName());
+                }
+            });
+
             players.forEachValue(100, player1 -> { //tell everyone this player disconnected
                 player1.write("DISCONNECTED:"+player.getName());
             });
