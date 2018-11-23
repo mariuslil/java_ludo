@@ -89,7 +89,7 @@ public class Player {
             }
         }
 
-        return 69;
+        return -1;
     }
 
     /**

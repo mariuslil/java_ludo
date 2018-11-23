@@ -4,19 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Ludo is the logic to the ludo game
+ */
 public class Ludo {
 
+    // Indexes to all the players
     protected static final int RED = 0;
     protected static final int BLUE = 1;
     protected static final int YELLOW = 2;
     protected static final int GREEN = 3;
 
+    // Keep track of the activePlayer
     private int activePlayer = 0;
 
+    // Keep track of lastThrow
     private int lastThrow = 0;
 
+    // Keep track of Ludo status
     private String status;
 
+    // List for all Players
     private List<Player> players = new ArrayList<>();
 
     // List for all DiceListeners
@@ -28,10 +36,22 @@ public class Ludo {
     // List for all PlayerListeners
     private List<PlayerListener> playerListeners = new ArrayList<>();
 
+    /**
+     * Constructor without parameters to Ludo
+     */
     public Ludo() {
         this.status = "Created";
     }
 
+    /**
+     * Constructor with Parameters to Ludo, adds players to players list
+     *
+     * @param player1 name of player1
+     * @param player2 name of player2
+     * @param player3 name of player3
+     * @param player4 name of player4
+     * @throws NotEnoughPlayersException if there isn't enough players
+     */
     public Ludo(String player1, String player2, String player3, String player4) throws NotEnoughPlayersException {
 
         players.add(RED, new Player(player1, RED));
@@ -39,6 +59,7 @@ public class Ludo {
         players.add(YELLOW, new Player(player3, YELLOW));
         players.add(GREEN, new Player(player4, GREEN));
 
+        // Minimum two players is needed
         if (this.nrOfPlayers() < 2) {
             throw new NotEnoughPlayersException();
         } else {
@@ -47,6 +68,11 @@ public class Ludo {
 
     }
 
+    /**
+     * Returns number of players in game
+     *
+     * @return playerCount of players
+     */
     public int nrOfPlayers() {
         int playerCount = 0;
         for (Player player : players) {
@@ -58,10 +84,20 @@ public class Ludo {
         return playerCount;
     }
 
+    /**
+     * Returns the status of the game
+     *
+     * @return status to Ludo
+     */
     public String getStatus() {
         return status;
     }
 
+    /**
+     * Returns number of active players
+     *
+     * @return playerCount of active players
+     */
     public int activePlayers() {
         int playerCount = 0;
         for (Player player : players) {
@@ -73,10 +109,21 @@ public class Ludo {
         return playerCount;
     }
 
+    /**
+     * Returns the current active player index
+     *
+     * @return activePlayer player that is active
+     */
     public int activePlayer() {
         return this.activePlayer;
     }
 
+    /**
+     * Gets the player's name from the color/index
+     *
+     * @param playerColor index to the player
+     * @return name of player or checks if player is inactive or null
+     */
     public String getPlayerName(int playerColor) {
         if (nrOfPlayers() - 1 >= playerColor) {
             if (players.get(playerColor).getState()) {
@@ -88,6 +135,11 @@ public class Ludo {
         return null;
     }
 
+    /**
+     * Adds the player to the players list
+     *
+     * @param name of the player
+     */
     public void addPlayer(String name) {
         if (nrOfPlayers() < 4) {
             players.add(new Player(name, nrOfPlayers() + 1));
@@ -97,6 +149,12 @@ public class Ludo {
         }
     }
 
+    /**
+     * This function removes the player from the game logic and throws
+     * PlayerEvent that user has LEFTGAME
+     *
+     * @param name to the player
+     */
     public void removePlayer(String name) {
         for (Player player : players) {
             if (player.getName() != null && player.getName().equals(name)) {
@@ -118,6 +176,13 @@ public class Ludo {
         }
     }
 
+    /**
+     * Gets the player's piece's position
+     *
+     * @param player index of player
+     * @param piece  index of player's piece
+     * @return position to the piece
+     */
     public int getPosition(int player, int piece) {
         return players.get(player)
                 .getPieces()
@@ -125,6 +190,14 @@ public class Ludo {
                 .getPosition();
     }
 
+    /**
+     * throwDice checks how many moves, if any at all, that the player can make.
+     * This also controls if the user should throw the dice again. Dicelisteners and Playerlisteners
+     * is also thrown in this function
+     *
+     * @param number random number between 1-6
+     * @return number of steps the player actually can move
+     */
     public int throwDice(int number) {
         this.lastThrow = number;
         this.status = "Started";
@@ -215,6 +288,11 @@ public class Ludo {
         return number;
     }
 
+    /**
+     * Generates a random number between 1 and 6, to simulate a dice
+     *
+     * @return nr a random number between 1-6
+     */
     public int throwDice() {
         //create new random number between 1 and 6
         int nr = ThreadLocalRandom.current().nextInt(1, 6 + 1);
@@ -224,21 +302,39 @@ public class Ludo {
         return nr;
     }
 
+    /**
+     * Adds a PieceListener
+     *
+     * @param listener added to a list
+     */
     public void addPieceListener(PieceListener listener) {
         // Add listener til diceListeners list for moved piece
         this.pieceListeners.add(listener);
     }
 
+    /**
+     * Adds a DiceListener
+     *
+     * @param listener added to a List
+     */
     public void addDiceListener(DiceListener listener) {
         // Add listener to diceListeners list for dice thrown
         this.diceListeners.add(listener);
     }
 
+    /**
+     * Adds a Playerlistener
+     *
+     * @param listener added to a List
+     */
     public void addPlayerListener(PlayerListener listener) {
         // Add listener to playerListeners list for players
         this.playerListeners.add(listener);
     }
 
+    /**
+     * Sets the next active player and throws PlayerEvent about new player that's playing
+     */
     public void setNextActivePlayer() {
         this.activePlayer = getNextActivePlayer();
         // PLAYERLISTENER : Trigger playerEvent for player that is WAITING
@@ -248,6 +344,11 @@ public class Ludo {
         }
     }
 
+    /**
+     * Gets the next active player after current active player
+     *
+     * @return nextActivePlayer if possible, returns -1 if not
+     */
     public int getNextActivePlayer() {
         //first check all players after current player
         for (int i = this.activePlayer + 1; i < nrOfPlayers(); i++) {
@@ -267,6 +368,15 @@ public class Ludo {
     }
 
 
+    /**
+     * Moves the player's piece if possible,
+     * this also throws piecelistener and playerlistener for Waiting when done moving.
+     *
+     * @param player index to the player
+     * @param from   position to the piece
+     * @param to     position to the piece
+     * @return returns true if the piece is at the from position
+     */
     public boolean movePiece(int player, int from, int to) {
 
         int piece = players.get(player).getPiece(from);
@@ -357,7 +467,15 @@ public class Ludo {
 
     }
 
-    public boolean towersBlocksOpponents(Player playr, int from, int number) {
+    /**
+     * Checks if a tower blocks an opponent
+     *
+     * @param playr  index to the player
+     * @param from   position to the players piece
+     * @param diceNr the number of the dice
+     * @return true if a tower is blocking the player
+     */
+    public boolean towersBlocksOpponents(Player playr, int from, int diceNr) {
 
         int tPos;
         int pos = userGridToLudoBoardGrid(playr.getColour(), from);
@@ -367,7 +485,7 @@ public class Ludo {
                         piece.position != 0 && piece.towerPos != -1) {
                     // If the piece is in a tower
                     tPos = userGridToLudoBoardGrid(player.getColour(), piece.position);
-                    for (int i = pos; i <= pos + number; i++) { //Checks all fields the piece would have to move
+                    for (int i = pos; i <= pos + diceNr; i++) { //Checks all fields the piece would have to move
                         if (tPos == i) { //Returns if a tower blocks the move
                             return true;
                         }
@@ -378,6 +496,12 @@ public class Ludo {
         return false;
     }
 
+    /**
+     * Checks if another players piece is at a position on the board
+     *
+     * @param player index to the player
+     * @param place  position to the players piece
+     */
     private void checkIfAnotherPlayerLiesThere(int player, int place) {
         //get our board position
         int playerPos = userGridToLudoBoardGrid(player, place);
@@ -415,6 +539,11 @@ public class Ludo {
         }
     }
 
+    /**
+     * Checks if a user has won, and if someone has won and ads a listener for this PlayerEvent
+     *
+     * @return index to the player that has won or -1 if no one has won
+     */
     public int getWinner() {
         for (int i = 0; i < nrOfPlayers(); i++) {
             if (players.get(i).isFinished()) {
@@ -430,6 +559,13 @@ public class Ludo {
         return -1;
     }
 
+    /**
+     * Converts the players piece on the players grid board to the game board grid
+     *
+     * @param color    to the player
+     * @param position to the players piece
+     * @return position on the game board
+     */
     protected int userGridToLudoBoardGrid(int color, int position) {
         // Get base for calculating board position
         int boardPos = (position + 15 + (13 * color));
