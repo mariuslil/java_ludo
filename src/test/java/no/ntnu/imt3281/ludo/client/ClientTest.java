@@ -1,14 +1,9 @@
 package no.ntnu.imt3281.ludo.client;
 
-import no.ntnu.imt3281.ludo.logic.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.Ludo;
 import no.ntnu.imt3281.ludo.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.*;
@@ -54,7 +49,7 @@ public class ClientTest {
     }
 
     @Test
-    public void sendMessageToClient(){
+    public void sendGlobalMessageToClient(){
 
         String message = "Testing123";
 
@@ -67,7 +62,7 @@ public class ClientTest {
         }
 
         assertEquals("GLOBALMSG:Johan§" + message, client2.messages.get(0));
-        System.out.println("TEST: sendMessageToClient complete");
+        System.out.println("TEST: sendGlobalMessageToClient complete");
     }
 
     /*@Test
@@ -118,4 +113,53 @@ public class ClientTest {
         assertTrue(server.playerInGame(client3.name, gameHash));
         assertTrue(server.playerInGame(client4.name, gameHash));
     }
+
+    @Test
+    public void sendLocalMessageToClient(){
+
+        Client client3 = new Client();
+        Client client4 = new Client();
+        Client client5 = new Client();
+        client3.connect("REGISTER:", "Marius", "hei");
+        client4.connect("REGISTER:", "Okolloen", "hei");
+        client5.connect("REGISTER:", "Admin", "123abc");
+
+        try{
+            sleep(500); //wait 500ms to let the system connect
+        }catch (InterruptedException e){
+
+        }
+
+        client1.requestNewGame();
+        client2.requestNewGame();
+        client3.requestNewGame();
+        client4.requestNewGame();
+
+
+        try{
+            sleep(6000); //wait 100ms to let the message go through the system.
+        }catch (InterruptedException e){
+
+        }
+
+        String gameHash = client1.activeGames.get(0); //get gameHash from client1
+
+        assertTrue(server.playerInGame(client1.name, gameHash));
+
+        String message = "Testing123";
+
+        client1.sendLOCALText(message, gameHash);
+
+        try{
+            sleep(100); //wait 100ms to let the message go through the system.
+        }catch (InterruptedException e){
+
+        }
+
+        assertEquals("GAMEMSG:" + gameHash+ "§Johan§" + message, client2.messages.get(0));
+        assertEquals(0, client5.messages.size());
+        System.out.println("TEST: sendLocalMessageToClient complete");
+    }
+
+
 }
