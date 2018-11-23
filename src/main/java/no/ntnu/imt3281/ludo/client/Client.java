@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -63,19 +64,19 @@ public class Client {
 
 		if(this.cookie != null){
 			try {
-				LOGGER.info("CLIENT: "+this.cookie+" Connecting to server.");
+				LOGGER.log(Level.SEVERE, "CLIENT: "+this.cookie+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true; //connected but not logged in
 				connection.send("SESSION:"+this.cookie); 	// Send cookie
 				
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
 			} catch (UnknownHostException e) {
-				// Ignored, means no connection (should have informed the user.)
-                LOGGER.info(e.getMessage());
-			} catch (IOException e2) {
-				// Ignored, means no connection (should have informed the user.)
-                LOGGER.info(e2.getMessage()+"");
-			}
+                // Ignored, means no connection (should have informed the user.)
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            } catch (IOException e2) {
+                // Ignored, means no connection (should have informed the user.)
+                LOGGER.log(Level.SEVERE, e2.getMessage(), e2);
+            }
 		}
 
 		this.activeChats.add("Global");
@@ -95,7 +96,7 @@ public class Client {
 			loggedIn = false;
 		} else {
 			try {
-                LOGGER.info("CLIENT: "+username+" Connecting to server.");
+                LOGGER.log(Level.SEVERE, "CLIENT: "+username+" Connecting to server.");
 				connection = new Connection();			// Connect to the server
 				connected = true; //connected but not logged in
 				connection.send(type+username+"§"+password); 	// Send username&password
@@ -103,10 +104,10 @@ public class Client {
 				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
 			} catch (UnknownHostException e) {
                 // Ignored, means no connection (should have informed the user.)
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             } catch (IOException e2) {
                 // Ignored, means no connection (should have informed the user.)
-                LOGGER.info(e2.getMessage()+"");
+                LOGGER.log(Level.SEVERE, e2.getMessage(), e2);
             }
 		}
 	}
@@ -122,7 +123,7 @@ public class Client {
 							//JOIN//
 						if(tmp != null && tmp.startsWith("JOIN:")){
 							String newUser = tmp.replace("JOIN:", "");
-                            LOGGER.info("CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
+                            LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":LOGGED_ON: "+newUser);
 
 							// Send message in Global chat that a new user has logged in and if anyone has logged in before him
 							// then show them too
@@ -133,7 +134,7 @@ public class Client {
 							//COOKIE//
 						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
-                            LOGGER.info("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
+                            LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
 
 							String[] payload = tmp.replace("COOKIE:","").split("§");
 							if(payload.length==2){
@@ -148,7 +149,7 @@ public class Client {
 
 							//GLOBAL MESSAGE//
 						}else if(tmp != null && tmp.startsWith("GLOBALMSG:")){
-                            LOGGER.info("CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
+                            LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_GLOBAL_MESSAGE: "+tmp.replace("GLOBALMSG:",""));
 							messages.add(tmp);
 
 							// This is so the sendMessageToClient test won't fail
@@ -168,7 +169,7 @@ public class Client {
 							String message = tmp.replace("GAMEMSG:", "");
 							String[] messageInfo = message.split("§");
 							if(activeGames.size() > 0 && activeGames.contains(messageInfo[0])){
-                                LOGGER.info("CLIENT:"+name.toUpperCase()+":RECEIVED_CHAT_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
+                                LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_CHAT_MESSAGE: "+tmp.replace("GAMEMSG:", ""));
 								messages.add(tmp);
 
 								if(ludoController != null){
@@ -187,7 +188,7 @@ public class Client {
 
 								//DICE//
 							if(event.startsWith("DICE:")){ //dice event
-                                LOGGER.info("CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
+                                LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_DICE_EVENT: "+event.replace("DICE:", ""));
 
 								this.test = true;
 								String[] payload = tmp.split("§");
@@ -197,7 +198,7 @@ public class Client {
 
 								//PIECE//
 							}else if(event.startsWith("PLAYER:")){ //player event
-								LOGGER.info("CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
+								LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_PIECE_EVENT: "+event.replace("PIECE:", ""));
 
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 4){
@@ -206,7 +207,7 @@ public class Client {
 
 								//PLAYER//
 							}else if(event.startsWith("PIECE:")){ //PIECE event
-								LOGGER.info("CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
+								LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_PLAYER_EVENT: "+event.replace("PLAYER:", ""));
 
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 6){
@@ -215,7 +216,7 @@ public class Client {
 
 								//JOIN//
 							}else if(event.startsWith("JOIN:")){ //join game event
-								LOGGER.info("CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
+								LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":RECEIVED_JOIN_EVENT: "+event.replace("PLAYER:", ""));
 								String[] payload = tmp.split("§");
 								if(ludoController!=null && payload.length == 4){
 									ludoController.receiveJoinEvent(payload[1], payload[2],  Integer.parseInt(payload[3]));
@@ -239,15 +240,15 @@ public class Client {
 
 							//LOGINERROR//
 						}else if(tmp != null && tmp.startsWith("LOGINERROR:")){
-							LOGGER.info("CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
+							LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":LOGINERROR: "+tmp.replace("LOGINERROR:", ""));
 							this.connected = false;
 							connection.close();
 							this.loggedIn = false;
-							LOGGER.info("CLIENT:"+name.toUpperCase()+": Disconnected from server.");
+							LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+": Disconnected from server.");
 
 							//NEWGAME//
 						}else if(tmp != null && tmp.startsWith("STARTGAME:")){
-							LOGGER.info("CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
+							LOGGER.log(Level.SEVERE, "CLIENT:"+name.toUpperCase()+":STARTGAME: "+tmp.replace("STARTGAME:", ""));
 							String game = tmp.replace("STARTGAME:","");
 							this.test2 = game;
 							if(this.lookingForGame){
@@ -296,7 +297,7 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("ROOMLIST:")){
 							String payload = tmp.replace("ROOMLIST:","");
 							if(!payload.equals("") && ludoController!=null){
-								LOGGER.info("CLINT:RECEIVED_ROOMLIST:ROOM: "+payload);
+								LOGGER.log(Level.SEVERE, "CLINT:RECEIV, eED_ROOMLIST:ROOM: "+payload);
 								ludoController.updateRoomList(payload);
 							}
 						}
@@ -316,7 +317,7 @@ public class Client {
 			try{
 				connection.send("PING");
 			}catch (IOException e){
-			    LOGGER.info(e.getMessage());
+			    LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -332,7 +333,7 @@ public class Client {
 			try{
 				connection.send("EVENT:DICE:§"+gameHash);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -350,7 +351,7 @@ public class Client {
 			try{
 				connection.send("EVENT:MOVE:§"+gameHash);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -366,7 +367,7 @@ public class Client {
 			try{
 				connection.send("GLOBALMSG:"+message);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -386,7 +387,7 @@ public class Client {
 				}
 
 			} catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -405,7 +406,7 @@ public class Client {
 					ludoController.startWaitForGame();
 				}
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -422,7 +423,7 @@ public class Client {
 			try{
 				connection.send("CHATCREATE:"+newChatName);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -438,7 +439,7 @@ public class Client {
 			try{
 				connection.send("CHATJOIN:"+joinChatName);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -454,7 +455,7 @@ public class Client {
 			try{
 				connection.send("CHATLEAVE:"+leaveChatName);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -471,7 +472,7 @@ public class Client {
 			try{
 				connection.send("CHATMESSAGE:"+chatName+"§"+message);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -487,7 +488,7 @@ public class Client {
 			try{
 				connection.send("LEAVEGAME:"+gameHash);
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -502,7 +503,7 @@ public class Client {
 			try{
 				connection.send("ROOMLIST");
 			}catch (IOException e){
-                LOGGER.info(e.getMessage());
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				connection.close();
 			}
 		}
@@ -516,7 +517,7 @@ public class Client {
 			Path file = Paths.get("cookie.txt");
 			Files.write(file, lines, Charset.forName("UTF-8"));
 		}catch (IOException e){
-			LOGGER.info(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			connection.close();
 		}
 	}
@@ -526,10 +527,10 @@ public class Client {
 		try {
 			byte[] encoded = Files.readAllBytes(Paths.get("cookie.txt"));
 			String cookie = new String(encoded, Charset.forName("UTF-8"));
-			LOGGER.info("COOKIE: "+cookie);
+			LOGGER.log(Level.INFO, "COOKIE: "+cookie);
 			return cookie;
 		}catch (IOException e){
-			LOGGER.info(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 
 		return null;

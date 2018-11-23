@@ -28,7 +28,7 @@ public class Server {
     protected LudoServer ludoServer;
     private int PORT = 1234;
 
-    private final Logger logger = Logger.getLogger("Chat server");
+    private final Logger LOGGER = Logger.getLogger("Chat server");
     protected boolean shutdown = false;
 
     protected final LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
@@ -85,6 +85,7 @@ public class Server {
             serverSocket.close();
         } catch (IOException e) {
             //
+            LOGGER.log(Level.SEVERE, "an exception was thrown", e);
         }
     }
 
@@ -92,29 +93,30 @@ public class Server {
     private void connectionListenerThread() {
         try {
             this.serverSocket = new ServerSocket(PORT);
-            logger.info("SERVER: Serversocket created on Port: " + PORT);
+            LOGGER.info("SERVER: Serversocket created on Port: " + PORT);
             while (!shutdown) {        // Run until server stopping
                 Socket s = null;
                 try {
                     s = serverSocket.accept(); //accept incoming connection
-                    logger.info("SERVER: Accepted connection");
+                    LOGGER.info("SERVER: Accepted connection");
                     try {
                         addPlayer(s);    // Method that gets username and adds client to hashmap
                     } catch (IOException e) {
-                        logger.log(Level.FINER, "Unable to establish connection with client", e);
+                        LOGGER.log(Level.FINER, "Unable to establish connection with client", e);
                     }
                 } catch (IOException e) {
-                    //logger.log(Level.SEVERE, "Error while getting client connection: "+PORT, e);
+                    //LOGGER.log(Level.SEVERE, "Error while getting client connection: "+PORT, e);
                     //System.exit(0);
-                    logger.info("SERVER: Exception thrown when shutting down serversocket\nSERVER: Because serverSocket is shut down from another thread.");
+                    LOGGER.log(Level.SEVERE, "an exception was thrown", e);
+                    LOGGER.info("SERVER: Exception thrown when shutting down serversocket\nSERVER: Because serverSocket is shut down from another thread.");
                     //continue; //jump out of callstack to dodge nullpointers when tossing exception //edit: moved thge addplayer trycatch into this try catch
                 }
 
             }
 
         } catch (IOException e) {
-            logger.info("SERVER: Unable to listen to port: " + PORT);
-            logger.log(Level.SEVERE, "Unable to listen to port: " + PORT, e);
+            LOGGER.info("SERVER: Unable to listen to port: " + PORT);
+            LOGGER.log(Level.SEVERE, "Unable to listen to port: " + PORT, e);
             //System.exit(0);
         }
     }
@@ -199,7 +201,7 @@ public class Server {
                     }
 
                 } else if (msg != null && msg.equals("ROOMLIST")) { //handle PING from user
-                    logger.info("SERVER: RECEIVED ROOMLIST REQUEST, PROCESSING");
+                    LOGGER.info("SERVER: RECEIVED ROOMLIST REQUEST, PROCESSING");
                     chats.forEachKey(100, chat -> {
                         player.write("ROOMLIST:" + chat); //send all chatNames to player.
                     });
@@ -220,7 +222,7 @@ public class Server {
                 players.forEachValue(100, player -> player.write(message));    // Do in parallel if more than 100 clients
 
             } catch (InterruptedException e) {
-                logger.log(Level.INFO, "Error fetching message from queue", e);
+                LOGGER.log(Level.INFO, "Error fetching message from queue", e);
                 Thread.currentThread().interrupt();
             }
             // Clients that have IO error was marked inactive
@@ -239,7 +241,7 @@ public class Server {
                 if (wannaGame.size() > 0 && newGame.size() < 4) {
                     Player player = wannaGame.take(); //this fucker
 
-                    logger.info("SERVER: Player " + player.getName() + " added to game waiting list.");
+                    LOGGER.info("SERVER: Player " + player.getName() + " added to game waiting list.");
 
                     waitingPlayers.put(player.getName(), player);
                     newGame.add(player.getName());
@@ -250,7 +252,7 @@ public class Server {
                 }
             } catch (InterruptedException e) {
                 //meep
-                logger.severe(e.getMessage());
+                LOGGER.log(Level.SEVERE, "an exception was thrown", e);
             }
         }
     }
@@ -270,7 +272,7 @@ public class Server {
 
                 ludoServer.newGame(uniqID, newGame.size());
                 LinkedBlockingQueue<String> lbq = new LinkedBlockingQueue<>();
-                logger.info("SERVER: Starting game: " + uniqID);
+                LOGGER.info("SERVER: Starting game: " + uniqID);
 
 
                 for (String playerName : newGame) {
@@ -282,7 +284,7 @@ public class Server {
                         ludoServer.addPlayerToGame(uniqID, playerName);
                         newGame.remove(playerName);
                     } catch (InterruptedException e) {
-                        logger.info(e.getMessage());
+                        LOGGER.info(e.getMessage());
                     }
                 }
 
@@ -350,22 +352,22 @@ public class Server {
                     for (String player : games.get(eventParts[1])) {
                         if (event.startsWith("EVENT:DICE:")) {
                             if (eventParts.length == 4) {
-                                logger.info("SERVER: Sending player " + player + " DICE event.");
+                                LOGGER.info("SERVER: Sending player " + player + " DICE event.");
                                 players.get(player).write(event);
                             }
                         } else if (event.startsWith("EVENT:PLAYER:")) {
                             if (eventParts.length == 4) {
-                                logger.info("SERVER: Sending player " + player + " PLAYER event.");
+                                LOGGER.info("SERVER: Sending player " + player + " PLAYER event.");
                                 players.get(player).write(event);
                             }
                         } else if (event.startsWith("EVENT:PIECE:")) {
                             if (eventParts.length == 6) {
-                                logger.info("SERVER: Sending player " + player + " PIECE event.");
+                                LOGGER.info("SERVER: Sending player " + player + " PIECE event.");
                                 players.get(player).write(event);
                             }
                         } else if (event.startsWith("EVENT:JOIN:")) {
                             if (eventParts.length == 4) {
-                                logger.info("SERVER: Sending player " + player + " JOIN event.");
+                                LOGGER.info("SERVER: Sending player " + player + " JOIN event.");
                                 players.get(player).write(event);
                             }
                         }
@@ -373,7 +375,7 @@ public class Server {
                 }
 
             } catch (InterruptedException e) {
-                logger.log(Level.INFO, "Error fetching message from queue", e);
+                LOGGER.log(Level.INFO, "Error fetching message from queue", e);
                 Thread.currentThread().interrupt();
             }
         }
@@ -397,13 +399,13 @@ public class Server {
             String[] namePass = trim.split("§");    //split the remaining string into USERNAME and PASSWORD
             if (namePass.length == 2) {   //make sure both username and password is present
                 if (database.userExists(namePass[0])) { //if the username already exists
-                    logger.info("SERVER: Username '" + namePass[0] + "' already exists, trying to login instead.");
+                    LOGGER.info("SERVER: Username '" + namePass[0] + "' already exists, trying to login instead.");
                     player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:"); //change REGISTER to LOGIN
                     loginPlayer(player); //then try to login the person instead.
                 } else { //username does not exits, try to register user
                     boolean registered = database.registerUser(namePass[0], namePass[1]);
                     if (registered) { //registered successfull
-                        logger.info("SERVER: User " + namePass[0].toUpperCase() + " registered succesfully.");
+                        LOGGER.info("SERVER: User " + namePass[0].toUpperCase() + " registered succesfully.");
                         player.connectionString = player.connectionString.replace("REGISTER:", "LOGIN:"); //change REGISTER to LOGIN
                         loginPlayer(player); //login player after registering
                     }
@@ -417,12 +419,12 @@ public class Server {
 
             String trim = player.connectionString.replace("LOGIN:", ""); //remove LOGIN: from string
             String[] namePass = trim.split("§"); //split string into USERNAME and PASSWORD
-            logger.info("SERVER: Logging in user: " + namePass[0]);
+            LOGGER.info("SERVER: Logging in user: " + namePass[0]);
 
             if (namePass.length == 2) { //make sure both username and password is present
                 String cookie = database.loginUser(namePass[0], namePass[1]); //login user/fetch cookie from db
                 if (cookie != null) { //no cookie, not a valid user
-                    logger.info("SERVER: User " + namePass[0].toUpperCase() + " logged in succesfully.");
+                    LOGGER.info("SERVER: User " + namePass[0].toUpperCase() + " logged in succesfully.");
                     player.setName(namePass[0]);
                     player.write("COOKIE:"+ namePass[0] + "§" + cookie); //send cookie to client for it to keep
 
@@ -435,17 +437,17 @@ public class Server {
                     //add player to global chat
                     chats.get("Global").add(player.getName());
                 } else { //failed to log in
-                    logger.info("SERVER: Failed to login user " + namePass[0].toUpperCase());
+                    LOGGER.info("SERVER: Failed to login user " + namePass[0].toUpperCase());
                     player.write("LOGINERROR: Failed to login user");
                 }
             }
         } else if (player.connectionString.startsWith("SESSION:")) { //login user through a session key instead
-            logger.info("SERVER: client trying to connect through cookie.");
+            LOGGER.info("SERVER: client trying to connect through cookie.");
             String cookie = player.connectionString.replace("SESSION:", "");
 
             String userName = database.loginUserWithCookie(cookie);
             if(userName!=null){
-                logger.info("SERVER: User " + userName.toUpperCase() + " logged in succesfully.");
+                LOGGER.info("SERVER: User " + userName.toUpperCase() + " logged in succesfully.");
                 player.setName(userName);
                 player.write("COOKIE:"+ userName + "§" + cookie); //send cookie to client for it to keep
 
@@ -460,7 +462,7 @@ public class Server {
             }
             //TODO: THIS -> login client with only the cookie
         } else {
-            logger.info("SERVER: Something wrong validating user.");
+            LOGGER.info("SERVER: Something wrong validating user.");
         }
     }
 
@@ -486,11 +488,11 @@ public class Server {
     }
 
     protected void removePlayerFromServer(Player player) {
-        logger.info("SERVER: Disconnecting user " + player.getName());
+        LOGGER.info("SERVER: Disconnecting user " + player.getName());
         if (players.remove(player.getName()) != null) { //fjern fra players stacken
             player.close(); //disconnect user
 
-            logger.info("SERVER: Player " + player.getName() + " DISCONNECTED.");
+            LOGGER.info("SERVER: Player " + player.getName() + " DISCONNECTED.");
 
             for (String gameHash : player.activeGames) { //remove player from all games and notify other players in the games
                 games.get(gameHash).remove(player.getName());
