@@ -24,7 +24,7 @@ public class ChatRoomsDialog {
         ludoController.sendRoomRequestToServer();
         listView.setItems(roomList);
         listView.setOnMouseClicked(event -> {
-            if(event.getClickCount() == 2) {
+            if(event.getClickCount() == 2 && !listView.getSelectionModel().getSelectedItem().equals("Global")) {
                 ludoController.requestJoinChat(listView.getSelectionModel().getSelectedItem());
                 ludoController.removeOpenDialog();
             }
@@ -54,7 +54,7 @@ public class ChatRoomsDialog {
     @FXML
     public void addRoom(String roomName){
         Platform.runLater(()-> {
-            if(!roomList.contains(roomName)){
+            if(!roomList.contains(roomName) || roomName.equals("Global")){
                 roomList.add(roomName);
             }
         });
