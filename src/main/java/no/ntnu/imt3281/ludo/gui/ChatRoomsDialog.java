@@ -26,6 +26,7 @@ public class ChatRoomsDialog {
         listView.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2) {
                 ludoController.requestJoinChat(listView.getSelectionModel().getSelectedItem());
+                ludoController.removeOpenDialog();
             }
         });
 
@@ -45,6 +46,7 @@ public class ChatRoomsDialog {
         if(newRoomText.getText()!=null && !newRoomText.getText().equals("")) {
             ludoController.requestCreateChat(newRoomText.getText());
             ludoController.sendRoomRequestToServer();
+            ludoController.removeOpenDialog();
             roomList.removeAll();
         }
     }
