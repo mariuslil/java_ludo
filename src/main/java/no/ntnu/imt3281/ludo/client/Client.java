@@ -1,14 +1,14 @@
 package no.ntnu.imt3281.ludo.client;
 
 import no.ntnu.imt3281.ludo.gui.LudoController;
-import no.ntnu.imt3281.ludo.logic.DiceEvent;
-import no.ntnu.imt3281.ludo.logic.PieceEvent;
-import no.ntnu.imt3281.ludo.logic.PlayerEvent;
-import org.apache.derby.impl.sql.catalog.SYSCOLUMNSRowFactory;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -48,7 +48,25 @@ public class Client {
 
 	public Client(LudoController ludoController){
 		this.ludoController = ludoController;
-		requestJoinChat("Global");
+
+		this.cookie = readCookie();
+
+		if(this.cookie != null){
+			try {
+				System.out.println("CLIENT: "+this.cookie+" Connecting to server.");
+				connection = new Connection();			// Connect to the server
+				connected = true; //connected but not logged in
+				connection.send("SESSION:"+this.cookie); 	// Send cookie
+				
+				executor.execute(()->listen());			// Starts a new thread, listening to messages from the server
+			} catch (UnknownHostException e) {
+				// Ignored, means no connection (should have informed the user.)
+			} catch (IOException e) {
+				// Ignored, means no connection (should have informed the user.)
+			}
+		}
+
+		//requestJoinChat("Global");
 		this.activeChats.add("Global");
 	}
 
@@ -96,10 +114,16 @@ public class Client {
 						}else if(tmp != null && tmp.startsWith("COOKIE:")){
 							//todo: STORE COOKIE LOCALLY
 							System.out.println("CLIENT:"+name.toUpperCase()+":COOKIE_RECEIVED: "+tmp.replace("COOKIE:", ""));
-							this.cookie = tmp.replace("COOKIE:",""); //set cookie
-							this.loggedIn = true; //Client is logged in :)
-							if(ludoController!=null) {
-								ludoController.removeOpenDialog();
+
+							String[] payload = tmp.replace("COOKIE:","").split("§");
+							if(payload.length==2){
+								this.name = payload[0];
+								this.cookie = payload[1]; //set cookie
+								saveCookie(this.cookie);
+								this.loggedIn = true; //Client is logged in :)
+								if(ludoController!=null) {
+									ludoController.removeOpenDialog();
+								}
 							}
 
 							//GLOBAL MESSAGE//
@@ -405,12 +429,43 @@ public class Client {
 		}
 	}
 
+	private void saveCookie(String cookie){
+		if(cookie != null)
+		try{
+			List<String> lines = new ArrayList<>();
+			lines.add(cookie);
+			Path file = Paths.get("cookie.txt");
+			Files.write(file, lines, Charset.forName("UTF-8"));
+		}catch (IOException e){
+			System.out.println(e.getMessage());
+			connection.close();
+		}
+	}
+
+	private String readCookie() {
+
+		try {
+			byte[] encoded = Files.readAllBytes(Paths.get("cookie.txt"));
+			String cookie = new String(encoded, Charset.forName("UTF-8"));
+			System.out.println("COOKIE: "+cookie);
+			return cookie;
+		}catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+
+		return null;
+	}
+
 	public boolean isLoggedIn() {
 		return loggedIn;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public void closeConnection(){
+		connection.close();
 	}
 
 	class Connection {

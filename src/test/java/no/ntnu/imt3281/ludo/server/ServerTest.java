@@ -50,7 +50,7 @@ public class ServerTest {
         //server.ludoServer.addPlayerToGame("TEST", client1.getName());
         //server.ludoServer.addPlayerToGame("TEST", client2.getName());
         try{
-            sleep(3000); //wait 1s to let the request run through server
+            sleep(2000); //wait 1s to let the request run through server
         }catch (InterruptedException e){
             System.out.println(e.getMessage());
         }
@@ -62,7 +62,7 @@ public class ServerTest {
         client4.sendDiceEvent(client4.test2); //send event
 
         try{
-            sleep(4000); //wait 2s to let the message run through
+            sleep(3000); //wait 2s to let the message run through
         }catch (InterruptedException e){
 
         }
